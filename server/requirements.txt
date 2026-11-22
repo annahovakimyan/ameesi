@@ -1,0 +1,7 @@
+# All licenses checked as AGPL-compatible.
+fastapi==0.165.0        # MIT
+uvicorn==0.54.0         # BSD-3-Clause
+pyswisseph==2.10.3.2    # AGPL-3.0
+tzdata==2026.6          # Apache-2.0
+pytest==9.2.0           # MIT
+httpx==0.28.1           # BSD-3-Clause (FastAPI test client)
