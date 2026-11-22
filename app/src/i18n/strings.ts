@@ -1,0 +1,53 @@
+// Interface strings. Armenian and Russian need review by a native speaker before release.
+export const strings = {
+  birthTitle: { hy: "Ձեր ծննդյան տվյալները", en: "Your birth details", ru: "Данные о рождении" },
+  date: { hy: "Ծննդյան ամսաթիվ", en: "Date of birth", ru: "Дата рождения" },
+  chooseDate: { hy: "Ընտրել ամսաթիվը", en: "Choose date", ru: "Выбрать дату" },
+  time: { hy: "Ծննդյան ժամ", en: "Time of birth", ru: "Время рождения" },
+  chooseTime: { hy: "Ընտրել ժամը", en: "Choose time", ru: "Выбрать время" },
+  exact: { hy: "Ճշգրիտ", en: "Exact", ru: "Точное" },
+  approximate: { hy: "Մոտավոր", en: "Approximate", ru: "Примерное" },
+  unknown: { hy: "Անհայտ", en: "Unknown", ru: "Неизвестно" },
+  from: { hy: "Սկսած", en: "From", ru: "С" },
+  to: { hy: "Մինչև", en: "To", ru: "До" },
+  unknownTimeNote: {
+    hy: "Առանց ժամի տները և անկյունները չեն հաշվարկվում։",
+    en: "Without a time, houses and angles can't be calculated.",
+    ru: "Без времени дома и углы не рассчитываются.",
+  },
+  place: { hy: "Ծննդավայր", en: "Place of birth", ru: "Место рождения" },
+  placeHint: { hy: "Քաղաք կամ գյուղ", en: "City, town or village", ru: "Город или село" },
+  formerly: { hy: "նախկինում՝ {name}", en: "formerly {name}", ru: "ранее {name}" },
+  noPlaces: { hy: "Ոչինչ չի գտնվել", en: "No places found", ru: "Ничего не найдено" },
+  adult: { hy: "Ես 18 տարեկան եմ կամ ավելի", en: "I am 18 or older", ru: "Мне 18 лет или больше" },
+  getChart: { hy: "Ստանալ քարտեզը", en: "Get my chart", ru: "Получить карту" },
+  back: { hy: "Հետ", en: "Back", ru: "Назад" },
+  errorNetwork: {
+    hy: "Չհաջողվեց կապվել սերվերի հետ։ Ստուգեք ինտերնետը։",
+    en: "Couldn't reach the server. Check your connection.",
+    ru: "Не удалось связаться с сервером. Проверьте интернет.",
+  },
+  errorGeneric: { hy: "Ինչ-որ բան սխալ գնաց։", en: "Something went wrong.", ru: "Что-то пошло не так." },
+  bodies: { hy: "Մոլորակներ", en: "Planets", ru: "Планеты" },
+  angles: { hy: "Անկյուններ", en: "Angles", ru: "Углы" },
+  aspects: { hy: "Ասպեկտներ", en: "Aspects", ru: "Аспекты" },
+  stelliums: { hy: "Ստելիումներ", en: "Stelliums", ru: "Стеллиумы" },
+  balance: { hy: "Տարրեր և որակներ", en: "Elements and modalities", ru: "Стихии и модальности" },
+  uncertain: { hy: "անորոշ", en: "uncertain", ru: "неточно" },
+  retrograde: { hy: "հետադարձ", en: "retrograde", ru: "ретроградный" },
+  orb: { hy: "օրբիս {orb}", en: "orb {orb}", ru: "орбис {orb}" },
+  calcDetails: {
+    hy: "{houses} · տրոպիկական · tzdata {tzdata}",
+    en: "{houses} · tropical · tzdata {tzdata}",
+    ru: "{houses} · тропический · tzdata {tzdata}",
+  },
+  placidus: { hy: "Պլացիդուս", en: "Placidus", ru: "Плацидус" },
+  whole_sign: { hy: "Ամբողջական նշաններ", en: "Whole Sign", ru: "Целые знаки" },
+  needsConfirmation: {
+    hy: "Այս ժամին ժամացույցները փոխվել են։ Ընտրեք ճիշտ պահը.",
+    en: "The clocks changed around this time. Choose the right moment:",
+    ru: "В это время переводили часы. Выберите правильный момент:",
+  },
+} as const;
+
+export type StringId = keyof typeof strings;

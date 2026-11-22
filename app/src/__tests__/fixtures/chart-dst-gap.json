@@ -1,0 +1,39 @@
+{
+ "meta": {
+  "engine": "ameesi-engine 0.1.0",
+  "swisseph": "2.10.03",
+  "tzdata": "2026f",
+  "zodiac": "tropical",
+  "house_system_requested": "placidus",
+  "house_system_used": null,
+  "node": "true",
+  "calculated_at": "2026-11-22T00:00:00Z"
+ },
+ "time": {
+  "local": "2021-03-14T02:30",
+  "utc": "2021-03-14T07:30Z",
+  "utc_offset_minutes": -300,
+  "offset_source": "tzdata",
+  "confidence": "exact",
+  "dst_ambiguity": {
+   "kind": "gap",
+   "candidates_utc": [
+    "2021-03-14T06:30Z",
+    "2021-03-14T07:30Z"
+   ]
+  }
+ },
+ "bodies": [],
+ "angles": null,
+ "houses": null,
+ "aspects": [],
+ "aspects_uncertain": [],
+ "stelliums": [],
+ "balance": null,
+ "warnings": [
+  {
+   "code": "needs_confirmation",
+   "message": "This local time is ambiguous because of a clock change. Please choose the correct moment."
+  }
+ ]
+}
