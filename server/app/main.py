@@ -1,11 +1,13 @@
 from contextlib import asynccontextmanager
 from datetime import date, datetime, time, timedelta, timezone
+from pathlib import Path
+from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import swisseph as swe
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Query
 
-from . import engine
+from . import engine, places
 from .models import ChartRequest
 from .timezones import TZDATA_VERSION, resolve_local
 from .uncertainty import flag_uncertain, moon_changes_sign
@@ -119,3 +121,13 @@ def calculate_chart(req: ChartRequest):
         warnings.append({"code": "utc_offset_overridden",
                          "message": "The UTC offset was set by hand instead of the time zone database."})
     return {"meta": meta, "time": time_block, **to_response(chart), "warnings": warnings}
+
+
+@app.get("/places")
+def search_places(q: str = Query(min_length=places.MIN_QUERY, max_length=100),
+                  lang: Literal["hy", "en", "ru"] = "hy",
+                  db_path: Path = Depends(places.get_db_path)):
+    if not db_path.is_file():
+        raise HTTPException(503, "place database not built; run scripts/build_places.py")
+    return {"results": places.search(db_path, q, lang),
+            "attribution": "Place data © GeoNames (geonames.org), CC BY 4.0"}
