@@ -3,6 +3,7 @@
 Data © GeoNames (geonames.org), CC BY 4.0. Build the database with scripts/build_places.py.
 """
 import csv
+import json
 import os
 import re
 import sqlite3
@@ -20,7 +21,17 @@ MIN_QUERY = 2
 SCRIPT = {"hy": re.compile(r"[԰-֏]"), "ru": re.compile(r"[Ѐ-ӿ]"),
           "en": re.compile(r"^[\x00-ɏ’ʼ‘]+$")}
 
+OVERRIDES_FILE = Path(__file__).resolve().parent / "place_overrides.json"
+
 csv.field_size_limit(sys.maxsize)
+
+
+def load_overrides() -> dict[int, dict]:
+    raw = json.loads(OVERRIDES_FILE.read_text(encoding="utf-8"))
+    return {int(k): v for k, v in raw.items() if not k.startswith("_")}
+
+
+OVERRIDES = load_overrides()
 _APOSTROPHES = str.maketrans("", "", "’'‘ʼ`´ʻ")
 
 
@@ -100,6 +111,9 @@ def build(raw_dir: Path, out: Path) -> None:
 # --- search --------------------------------------------------------------
 
 def _display_name(con, gid: int, lang: str, fallback: str) -> str:
+    override = OVERRIDES.get(gid, {}).get("names", {}).get(lang)
+    if override:
+        return override
     rows = con.execute("SELECT name, preferred, short, historic FROM names "
                        "WHERE geonames_id = ? AND lang = ?", (gid, lang)).fetchall()
     rows = [r for r in rows if not r[3] and SCRIPT[lang].search(r[0])]
@@ -139,6 +153,7 @@ def search(db_path: Path, query: str, lang: str) -> list[dict]:
             name, cc, admin_id, lat, lon, tz = con.execute(
                 "SELECT name, country_code, admin1_id, lat, lon, tz FROM places WHERE geonames_id = ?",
                 (gid,)).fetchone()
+            cc = OVERRIDES.get(gid, {}).get("country_code", cc)
             c_gid, c_name = con.execute("SELECT geonames_id, name FROM countries WHERE code = ?",
                                         (cc,)).fetchone() or (None, cc)
             region = None

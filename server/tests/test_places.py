@@ -120,3 +120,24 @@ def test_missing_database_is_explicit(tmp_path):
 ])
 def test_normalise(raw, norm):
     assert places.normalise(raw) == norm
+
+
+def test_overrides_replace_display_names(client, monkeypatch):
+    monkeypatch.setattr(places, "OVERRIDES", {GYUMRI: {"names": {"en": "Gyumri (test)"}},
+                                              828264: {"names": {"en": "Shirak (test)"}}})
+    p = search(client, "Gyumri")[0]
+    assert p["name"] == "Gyumri (test)" and p["region"] == "Shirak (test)"
+    assert search(client, "Gyumri", "ru")[0]["name"] == "Гюмри"  # other languages unchanged
+
+
+def test_override_changes_country(client, monkeypatch):
+    monkeypatch.setattr(places, "OVERRIDES", {SPB: {"country_code": "AM"}})
+    p = next(p for p in search(client, "Leningrad") if p["geonames_id"] == SPB)
+    assert p["country_code"] == "AM" and p["country"] == "Armenia"
+
+
+def test_override_file_is_valid():
+    for gid, o in places.load_overrides().items():
+        assert isinstance(gid, int)
+        assert set(o) <= {"names", "country_code", "_what"}
+        assert set(o.get("names", {})) <= set(places.LANGS)

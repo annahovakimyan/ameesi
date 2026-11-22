@@ -1,0 +1,4 @@
+{
+  "_comment": "Display overrides for GeoNames places, regions and countries, keyed by geonames_id. 'names' replaces the shown name per language; 'country_code' changes the country shown for a place. Searching still uses every GeoNames name. Read at startup; no database rebuild needed.",
+  "616051": {"_what": "Yerevan (region). GeoNames only has the classical spelling Երէվան.", "names": {"hy": "Երևան"}}
+}
