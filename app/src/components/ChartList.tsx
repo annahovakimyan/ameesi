@@ -1,12 +1,12 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import type { Chart, Lang } from "../api/types";
-import { AppText } from "../components/AppText";
-import { Button } from "../components/Button";
-import { bodyGlyph, formatDegrees, signGlyph } from "../format";
+import { bodyFlags, placement } from "../chartText";
+import { bodyGlyph, formatDegrees } from "../format";
 import { houseTerm, t, term } from "../i18n";
 import { colors, radius, space } from "../theme";
+import { AppText } from "./AppText";
 
-function Row({ title, subtitle, glyph, flags }: { title: string; subtitle: string; glyph?: string; flags?: string[] }) {
+export function Row({ title, subtitle, glyph, flags }: { title: string; subtitle: string; glyph?: string; flags?: string[] }) {
   return (
     <View style={styles.row}>
       {glyph && <AppText variant="glyph" tone="lavender" style={styles.glyph}>{glyph}</AppText>}
@@ -27,21 +27,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export function ChartListScreen({ chart, lang, onBack }: { chart: Chart; lang: Lang; onBack: () => void }) {
+export function ChartList({ chart, lang }: { chart: Chart; lang: Lang }) {
   const flag = (cond: boolean, id: "uncertain" | "retrograde") => (cond ? [t(id, lang)] : []);
-  const where = (sign: Parameters<typeof signGlyph>[0], deg: number, house: number | null) =>
-    [`${signGlyph(sign)} ${term(`sign.${sign}`, lang)} ${formatDegrees(deg)}`,
-     house ? houseTerm(house, lang) : null].filter(Boolean).join(" · ");
 
   return (
-    <ScrollView contentContainerStyle={styles.screen}>
-      <Button kind="secondary" label={t("back", lang)} onPress={onBack} testID="back" />
+    <View style={styles.list}>
 
       <Section title={t("bodies", lang)}>
         {chart.bodies.map((b) => (
           <Row key={b.id} glyph={bodyGlyph(b.id)} title={term(`body.${b.id}`, lang)}
-            subtitle={where(b.sign, b.sign_deg, b.house)}
-            flags={[...flag(b.retrograde, "retrograde"), ...flag(b.uncertain, "uncertain")]} />
+            subtitle={placement(b.sign, b.sign_deg, b.house, lang)} flags={bodyFlags(b, lang)} />
         ))}
       </Section>
 
@@ -49,7 +44,7 @@ export function ChartListScreen({ chart, lang, onBack }: { chart: Chart; lang: L
         <Section title={t("angles", lang)}>
           {(["asc", "mc", "dsc", "ic"] as const).map((k) => {
             const a = chart.angles![k];
-            return <Row key={k} title={term(`angle.${k}`, lang)} subtitle={where(a.sign, a.sign_deg, null)}
+            return <Row key={k} title={term(`angle.${k}`, lang)} subtitle={placement(a.sign, a.sign_deg, null, lang)}
               flags={flag(a.uncertain, "uncertain")} />;
           })}
         </Section>
@@ -86,19 +81,12 @@ export function ChartListScreen({ chart, lang, onBack }: { chart: Chart; lang: L
         </Section>
       )}
 
-      {chart.warnings.map((w) => <AppText key={w.code} tone="gold" variant="bodySm">⚠︎ {w.message}</AppText>)}
-      <AppText variant="caption" tone="textFaint">
-        {t("calcDetails", lang, {
-          houses: chart.meta.house_system_used ? t(chart.meta.house_system_used, lang) : "—",
-          tzdata: chart.meta.tzdata,
-        })}
-      </AppText>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: space[4], paddingTop: space[8], gap: space[6] },
+  list: { gap: space[6] },
   section: { gap: space[2] },
   group: { backgroundColor: colors.surface, borderRadius: radius.md, overflow: "hidden" },
   row: { flexDirection: "row", alignItems: "center", gap: space[3], paddingHorizontal: space[4], paddingVertical: space[3],

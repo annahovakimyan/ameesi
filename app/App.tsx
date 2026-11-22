@@ -5,7 +5,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import type { Chart, Lang } from "./src/api/types";
 import { Segmented } from "./src/components/Segmented";
 import { BirthInputScreen } from "./src/screens/BirthInputScreen";
-import { ChartListScreen } from "./src/screens/ChartListScreen";
+import { ChartScreen } from "./src/screens/ChartScreen";
 import { colors, space } from "./src/theme";
 
 export default function App() {
@@ -21,7 +21,7 @@ export default function App() {
           options={[{ value: "hy", label: "Հայ" }, { value: "en", label: "Eng" }, { value: "ru", label: "Рус" }]} />
       </View>
       {chart
-        ? <ChartListScreen chart={chart} lang={lang} onBack={() => setChart(null)} />
+        ? <ChartScreen chart={chart} lang={lang} onBack={() => setChart(null)} />
         : <BirthInputScreen lang={lang} onChart={setChart} />}
     </SafeAreaView>
     </SafeAreaProvider>

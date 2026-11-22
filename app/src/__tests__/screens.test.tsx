@@ -1,7 +1,9 @@
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
 import type { Chart } from "../api/types";
 import { BirthInputScreen } from "../screens/BirthInputScreen";
-import { ChartListScreen } from "../screens/ChartListScreen";
+import { nearestGlyph } from "../components/ChartWheel";
+import { ChartScreen } from "../screens/ChartScreen";
 import exact from "./fixtures/chart-exact.json";
 import unknown from "./fixtures/chart-unknown.json";
 
@@ -55,9 +57,14 @@ describe("BirthInputScreen", () => {
   });
 });
 
-describe("ChartListScreen", () => {
+async function renderList(chart: unknown, lang: "hy" | "en" | "ru") {
+  await render(<ChartScreen chart={chart as Chart} lang={lang} onBack={jest.fn()} />);
+  await fireEvent.press(screen.getByTestId("view-list"));
+}
+
+describe("ChartScreen list view", () => {
   test("shows bodies with glossary names, degrees and houses", async () => {
-    await render(<ChartListScreen chart={exact as Chart} lang="hy" onBack={jest.fn()} />);
+    await renderList(exact, "hy");
     expect(screen.getByText("Արեգակ")).toBeTruthy();
     expect(screen.getByText("Փայլածու")).toBeTruthy();
     expect(screen.getByText(/Առյուծ 21°52′ · 9-րդ տուն/)).toBeTruthy(); // Sun 21.88° Leo, 9th house
@@ -65,18 +72,76 @@ describe("ChartListScreen", () => {
   });
 
   test("marks retrograde bodies", async () => {
-    await render(<ChartListScreen chart={exact as Chart} lang="en" onBack={jest.fn()} />);
+    await renderList(exact, "en");
     expect(screen.getAllByText(/retrograde/).length).toBeGreaterThan(0);
     expect(screen.getByText(/Placidus · tropical · tzdata/)).toBeTruthy();
   });
 
   test("unknown time: no angles or houses, Moon marked uncertain", async () => {
-    await render(<ChartListScreen chart={unknown as Chart} lang="en" onBack={jest.fn()} />);
+    await renderList(unknown, "en");
     expect(screen.queryByText("Angles")).toBeNull();
     expect(screen.queryByText(/house/)).toBeNull();
     // Only the Moon is uncertain: it moves from Scorpio into Sagittarius that day
     const flagged = screen.getAllByText(/uncertain/);
     expect(flagged).toHaveLength(1);
     expect(flagged[0]).toHaveTextContent(/(Scorpio|Sagittarius) \d+°\d\d′ · uncertain/);
+  });
+});
+
+test("nearestGlyph ignores taps far from every glyph", () => {
+  const glyphs = [{ b: { id: "sun" as const }, x: 100, y: 100 }, { b: { id: "moon" as const }, x: 115, y: 100 }];
+  expect(nearestGlyph(glyphs, 104, 100)).toBe("sun");
+  expect(nearestGlyph(glyphs, 112, 101)).toBe("moon");
+  expect(nearestGlyph(glyphs, 200, 200)).toBeNull();
+});
+
+describe("ChartScreen wheel view", () => {
+  test("shows the wheel by default with a labelled button for every body", async () => {
+    await render(<ChartScreen chart={exact as Chart} lang="en" onBack={jest.fn()} />);
+    expect(screen.getByTestId("chart-wheel")).toBeTruthy();
+    expect(screen.getAllByRole("button", { name: /^(Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|North Node|South Node|Chiron), / }))
+      .toHaveLength(13);
+    expect(screen.getByLabelText(/^Sun, Leo 21°52′ · 9th house$/)).toBeTruthy();
+    expect(screen.getByText("Tap a planet to see its details")).toBeTruthy();
+  });
+
+  test("draws one line per aspect", async () => {
+    await render(<ChartScreen chart={exact as Chart} lang="en" onBack={jest.fn()} />);
+    for (const a of (exact as Chart).aspects) expect(screen.getByTestId(`aspect-${a.a}-${a.b}`)).toBeTruthy();
+  });
+
+  test("tapping a planet shows its placement and aspects; tapping again clears it", async () => {
+    const chart = exact as Chart;
+    const sunAspects = chart.aspects.filter((a) => a.a === "sun" || a.b === "sun");
+    await render(<ChartScreen chart={chart} lang="en" onBack={jest.fn()} />);
+    await fireEvent(screen.getByTestId("wheel-sun"), "accessibilityAction", { nativeEvent: { actionName: "activate" } });
+    const card = screen.getByTestId("selection");
+    expect(card).toHaveTextContent(/Sun.*Leo 21°52′ · 9th house/);
+    expect(screen.getAllByText(/orb \d+°\d\d′/)).toHaveLength(sunAspects.length);
+    expect(screen.getByTestId("wheel-sun")).toBeSelected();
+    await fireEvent(screen.getByTestId("wheel-sun"), "accessibilityAction", { nativeEvent: { actionName: "activate" } });
+    expect(screen.queryByTestId("selection")).toBeNull();
+  });
+
+  test("a tap selects the nearest glyph, even when targets would overlap", async () => {
+    await render(<ChartScreen chart={exact as Chart} lang="en" onBack={jest.fn()} />);
+    const sun = StyleSheet.flatten(screen.getByTestId("wheel-sun").props.style);
+    const chiron = StyleSheet.flatten(screen.getByTestId("wheel-chiron").props.style);
+    // Sun and Chiron are close: their 48 px squares overlap
+    expect(Math.hypot(sun.left - chiron.left, sun.top - chiron.top)).toBeLessThan(48);
+    const centre = (st: { left: number; top: number }) => ({ locationX: st.left + 24, locationY: st.top + 24 });
+    await fireEvent.press(screen.getByTestId("wheel-touch"), { nativeEvent: centre(sun) });
+    expect(screen.getByTestId("wheel-sun")).toBeSelected();
+    await fireEvent.press(screen.getByTestId("wheel-touch"), { nativeEvent: centre(chiron) });
+    expect(screen.getByTestId("wheel-chiron")).toBeSelected();
+    expect(screen.getByTestId("wheel-sun")).not.toBeSelected();
+  });
+
+  test("unknown time: no houses in the labels, Armenian names on the buttons", async () => {
+    await render(<ChartScreen chart={unknown as Chart} lang="hy" onBack={jest.fn()} />);
+    expect(screen.getByLabelText(/^Արեգակ, Այծեղջյուր/)).toBeTruthy();
+    expect(screen.queryByLabelText(/\d+-(ին|րդ) տուն/)).toBeNull(); // not /տուն/: Նեպտուն contains it
+    expect(screen.getByText("Առանց ժամի տները և անկյունները չեն հաշվարկվում։")).toBeTruthy();
+    expect(screen.getByText(/^տրոպիկական · tzdata/)).toBeTruthy();
   });
 });

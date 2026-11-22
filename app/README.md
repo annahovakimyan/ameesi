@@ -14,6 +14,9 @@ The app talks to `EXPO_PUBLIC_API_URL` (default `http://10.0.2.2:8000`, which is
 localhost as seen from the Android emulator). On a real phone, set it to your computer's LAN address,
 for example `EXPO_PUBLIC_API_URL=http://192.168.1.20:8000 npx expo start`.
 
+To look at screens in a browser (no phone needed): `npx expo start --web`. The date picker
+doesn't work on web; use the Android emulator or a phone for the birth form.
+
 ```
 npm test             # unit and screen tests
 npm run typecheck
@@ -28,7 +31,10 @@ npm run generate     # after design/tokens.json or content/glossary.json changes
 - `src/i18n/`: `term()` for astrology terms (glossary), `t()` for interface strings.
 - `src/api/`: server types and client.
 - `src/birthForm.ts`: birth form validation and the request sent to the server.
-- `src/screens/`: birth input, chart list.
+- `src/wheel/geometry.ts`: wheel drawing maths (screen angles, spacing close glyphs). Display only.
+- `src/components/ChartWheel.tsx`: the wheel (react-native-svg). Taps pick the nearest planet glyph,
+  because close planets' 48 px targets would overlap; screen readers get one labelled element per planet.
+- `src/screens/`: birth input, chart (wheel / list).
 
 ## Status
 
@@ -36,7 +42,8 @@ npm run generate     # after design/tokens.json or content/glossary.json changes
 - [x] Clock-change confirmation (the user picks the right UTC offset)
 - [x] Chart list: bodies, angles, aspects, stelliums, elements and modalities, uncertain flags
 - [ ] Fonts (Noto Sans / Serif Armenian): system font for now
-- [ ] Chart wheel
+- [x] Chart wheel: signs, houses, axes, aspect lines (gold harmonious, rose tense, dashed if uncertain),
+      tap a planet to highlight it and see its placement and aspects
 - [ ] Tap-to-explain bottom sheet (needs content loading from Supabase, build step 4)
 - [ ] Profiles (saved charts)
 - [ ] House system setting (Placidus is always used for now)
