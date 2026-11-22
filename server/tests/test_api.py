@@ -18,7 +18,7 @@ def test_exact_chart_shape():
     assert r.status_code == 200
     data = r.json()
     assert set(data) == {"meta", "time", "bodies", "angles", "houses", "aspects",
-                         "stelliums", "balance", "warnings"}
+                         "stelliums", "balance", "warnings", "aspects_uncertain"}
     assert data["meta"]["engine"].startswith("ameesi-engine")
     assert data["meta"]["swisseph"] and data["meta"]["tzdata"]
     assert data["time"]["utc"] == "1992-08-14T10:30Z"  # Armenia, summer 1992: UTC+4
@@ -53,5 +53,40 @@ def test_validation_errors():
     assert req(place={**GYUMRI, "tz": "Mars/Olympus"}).status_code == 422
 
 
-def test_unimplemented_confidence_is_explicit():
-    assert req(time_confidence="unknown").status_code == 501
+
+def test_unknown_time_has_no_houses_or_angles():
+    data = req(time=None, time_confidence="unknown").json()
+    assert data["houses"] is None and data["angles"] is None
+    assert all(b["house"] is None for b in data["bodies"])
+    assert data["time"]["local"] == "1992-08-14T12:00"
+    assert data["time"]["confidence"] == "unknown"
+    assert not any(s["kind"] == "house" for s in data["stelliums"])
+
+
+def moon_of(data):
+    return next(b for b in data["bodies"] if b["id"] == "moon")
+
+
+def test_unknown_time_flags_moon_on_sign_change_day():
+    yerevan = {"name": "Yerevan", "lat": 40.18, "lon": 44.51, "tz": "Asia/Yerevan"}
+    # 2000-01-03: the Moon moves from Scorpio into Sagittarius during the day
+    data = req(date="2000-01-03", time=None, time_confidence="unknown", place=yerevan).json()
+    assert moon_of(data)["uncertain"]
+    assert not any(b["uncertain"] for b in data["bodies"] if b["id"] != "moon")
+    # 2000-01-02: the Moon stays in Scorpio all day
+    data = req(date="2000-01-02", time=None, time_confidence="unknown", place=yerevan).json()
+    assert not moon_of(data)["uncertain"]
+
+
+def test_approximate_time_reports_midpoint_with_flags():
+    data = req(time=None, time_confidence="approximate",
+               time_window={"from": "12:00", "to": "16:00"}).json()
+    assert data["time"]["local"] == "1992-08-14T14:00"
+    assert data["time"]["confidence"] == "approximate"
+    assert data["time"]["window"] == {"from": "12:00", "to": "16:00"}
+    assert data["angles"]["asc"]["uncertain"]  # 4 hours always moves the Ascendant's sign
+    assert isinstance(data["aspects_uncertain"], list)
+
+
+def test_approximate_window_must_be_in_order():
+    assert req(time_confidence="approximate", time_window={"from": "16:00", "to": "12:00"}).status_code == 422

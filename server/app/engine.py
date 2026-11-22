@@ -188,10 +188,11 @@ def calculate(utc: datetime, lat: float, lon: float, house_system: str,
     used, warnings = house_system, []
     if with_houses:
         cusps, asc, mc, used, warnings = house_cusps(jd, lat, lon, house_system)
-        angles = {name: {"lon": x, "sign": sign_of(x), "sign_deg": sign_deg(x)}
+        angles = {name: {"lon": x, "sign": sign_of(x), "sign_deg": sign_deg(x), "uncertain": False}
                   for name, x in (("asc", asc), ("mc", mc),
                                   ("dsc", norm(asc + 180)), ("ic", norm(mc + 180)))}
-        houses = [{"house": i + 1, "cusp_lon": c, "sign": sign_of(c)} for i, c in enumerate(cusps)]
+        houses = [{"house": i + 1, "cusp_lon": c, "sign": sign_of(c), "uncertain": False}
+                  for i, c in enumerate(cusps)]
     body_houses = {b: house_of(x, cusps) for b, x in lons.items()} if cusps else None
 
     bodies = {
@@ -211,5 +212,6 @@ def calculate(utc: datetime, lat: float, lon: float, house_system: str,
         "aspects": find_aspects(lons),
         "stelliums": find_stelliums(signs, body_houses),
         "balance": balance(signs),
+        "aspects_uncertain": [],
         "warnings": warnings,
     }

@@ -14,6 +14,7 @@ uvicorn app.main:app --reload  # http://localhost:8000/docs
 ## Layout
 
 - `app/engine.py`: all astrology (positions, houses, aspects, stelliums, balance). Full precision.
+- `app/uncertainty.py`: flags for approximate and unknown birth times.
 - `app/timezones.py`: local time → UTC. Refuses to guess in DST gaps and overlaps.
 - `app/models.py`: request validation.
 - `app/main.py`: FastAPI routes. Rounds to 0.01° for the response.
@@ -23,7 +24,7 @@ uvicorn app.main:app --reload  # http://localhost:8000/docs
 
 - [x] Exact birth time: bodies, Placidus/Whole Sign houses, polar fallback, aspects, stelliums, balance
 - [x] DST gap/overlap detection and `utc_offset_override`
-- [ ] Approximate time (5-minute sampling, `uncertain` flags, `aspects_uncertain`): returns 501 for now
-- [ ] Unknown time (noon chart, no houses, Moon sign-change flag): returns 501 for now
+- [x] Approximate time: 5-minute sampling across the window, `uncertain` flags on bodies, angles and house cusps, `aspects_uncertain`
+- [x] Unknown time: local-noon chart, no houses or angles, Moon flagged if it changes sign that day
 - [ ] Golden charts in `tests/golden/charts.csv` (the tests are written; they skip until rows are added)
 - [ ] `GET /places`

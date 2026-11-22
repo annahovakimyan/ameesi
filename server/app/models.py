@@ -30,8 +30,11 @@ class ChartRequest(BaseModel):
     def check_time(self):
         if self.time_confidence == "exact" and self.time is None:
             raise ValueError("time is required when time_confidence is 'exact'")
-        if self.time_confidence == "approximate" and self.time_window is None:
-            raise ValueError("time_window is required when time_confidence is 'approximate'")
+        if self.time_confidence == "approximate":
+            if self.time_window is None:
+                raise ValueError("time_window is required when time_confidence is 'approximate'")
+            if self.time_window.to <= self.time_window.from_:
+                raise ValueError("time_window 'to' must be later than 'from' on the same day")
         if not (1800 <= self.date.year <= 2399):
             raise ValueError("date must be between 1800 and 2399 (ephemeris range)")
         return self
