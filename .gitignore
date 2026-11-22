@@ -1,0 +1,9 @@
+.env
+.env.*
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+.expo/
+server/data/*.sqlite
+content/entries*.json

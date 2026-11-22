@@ -1,0 +1,2 @@
+id,label,source,date,time,place,lat,lon,tz,utc_offset_minutes,house_system,sun,moon,mercury,venus,mars,jupiter,saturn,uranus,neptune,pluto,north_node,chiron,asc,mc
+example,FORMAT EXAMPLE - replace with real data,astro.com,1990-01-01,12:00,City,0.0000,0.0000,Etc/UTC,0,placidus,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000

@@ -1,0 +1,555 @@
+[
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Sun",
+  "hy": "Արեգակ",
+  "ru": "Солнце",
+  "status": "agreed"
+ },
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Moon",
+  "hy": "Լուսին",
+  "ru": "Луна",
+  "status": "agreed"
+ },
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Mercury",
+  "hy": "Փայլածու",
+  "ru": "Меркурий",
+  "status": "agreed"
+ },
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Venus",
+  "hy": "Արուսյակ",
+  "ru": "Венера",
+  "status": "agreed"
+ },
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Mars",
+  "hy": "Հրատ",
+  "ru": "Марс",
+  "status": "agreed"
+ },
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Jupiter",
+  "hy": "Լուսնթագ",
+  "ru": "Юпитер",
+  "status": "agreed"
+ },
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Saturn",
+  "hy": "Երևակ",
+  "ru": "Сатурн",
+  "status": "agreed"
+ },
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Uranus",
+  "hy": "Ուրան",
+  "ru": "Уран",
+  "status": "agreed"
+ },
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Neptune",
+  "hy": "Նեպտուն",
+  "ru": "Нептун",
+  "status": "agreed"
+ },
+ {
+  "category": "Planets and celestial bodies",
+  "en": "Pluto",
+  "hy": "Պլուտոն",
+  "ru": "Плутон",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Aries",
+  "hy": "Խոյ",
+  "ru": "Овен",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Taurus",
+  "hy": "Ցուլ",
+  "ru": "Телец",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Gemini",
+  "hy": "Երկվորյակներ",
+  "ru": "Близнецы",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Cancer",
+  "hy": "Խեցգետին",
+  "ru": "Рак",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Leo",
+  "hy": "Առյուծ",
+  "ru": "Лев",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Virgo",
+  "hy": "Կույս",
+  "ru": "Дева",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Libra",
+  "hy": "Կշեռք",
+  "ru": "Весы",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Scorpio",
+  "hy": "Կարիճ",
+  "ru": "Скорпион",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Sagittarius",
+  "hy": "Աղեղնավոր",
+  "ru": "Стрелец",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Capricorn",
+  "hy": "Այծեղջյուր",
+  "ru": "Козерог",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Aquarius",
+  "hy": "Ջրհոս",
+  "ru": "Водолей",
+  "status": "agreed"
+ },
+ {
+  "category": "Zodiac signs",
+  "en": "Pisces",
+  "hy": "Ձկներ",
+  "ru": "Рыбы",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "1st house",
+  "hy": "1-ին տուն",
+  "ru": "1-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "2nd house",
+  "hy": "2-րդ տուն",
+  "ru": "2-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "3rd house",
+  "hy": "3-րդ տուն",
+  "ru": "3-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "4th house",
+  "hy": "4-րդ տուն",
+  "ru": "4-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "5th house",
+  "hy": "5-րդ տուն",
+  "ru": "5-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "6th house",
+  "hy": "6-րդ տուն",
+  "ru": "6-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "7th house",
+  "hy": "7-րդ տուն",
+  "ru": "7-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "8th house",
+  "hy": "8-րդ տուն",
+  "ru": "8-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "9th house",
+  "hy": "9-րդ տուն",
+  "ru": "9-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "10th house",
+  "hy": "10-րդ տուն",
+  "ru": "10-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "11th house",
+  "hy": "11-րդ տուն",
+  "ru": "11-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological houses",
+  "en": "12th house",
+  "hy": "12-րդ տուն",
+  "ru": "12-й дом",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological aspects",
+  "en": "Conjunction",
+  "hy": "Միացում",
+  "ru": "Соединение",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological aspects",
+  "en": "Sextile",
+  "hy": "Սեքստիլ",
+  "ru": "Секстиль",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological aspects",
+  "en": "Square",
+  "hy": "Քառակուսի (քառակուսային ասպեկտ)",
+  "ru": "Квадратура",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological aspects",
+  "en": "Trine",
+  "hy": "Տրին (եռանկյունային ասպեկտ)",
+  "ru": "Трин",
+  "status": "agreed"
+ },
+ {
+  "category": "Astrological aspects",
+  "en": "Opposition",
+  "hy": "Ընդդիմադրություն",
+  "ru": "Оппозиция",
+  "status": "agreed"
+ },
+ {
+  "category": "Chart angles",
+  "en": "Ascendant",
+  "hy": "Ասցենդենտ (ծագող նշան)",
+  "ru": "Асцендент",
+  "status": "agreed"
+ },
+ {
+  "category": "Chart angles",
+  "en": "Midheaven",
+  "hy": "Միջին երկինք (MC)",
+  "ru": "Середина неба",
+  "status": "agreed"
+ },
+ {
+  "category": "Chart angles",
+  "en": "Descendant",
+  "hy": "Դեսցենդենտ",
+  "ru": "Десцендент",
+  "status": "agreed"
+ },
+ {
+  "category": "Chart angles",
+  "en": "Imum Coeli (IC)",
+  "hy": "Երկնքի հատակ (IC)",
+  "ru": "Основание неба",
+  "status": "agreed"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "North Node",
+  "hy": "Հյուսիսային լուսնային հանգույց",
+  "ru": "Северный лунный узел",
+  "status": "agreed"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "Chiron",
+  "hy": "Քիրոն",
+  "ru": "Хирон",
+  "status": "agreed"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "Retrograde",
+  "hy": "Հետադարձ շարժում",
+  "ru": "Ретроградное движение",
+  "status": "agreed"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "Stellium",
+  "hy": "Ստելիում",
+  "ru": "Стеллиум",
+  "status": "agreed"
+ },
+ {
+  "category": "Elements and modalities",
+  "en": "Fire",
+  "hy": "Կրակ",
+  "ru": "Огонь",
+  "status": "agreed"
+ },
+ {
+  "category": "Elements and modalities",
+  "en": "Earth",
+  "hy": "Հող",
+  "ru": "Земля",
+  "status": "agreed"
+ },
+ {
+  "category": "Elements and modalities",
+  "en": "Air",
+  "hy": "Օդ",
+  "ru": "Воздух",
+  "status": "agreed"
+ },
+ {
+  "category": "Elements and modalities",
+  "en": "Water",
+  "hy": "Ջուր",
+  "ru": "Вода",
+  "status": "agreed"
+ },
+ {
+  "category": "Elements and modalities",
+  "en": "Cardinal",
+  "hy": "Կարդինալ",
+  "ru": "Кардинальный",
+  "status": "agreed"
+ },
+ {
+  "category": "Elements and modalities",
+  "en": "Fixed",
+  "hy": "Ֆիքսված",
+  "ru": "Фиксированный",
+  "status": "agreed"
+ },
+ {
+  "category": "Elements and modalities",
+  "en": "Mutable",
+  "hy": "Փոփոխական",
+  "ru": "Мутабельный",
+  "status": "agreed"
+ },
+ {
+  "category": "Category names",
+  "en": "Basics",
+  "hy": "Հիմունքներ",
+  "ru": "Основы",
+  "status": "agreed"
+ },
+ {
+  "category": "Category names",
+  "en": "Planet in sign",
+  "hy": "Մոլորակները նշաններում",
+  "ru": "Планеты в знаках",
+  "status": "agreed"
+ },
+ {
+  "category": "Category names",
+  "en": "Planet in house",
+  "hy": "Մոլորակները տներում",
+  "ru": "Планеты в домах",
+  "status": "agreed"
+ },
+ {
+  "category": "Category names",
+  "en": "Angle in sign",
+  "hy": "Անկյունները նշաններում",
+  "ru": "Углы в знаках",
+  "status": "agreed"
+ },
+ {
+  "category": "Category names",
+  "en": "Aspect pairs",
+  "hy": "Մոլորակների ասպեկտներ",
+  "ru": "Аспекты планет",
+  "status": "agreed"
+ },
+ {
+  "category": "Category names",
+  "en": "Retrograde planets",
+  "hy": "Հետադարձ մոլորակներ",
+  "ru": "Ретроградные планеты",
+  "status": "agreed"
+ },
+ {
+  "category": "Category names",
+  "en": "Elements and modalities",
+  "hy": "Տարրեր և որակներ",
+  "ru": "Стихии и модальности",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Sun in Aries",
+  "hy": "Արեգակը Խոյում",
+  "ru": "Солнце в Овне",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Moon in Taurus",
+  "hy": "Լուսինը Ցուլում",
+  "ru": "Луна в Тельце",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Mercury in Gemini",
+  "hy": "Փայլածուն Երկվորյակներում",
+  "ru": "Меркурий в Близнецах",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Venus in Cancer",
+  "hy": "Արուսյակը Խեցգետնում",
+  "ru": "Венера в Раке",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Mars in Leo",
+  "hy": "Հրատը Առյուծում",
+  "ru": "Марс во Льве",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Jupiter in Sagittarius",
+  "hy": "Լուսնթագը Աղեղնավորում",
+  "ru": "Юпитер в Стрельце",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Saturn in Capricorn",
+  "hy": "Երևակը Այծեղջյուրում",
+  "ru": "Сатурн в Козероге",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Sun in 1st house",
+  "hy": "Արեգակը 1-ին տանը",
+  "ru": "Солнце в 1-м доме",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Venus in 7th house",
+  "hy": "Արուսյակը 7-րդ տանը",
+  "ru": "Венера в 7-м доме",
+  "status": "agreed"
+ },
+ {
+  "category": "Combined terminology examples",
+  "en": "Mars retrograde",
+  "hy": "Հրատը հետադարձ շարժման մեջ",
+  "ru": "Ретроградный Марс",
+  "status": "agreed"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "South Node",
+  "hy": "Հարավային լուսնային հանգույց",
+  "ru": "Южный лунный узел",
+  "status": "to check"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "Natal chart",
+  "hy": "Ծննդյան քարտեզ",
+  "ru": "Натальная карта",
+  "status": "to check"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "House",
+  "hy": "Տուն",
+  "ru": "Дом",
+  "status": "to check"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "Sign",
+  "hy": "Նշան",
+  "ru": "Знак",
+  "status": "to check"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "Aspect",
+  "hy": "Ասպեկտ",
+  "ru": "Аспект",
+  "status": "to check"
+ },
+ {
+  "category": "Additional astrological concepts",
+  "en": "Orb",
+  "hy": "Օրբիս",
+  "ru": "Орбис",
+  "status": "to check"
+ },
+ {
+  "category": "Elements and modalities",
+  "en": "Element",
+  "hy": "Տարր",
+  "ru": "Стихия",
+  "status": "to check"
+ },
+ {
+  "category": "Elements and modalities",
+  "en": "Modality",
+  "hy": "Որակ",
+  "ru": "Модальность",
+  "status": "to check"
+ }
+]
