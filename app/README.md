@@ -17,6 +17,9 @@ for example `EXPO_PUBLIC_API_URL=http://192.168.1.20:8000 npx expo start`.
 To look at screens in a browser (no phone needed): `npx expo start --web`. The date picker
 doesn't work on web; use the Android emulator or a phone for the birth form.
 
+Copy `.env.example` to `.env` and fill in the Supabase project URL and publishable key
+(Supabase → Project Settings → API keys). Restart `npx expo start` after changing it.
+
 ```
 npm test             # unit and screen tests
 npm run typecheck
@@ -48,7 +51,9 @@ npm run generate     # after design/tokens.json or content/glossary.json changes
       aspect or stellium in the list. Shows the entries for that element (`src/content/entryIds.ts`, per
       docs/content-spec.md), the astrological basis with content ids, the symbolic framing line, uncertainty
       notices and related placements. Half height, drag or tap the handle for full, scrim or back to close.
-- [ ] Real texts: replace `placeholderSource()` in `src/content/source.tsx` with the Supabase-backed cache (build step 4)
+- [x] Content from Supabase (`src/content/live.tsx`, `src/content/sync.ts`): approved entries for the user's
+      language, cached on the device, refreshed at most daily and on a language change. Needs `app/.env`
+      (copy `.env.example`); without it, or with `EXPO_PUBLIC_CONTENT_SOURCE=placeholder`, placeholders show.
 - [ ] Houses tappable on the wheel (sheet already supports them)
 - [ ] Profiles (saved charts)
 - [ ] House system setting (Placidus is always used for now)

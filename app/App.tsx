@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import type { Chart, Lang } from "./src/api/types";
 import { Segmented } from "./src/components/Segmented";
+import { LiveContentProvider } from "./src/content/live";
 import { BirthInputScreen } from "./src/screens/BirthInputScreen";
 import { ChartScreen } from "./src/screens/ChartScreen";
 import { colors, space } from "./src/theme";
@@ -20,9 +21,11 @@ export default function App() {
         <Segmented testID="lang" value={lang} onChange={setLang}
           options={[{ value: "hy", label: "Հայ" }, { value: "en", label: "Eng" }, { value: "ru", label: "Рус" }]} />
       </View>
-      {chart
-        ? <ChartScreen chart={chart} lang={lang} onBack={() => setChart(null)} />
-        : <BirthInputScreen lang={lang} onChart={setChart} />}
+      <LiveContentProvider lang={lang}>
+        {chart
+          ? <ChartScreen chart={chart} lang={lang} onBack={() => setChart(null)} />
+          : <BirthInputScreen lang={lang} onChart={setChart} />}
+      </LiveContentProvider>
     </SafeAreaView>
     </SafeAreaProvider>
   );

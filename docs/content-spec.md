@@ -4,7 +4,10 @@ Interpretation texts are private. They live in the `ameesi-content` repository a
 
 ## Source
 
-Supabase table `public.entries` (schema in the private repo's `schema.sql`):
+Supabase project `ameesi` (eu-west-1), table `public.entries` (schema in the private repo's `schema.sql`,
+applied as migration `create_entries`). Besides the columns below it has `reviewer`, `reviewed_at`,
+`source_notes` and `updated_at`; `version` increases automatically when `text` or `status` changes.
+Anonymous sign-in is enabled for the app.
 
 | Column | Meaning |
 | --- | --- |
@@ -14,7 +17,9 @@ Supabase table `public.entries` (schema in the private repo's `schema.sql`):
 | `status` | Only `approved` rows are readable by the app (row-level security) |
 | `version` | Increases when the text changes |
 
-The app uses the Supabase URL and **anon** key (public by design). The service key is never in the app or this repository.
+The app uses the Supabase URL and **publishable** key (public by design), from `app/.env`. The secret
+(service) key is never in the app or this repository; only the content pipeline uses it. Row-level security
+lets the app read approved rows only, and the app has no insert, update or delete rights.
 
 ## Behaviour
 
