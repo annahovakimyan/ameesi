@@ -1,4 +1,4 @@
-import type { Chart, ChartRequest, Lang, PlaceSearchResponse } from "./types";
+import type { Chart, ChartRequest, Lang, Place, PlaceSearchResponse } from "./types";
 
 // Android emulator reaches the host machine's localhost at 10.0.2.2.
 export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://10.0.2.2:8000";
@@ -35,4 +35,9 @@ export function calculateChart(body: ChartRequest): Promise<Chart> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+}
+
+/** One place in a language (for showing saved profiles in the current language). */
+export function getPlace(geonamesId: number, lang: Lang): Promise<Place> {
+  return request(`/places/${geonamesId}?lang=${lang}`);
 }

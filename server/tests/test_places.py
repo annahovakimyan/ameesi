@@ -230,3 +230,23 @@ def test_shahumyan_armenian_names_but_baku_time(client):
 def test_rest_of_azerbaijan_unchanged(client):
     p = search(client, "Zumurxan")[0]
     assert p["geonames_id"] == OUTSIDE and p["tz"] == "Asia/Baku" and p["name"] == "Zümürxan"
+
+
+@pytest.mark.parametrize("lang,name,region", [("hy", "Գյումրի", "Շիրակ"), ("ru", "Гюмри", None), ("en", "Gyumri", "Shirak")])
+def test_one_place_by_id_in_a_language(client, lang, name, region):
+    r = client.get(f"/places/{GYUMRI}", params={"lang": lang})
+    assert r.status_code == 200
+    p = r.json()
+    assert p["geonames_id"] == GYUMRI and p["name"] == name and p["tz"] == "Asia/Yerevan"
+    if region:
+        assert p["region"] == region
+    assert p["former_names_matched"] == []
+
+
+def test_one_place_applies_region_rules(client):
+    assert client.get(f"/places/{STEPANAKERT}", params={"lang": "en"}).json()["name"] == "Stepanakert"
+    assert client.get(f"/places/{STEPANAKERT}", params={"lang": "en"}).json()["tz"] == "Asia/Yerevan"
+
+
+def test_unknown_place_is_404(client):
+    assert client.get("/places/999999999", params={"lang": "en"}).status_code == 404

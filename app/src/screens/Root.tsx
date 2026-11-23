@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Share, StyleSheet, View } from "react-native";
-import { calculateChart } from "../api/client";
+import { calculateChart, getPlace } from "../api/client";
 import type { HouseSystem, Lang } from "../api/types";
 import { formFromProfile, type Purpose } from "../birthForm";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { TabBar } from "../components/TabBar";
 import { t } from "../i18n";
-import { canAdd, exportJson, newProfile, removeProfile, upsertProfile, type Profile } from "../profiles/profiles";
+import { canAdd, exportJson, newProfile, placeNameIn, removeProfile, upsertProfile, type Profile } from "../profiles/profiles";
 import type { ProfileStore } from "../profiles/store";
 import { colors, space } from "../theme";
 import { BirthInputScreen, type BirthResult } from "./BirthInputScreen";
@@ -52,6 +52,23 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
     setCalc("idle");
   }, [houseSystem, profiles]);
 
+  // Place names in all three languages, so profiles follow the language setting. Best effort: offline
+  // or on error the name the place was saved with is shown.
+  useEffect(() => {
+    const missing = profiles?.filter((p) => !p.placeNames || Object.keys(p.placeNames).length < 3) ?? [];
+    for (const p of missing) {
+      Promise.all((["hy", "en", "ru"] as const).map((l) => getPlace(p.place.geonames_id, l).then((pl) => [l, pl.name] as const)))
+        .then((pairs) => setProfiles((cur) => {
+          const target = cur?.find((x) => x.id === p.id);
+          if (!cur || !target) return cur;
+          const next = upsertProfile(cur, { ...target, placeNames: Object.fromEntries(pairs) }, target.updatedAt);
+          store.save(next).catch(() => {});
+          return next;
+        }))
+        .catch(() => {});
+    }
+  }, [profiles?.map((p) => `${p.id}:${p.place.geonames_id}:${p.placeNames ? 1 : 0}`).join(",")]);
+
   const active = profiles?.find((p) => p.id === activeId) ?? null;
 
   // A profile without a saved chart (new device, or birth details edited) is recalculated on opening.
@@ -80,6 +97,7 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
     const purpose = editor?.purpose ?? "self";
     const profile = existing
       ? { ...existing, name: form.name.trim() || existing.name, request, place, chart,
+          placeNames: existing.place.geonames_id === place.geonames_id ? existing.placeNames : undefined,
           consent: existing.kind === "other" && form.consent ? { kind: form.consent, confirmedAt: at } : existing.consent }
       : newProfile({ kind: purpose, name: form.name, request, place, chart, now: at,
           consent: purpose === "other" && form.consent ? { kind: form.consent, confirmedAt: at } : undefined });
@@ -122,7 +140,7 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
             tour={active.kind === "self" && !tourDone} onTourDone={onTourDone}
             addPrompt={active.kind === "self" && tourDone && !addPromptDone && addOther.ok}
             onAddPromptDone={onAddPromptDone} onAddSomeone={() => setEditor({ purpose: "other" })}
-            place={active.place} onEditDetails={() => setEditor({ purpose: active.kind, profileId: active.id })} />
+            place={{ ...active.place, name: placeNameIn(active, lang) }} onEditDetails={() => setEditor({ purpose: active.kind, profileId: active.id })} />
         ) : (
           <View style={[styles.fill, styles.centre]}>
             {calc === "error" ? (

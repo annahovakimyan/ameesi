@@ -187,33 +187,45 @@ def search(db_path: Path, query: str, lang: str) -> list[dict]:
         current = {gid for gid, _, norm, *_ in rows if norm not in former.get(gid, {})}
         top = sorted(best, key=lambda g: best[g])[:MAX_RESULTS]
 
-        results = []
-        for gid in top:
-            name, cc, admin_id, admin_code, lat, lon, tz = con.execute(
-                "SELECT name, country_code, admin1_id, admin1_code, lat, lon, tz FROM places "
-                "WHERE geonames_id = ?", (gid,)).fetchone()
-            rule = _region_of(gid, admin_code)
-            cc = OVERRIDES.get(gid, {}).get("country_code", cc)
-            tz = OVERRIDES.get(gid, {}).get("tz") or (rule or {}).get("tz") or tz
-            shown = _display_name(con, gid, lang, name, rule)
-            c_gid, c_name = con.execute("SELECT geonames_id, name FROM countries WHERE code = ?",
-                                        (cc,)).fetchone() or (None, cc)
-            region = None
-            if admin_id:
-                a_name = con.execute("SELECT name FROM admin1 WHERE geonames_id = ?", (admin_id,)).fetchone()
-                region = _display_name(con, admin_id, lang, a_name[0] if a_name else None)
-            matched = [] if gid in current else sorted(
-                (f for f in former.get(gid, {}).values() if normalise(f["name"]) != normalise(shown)),
-                key=lambda f: (f["from"] or 0, f["name"]))[:MAX_FORMER_NAMES]
-            results.append({
-                "geonames_id": gid,
-                "name": shown,
-                "former_names_matched": matched,
-                "region": region,
-                "country": _display_name(con, c_gid, lang, c_name) if c_gid else c_name,
-                "country_code": cc,
-                "lat": lat, "lon": lon, "tz": tz,
-            })
-        return results
+        return [_describe(con, gid, lang, [] if gid in current else former.get(gid, {}).values()) for gid in top]
+    finally:
+        con.close()
+
+
+def _describe(con, gid: int, lang: str, former_names) -> dict:
+    """Display details of one place in a language, with overrides and region rules applied."""
+    name, cc, admin_id, admin_code, lat, lon, tz = con.execute(
+        "SELECT name, country_code, admin1_id, admin1_code, lat, lon, tz FROM places "
+        "WHERE geonames_id = ?", (gid,)).fetchone()
+    rule = _region_of(gid, admin_code)
+    cc = OVERRIDES.get(gid, {}).get("country_code", cc)
+    tz = OVERRIDES.get(gid, {}).get("tz") or (rule or {}).get("tz") or tz
+    shown = _display_name(con, gid, lang, name, rule)
+    c_gid, c_name = con.execute("SELECT geonames_id, name FROM countries WHERE code = ?",
+                                (cc,)).fetchone() or (None, cc)
+    region = None
+    if admin_id:
+        a_name = con.execute("SELECT name FROM admin1 WHERE geonames_id = ?", (admin_id,)).fetchone()
+        region = _display_name(con, admin_id, lang, a_name[0] if a_name else None)
+    matched = sorted((f for f in former_names if normalise(f["name"]) != normalise(shown)),
+                     key=lambda f: (f["from"] or 0, f["name"]))[:MAX_FORMER_NAMES]
+    return {
+        "geonames_id": gid,
+        "name": shown,
+        "former_names_matched": matched,
+        "region": region,
+        "country": _display_name(con, c_gid, lang, c_name) if c_gid else c_name,
+        "country_code": cc,
+        "lat": lat, "lon": lon, "tz": tz,
+    }
+
+
+def lookup(db_path: Path, gid: int, lang: str) -> dict | None:
+    """One place by GeoNames id, as search would show it (no former names)."""
+    con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+    try:
+        if not con.execute("SELECT 1 FROM places WHERE geonames_id = ?", (gid,)).fetchone():
+            return None
+        return _describe(con, gid, lang, [])
     finally:
         con.close()

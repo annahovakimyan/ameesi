@@ -162,3 +162,15 @@ def search_places(q: str = Query(min_length=places.MIN_QUERY, max_length=100),
         raise HTTPException(503, "place database not built; run scripts/build_places.py")
     return {"results": places.search(db_path, q, lang),
             "attribution": "Place data © GeoNames (geonames.org), CC BY 4.0"}
+
+
+@app.get("/places/{geonames_id}")
+def get_place(geonames_id: int, lang: Literal["hy", "en", "ru"] = "hy",
+              db_path: Path = Depends(places.get_db_path)):
+    """One place in a language, so saved profiles can show their place in the current language."""
+    if not db_path.is_file():
+        raise HTTPException(503, "place database not built; run scripts/build_places.py")
+    place = places.lookup(db_path, geonames_id, lang)
+    if place is None:
+        raise HTTPException(404, "unknown place")
+    return place

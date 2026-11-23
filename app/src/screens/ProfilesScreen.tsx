@@ -7,15 +7,15 @@ import { Row } from "../components/ChartList";
 import { SettingsSection } from "../components/SettingsSection";
 import type { HouseSystem } from "../api/types";
 import { t } from "../i18n";
-import type { Profile } from "../profiles/profiles";
+import { placeNameIn, type Profile } from "../profiles/profiles";
 import { colors, radius, space } from "../theme";
 
 export const profileName = (p: Profile, lang: Lang) => (p.kind === "self" ? t("me", lang) : p.name);
 
-function birthSummary(p: Profile): string {
+function birthSummary(p: Profile, lang: Lang): string {
   const r = p.request;
   const time = r.time ?? (r.time_window ? `${r.time_window.from}–${r.time_window.to}` : "—");
-  return `${r.date} · ${time} · ${p.place.name}`;
+  return `${r.date} · ${time} · ${placeNameIn(p, lang)}`;
 }
 
 export function ProfilesScreen({ lang, profiles, activeId, canAddMore, onOpen, onAdd, onEdit, onDelete, onExport,
@@ -33,7 +33,7 @@ export function ProfilesScreen({ lang, profiles, activeId, canAddMore, onOpen, o
 
       {profiles.map((p) => (
         <View key={p.id} style={[styles.card, p.id === activeId && styles.active]} testID={`profile-${p.id}`}>
-          <Row title={profileName(p, lang)} subtitle={birthSummary(p)} onPress={() => onOpen(p.id)} testID={`open-${p.id}`} />
+          <Row title={profileName(p, lang)} subtitle={birthSummary(p, lang)} onPress={() => onOpen(p.id)} testID={`open-${p.id}`} />
           {confirming === p.id ? (
             <View style={styles.actions}>
               <AppText variant="bodySm" accessibilityRole="alert">
