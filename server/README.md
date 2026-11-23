@@ -14,6 +14,14 @@ uvicorn app.main:app --reload  # http://localhost:8000/docs
 
 ## Deploy
 
+**Easiest: Render, no Docker on your computer.** `render.yaml` at the repository root describes the service.
+In Render: New → Blueprint → connect the GitHub repository → choose the branch → Apply. The first build takes
+about 10 minutes (it downloads GeoNames). Then copy the service's address (https://….onrender.com) into
+`app/.env` as `EXPO_PUBLIC_API_URL` and restart Expo with `npx expo start -c`. On the free plan the server
+sleeps after a while; the first request afterwards takes up to a minute.
+
+**Anywhere else with Docker:**
+
 ```
 docker build -t ameesi-server .          # from server/; downloads GeoNames and builds the place database
 docker run -p 8000:8000 ameesi-server    # honours $PORT, as most hosts set it
