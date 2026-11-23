@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Share, StyleSheet, View } from "react-native";
+import { ActivityIndicator, BackHandler, Share, StyleSheet, View } from "react-native";
 import { calculateChart, getPlace } from "../api/client";
 import type { HouseSystem, Lang } from "../api/types";
 import { formFromProfile, type Purpose } from "../birthForm";
@@ -7,7 +7,7 @@ import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { TabBar } from "../components/TabBar";
 import { t } from "../i18n";
-import { canAdd, exportJson, newProfile, placeNameIn, removeProfile, upsertProfile, type Profile } from "../profiles/profiles";
+import { canAdd, exportJson, newProfile, placeIn, removeProfile, upsertProfile, type Profile } from "../profiles/profiles";
 import type { ProfileStore } from "../profiles/store";
 import { colors, space } from "../theme";
 import { BirthInputScreen, type BirthResult } from "./BirthInputScreen";
@@ -57,19 +57,20 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
   // Place names in all three languages, so profiles follow the language setting. Best effort: offline
   // or on error the name the place was saved with is shown.
   useEffect(() => {
-    const missing = profiles?.filter((p) => !p.placeNames || Object.keys(p.placeNames).length < 3) ?? [];
+    const missing = profiles?.filter((p) => !p.placeLocalized || Object.keys(p.placeLocalized).length < 3) ?? [];
     for (const p of missing) {
-      Promise.all((["hy", "en", "ru"] as const).map((l) => getPlace(p.place.geonames_id, l).then((pl) => [l, pl.name] as const)))
+      Promise.all((["hy", "en", "ru"] as const).map((l) => getPlace(p.place.geonames_id, l)
+        .then((pl) => [l, { name: pl.name, region: pl.region, country: pl.country }] as const)))
         .then((pairs) => setProfiles((cur) => {
           const target = cur?.find((x) => x.id === p.id);
           if (!cur || !target) return cur;
-          const next = upsertProfile(cur, { ...target, placeNames: Object.fromEntries(pairs) }, target.updatedAt);
+          const next = upsertProfile(cur, { ...target, placeLocalized: Object.fromEntries(pairs) }, target.updatedAt);
           store.save(next).catch(() => {});
           return next;
         }))
         .catch(() => {});
     }
-  }, [profiles?.map((p) => `${p.id}:${p.place.geonames_id}:${p.placeNames ? 1 : 0}`).join(",")]);
+  }, [profiles?.map((p) => `${p.id}:${p.place.geonames_id}:${p.placeLocalized ? 1 : 0}`).join(",")]);
 
   const active = profiles?.find((p) => p.id === activeId) ?? null;
 
@@ -91,6 +92,17 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
     if (active && !active.chart && calc === "idle" && tab === "chart" && !editor) recalc(active);
   }, [active, tab, editor]);
 
+  // Android back button: leave the form, the sample or the Profiles tab instead of closing the app.
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (sample) { setSample(false); return true; }
+      if (editor && (profiles?.length ?? 0) > 0) { setEditor(null); return true; }
+      if (tab === "profiles") { setTab("chart"); return true; }
+      return false;
+    });
+    return () => sub.remove();
+  }, [sample, editor, tab, profiles?.length]);
+
   if (!profiles) return <ActivityIndicator color={colors.gold} style={styles.fill} />;
 
   const saveFromForm = ({ chart, request, place, form }: BirthResult) => {
@@ -99,7 +111,7 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
     const purpose = editor?.purpose ?? "self";
     const profile = existing
       ? { ...existing, name: form.name.trim() || existing.name, request, place, chart,
-          placeNames: existing.place.geonames_id === place.geonames_id ? existing.placeNames : undefined,
+          placeLocalized: existing.place.geonames_id === place.geonames_id ? existing.placeLocalized : undefined,
           consent: existing.kind === "other" && form.consent ? { kind: form.consent, confirmedAt: at } : existing.consent }
       : newProfile({ kind: purpose, name: form.name, request, place, chart, now: at,
           consent: purpose === "other" && form.consent ? { kind: form.consent, confirmedAt: at } : undefined });
@@ -153,7 +165,7 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
             tour={active.kind === "self" && !tourDone} onTourDone={onTourDone}
             addPrompt={active.kind === "self" && tourDone && !addPromptDone && addOther.ok}
             onAddPromptDone={onAddPromptDone} onAddSomeone={() => setEditor({ purpose: "other" })}
-            place={{ ...active.place, name: placeNameIn(active, lang) }} onEditDetails={() => setEditor({ purpose: active.kind, profileId: active.id })} />
+            place={placeIn(active, lang)} onEditDetails={() => setEditor({ purpose: active.kind, profileId: active.id })} />
         ) : (
           <View style={[styles.fill, styles.centre]}>
             {calc === "error" ? (

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Keyboard, Pressable, StyleSheet, View } from "react-native";
 import { searchPlaces } from "../api/client";
 import { offlinePlaces } from "../sample/places";
 import type { Lang, Place } from "../api/types";
 import { t } from "../i18n";
-import { colors, MIN_TOUCH, radius, space, textStyle } from "../theme";
+import { colors, MIN_TOUCH, radius, space } from "../theme";
 import { AppText } from "./AppText";
+import { TextField } from "./TextField";
 
 const DEBOUNCE_MS = 250;
 
@@ -51,7 +52,7 @@ export function PlaceSearch({ lang, value, onChange }: {
 
   return (
     <View>
-      <TextInput
+      <TextField
         testID="place-input"
         value={query}
         onChangeText={(q) => {
@@ -59,9 +60,8 @@ export function PlaceSearch({ lang, value, onChange }: {
           if (value) onChange(null);
         }}
         placeholder={t("placeHint", lang)}
-        placeholderTextColor={colors.textFaint}
         autoCorrect={false}
-        style={[styles.input, textStyle("body")]}
+        accessibilityLabel={t("place", lang)}
       />
       {failed && (
         <AppText variant="bodySm" tone="rose" accessibilityRole="alert" testID="place-error" style={styles.error}>
@@ -80,6 +80,7 @@ export function PlaceSearch({ lang, value, onChange }: {
               testID={`place-${p.geonames_id}`}
               accessibilityRole="button"
               onPress={() => {
+                Keyboard.dismiss();
                 onChange(p);
                 setQuery(placeLabel(p));
                 setResults(null);
@@ -101,10 +102,6 @@ export function PlaceSearch({ lang, value, onChange }: {
 }
 
 const styles = StyleSheet.create({
-  input: {
-    minHeight: MIN_TOUCH, paddingHorizontal: space[4], color: colors.ivory,
-    backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,
-  },
   error: { marginTop: space[2] },
   results: { marginTop: space[2], backgroundColor: colors.surface, borderRadius: radius.md, overflow: "hidden" },
   row: { paddingHorizontal: space[4], paddingVertical: space[3], minHeight: MIN_TOUCH, justifyContent: "center",

@@ -145,7 +145,7 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
             accessibilityActions={[{ name: "activate" }]}
             onAccessibilityAction={(e) => e.nativeEvent.actionName === "activate" && onSelect({ kind: "body", id: b.id })}
             style={[styles.glyph, { left: x - MIN_TOUCH / 2, top: y - MIN_TOUCH / 2 }]}>
-            <AppText variant="glyph" tone={isSelected ? "gold" : "ivory"}>{bodyGlyph(b.id)}</AppText>
+            <AppText variant="glyph" tone={isSelected ? "gold" : "ivory"} maxFontSizeMultiplier={1}>{bodyGlyph(b.id)}</AppText>
           </View>
         );
       })}

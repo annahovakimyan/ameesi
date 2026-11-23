@@ -26,3 +26,33 @@ export const bodyGlyph = (b: string) => BODY_GLYPHS[b] + TEXT;
 export const isoDate = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 export const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+
+/** "1992-08-14" → "14.08.1992" (the usual format in Armenia and Russia). */
+export function formatDate(iso: string): string {
+  const [y, m, d] = iso.slice(0, 10).split("-");
+  return `${d}.${m}.${y}`;
+}
+
+/** "1992-08-14T14:30" or "1992-08-14T10:30Z" → "14.08.1992 14:30". */
+export function formatDateTime(iso: string): string {
+  return `${formatDate(iso)} ${iso.slice(11, 16)}`;
+}
+
+/** A Date shown in a date field: "14.08.1992". */
+export const displayDate = (d: Date) => formatDate(isoDate(d));
+
+/** Parse "14.08.1992" (also "14/08/1992", "14-08-1992") into a local Date, or null. */
+export function parseDisplayDate(text: string): Date | null {
+  const m = text.trim().match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
+  if (!m) return null;
+  const [d, mo, y] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const date = new Date(y, mo - 1, d);
+  return date.getFullYear() === y && date.getMonth() === mo - 1 && date.getDate() === d ? date : null;
+}
+
+/** Parse "14:30" into a Date on 1 January 2000 (only the time is used), or null. */
+export function parseDisplayTime(text: string): Date | null {
+  const m = text.trim().match(/^(\d{1,2})[:.](\d{2})$/);
+  if (!m || Number(m[1]) > 23 || Number(m[2]) > 59) return null;
+  return new Date(2000, 0, 1, Number(m[1]), Number(m[2]));
+}

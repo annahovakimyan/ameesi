@@ -18,7 +18,10 @@ export function Segmented<T extends string>({ options, value, onChange, testID }
             onPress={() => onChange(o.value)}
             style={[styles.segment, selected && { backgroundColor: colors.pomegranate }]}
           >
-            <AppText variant="label" tone={selected ? "ivory" : "textMuted"}>{o.label}</AppText>
+            <AppText variant="label" tone={selected ? "ivory" : "textMuted"} style={styles.text} numberOfLines={2}
+              adjustsFontSizeToFit minimumFontScale={0.8}>
+              {o.label}
+            </AppText>
           </Pressable>
         );
       })}
@@ -31,5 +34,8 @@ const styles = StyleSheet.create({
     flexDirection: "row", backgroundColor: colors.surface, borderRadius: radius.sm,
     borderWidth: 1, borderColor: colors.border, padding: space[1], gap: space[1],
   },
-  segment: { flex: 1, minHeight: MIN_TOUCH - space[2], borderRadius: radius.sm, alignItems: "center", justifyContent: "center" },
+  // Equal widths; labels wrap between words (keep single words short enough for a third of 320 px).
+  segment: { flex: 1, minHeight: MIN_TOUCH - space[2], borderRadius: radius.sm, alignItems: "center", justifyContent: "center",
+             paddingHorizontal: space[1], paddingVertical: space[1] },
+  text: { textAlign: "center" },
 });

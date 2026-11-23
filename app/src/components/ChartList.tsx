@@ -66,7 +66,7 @@ export function ChartList({ chart, lang, onSelect }: { chart: Chart; lang: Lang;
         <Section title={t("aspects", lang)}>
           {chart.aspects.map((a) => {
             const unsure = chart.aspects_uncertain.some((u) => u.a === a.a && u.b === a.b && u.type === a.type);
-            return <Row key={`${a.a}-${a.b}`} glyph={`${bodyGlyph(a.a)}${bodyGlyph(a.b)}`}
+            return <Row key={`${a.a}-${a.b}`} glyph={`${bodyGlyph(a.a)} ${bodyGlyph(a.b)}`}
               title={`${term(`body.${a.a}`, lang)} – ${term(`body.${a.b}`, lang)}`}
               subtitle={`${term(`aspect.${a.type}`, lang)} · ${t("orb", lang, { orb: formatDegrees(a.orb) })}`}
               flags={flag(unsure, "uncertain")} testID={`row-${a.a}-${a.b}`}

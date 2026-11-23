@@ -33,8 +33,8 @@ test("calculation details show place, coordinates, times, settings and versions 
   expect(panel.getByText("Gyumri, Shirak, Armenia")).toBeTruthy();
   expect(panel.getByText("40.7942, 43.8453")).toBeTruthy();
   expect(panel.getByText("Asia/Yerevan")).toBeTruthy();
-  expect(panel.getByText("1992-08-14 14:30 · Exact")).toBeTruthy();
-  expect(panel.getByText("1992-08-14 10:30 · UTC+04:00")).toBeTruthy();
+  expect(panel.getByText("14.08.1992 14:30 · Exact")).toBeTruthy();
+  expect(panel.getByText("14.08.1992 10:30 · UTC+04:00")).toBeTruthy();
   expect(panel.getByText("Tropical zodiac · true node")).toBeTruthy();
   expect(panel.getByText(/^ameesi-engine .* · Swiss Ephemeris 2\.10\.03 · tzdata /)).toBeTruthy();
   await fireEvent.press(panel.getByTestId("details-edit"));

@@ -9,6 +9,7 @@ import { ExplanationSheet } from "../components/ExplanationSheet";
 import { AddSomeonePrompt, TourCard, tourSteps } from "../components/TourCard";
 import { ShareCard, shareCard, type ViewRef } from "../components/ShareCard";
 import { Segmented } from "../components/Segmented";
+import { formatDateTime } from "../format";
 import { t } from "../i18n";
 import { strings } from "../i18n/strings";
 import type { Selection } from "../selection";
@@ -40,9 +41,13 @@ export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addP
   return (
     <ScrollView contentContainerStyle={styles.screen}>
       {onBack && <Button kind="secondary" label={t("back", lang)} onPress={onBack} testID="back" />}
-      {title && <AppText variant="titleLg" accessibilityRole="header" testID="chart-title">{title}</AppText>}
-      <Button kind="secondary" testID="share" label={t("share", lang)}
-        onPress={() => { shareCard(cardRef.current).catch(() => {}); }} />
+      <View style={styles.header}>
+        <AppText variant="titleLg" accessibilityRole="header" testID="chart-title" style={styles.flex} numberOfLines={2}>
+          {title ?? ""}
+        </AppText>
+        <Button kind="secondary" compact testID="share" label={t("share", lang)}
+          onPress={() => { shareCard(cardRef.current).catch(() => {}); }} />
+      </View>
       {/* Off-screen: rendered so it can be captured as an image, never shown */}
       <View style={styles.offscreen} pointerEvents="none" importantForAccessibility="no-hide-descendants"
         accessibilityElementsHidden>
@@ -107,8 +112,8 @@ function CalcDetails({ chart, lang, place, onEdit }: { chart: Chart; lang: Lang;
     ...(place ? [[t("place", lang), [place.name, place.region, place.country].filter(Boolean).join(", ")],
       [t("coordinates", lang), `${place.lat.toFixed(4)}, ${place.lon.toFixed(4)}`],
       [t("timeZone", lang), place.tz]] as [string, string][] : []),
-    [t("localTime", lang), `${chart.time.local.replace("T", " ")} · ${t(chart.time.confidence, lang)}`],
-    [t("utcTime", lang), `${chart.time.utc.replace("T", " ").replace("Z", "")} · ${offset}${
+    [t("localTime", lang), `${formatDateTime(chart.time.local)} · ${t(chart.time.confidence, lang)}`],
+    [t("utcTime", lang), `${formatDateTime(chart.time.utc)} · ${offset}${
       chart.time.offset_source === "user_override" ? ` (${t("offsetSetByHand", lang)})` : ""}`],
     [t("houseSystem", lang), used ? t(used, lang) : "—"],
     ["", t("zodiacNode", lang)],
@@ -132,7 +137,9 @@ const styles = StyleSheet.create({
   notice: { padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.border, borderRadius: radius.md,
             backgroundColor: colors.surface },
   details: { padding: space[4], gap: space[3], backgroundColor: colors.surface, borderRadius: radius.lg },
-  screen: { padding: space[4], paddingTop: space[8], gap: space[6] },
+  screen: { padding: space[4], gap: space[4], paddingBottom: space[8] },
+  header: { flexDirection: "row", alignItems: "center", gap: space[3] },
+  flex: { flex: 1 },
   centre: { alignItems: "center" },
   hint: { textAlign: "center" },
 });

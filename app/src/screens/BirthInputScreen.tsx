@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { API_URL, ApiError, calculateChart, serverReachable } from "../api/client";
 import type { Chart, ChartRequest, Lang, Place } from "../api/types";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { Checkbox } from "../components/Checkbox";
+import { TextField } from "../components/TextField";
 import { PickerField } from "../components/PickerField";
 import { PlaceSearch } from "../components/PlaceSearch";
 import { Segmented } from "../components/Segmented";
 import { buildRequest, emptyForm, isComplete, missingFields, offsetFor, type BirthForm, type Purpose } from "../birthForm";
-import { hhmm, isoDate } from "../format";
+import { displayDate, formatDateTime, hhmm } from "../format";
 import { t } from "../i18n";
 import { colors, MIN_TOUCH, radius, space, textStyle } from "../theme";
 
@@ -58,7 +59,8 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
 
   const timeField = (key: "time" | "windowFrom" | "windowTo", testID: string) => (
     <PickerField mode="time" value={form[key]} onChange={(d) => set({ [key]: d })}
-      placeholder={t("chooseTime", lang)} display={hhmm} testID={testID} />
+      placeholder={t("chooseTime", lang)} display={hhmm} testID={testID}
+      doneLabel={t("done", lang)} cancelLabel={t("cancel", lang)} />
   );
 
   if (review) {
@@ -77,8 +79,8 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
         <View style={styles.reviewCard}>
           {line(t("place", lang), [review.place.name, review.place.region, review.place.country].filter(Boolean).join(", "))}
           {line(t("timeZone", lang), review.place.tz)}
-          {line(t("localTime", lang), tm.local.replace("T", " "), "review-local")}
-          {line(t("utcTime", lang), `${tm.utc.replace("T", " ").replace("Z", "")} · ${offset}${
+          {line(t("localTime", lang), formatDateTime(tm.local), "review-local")}
+          {line(t("utcTime", lang), `${formatDateTime(tm.utc)} · ${offset}${
             tm.offset_source === "user_override" ? ` (${t("offsetSetByHand", lang)})` : ""}`, "review-utc")}
         </View>
         {tm.confidence === "unknown" && <AppText variant="bodySm" tone="textMuted">{t("noonNote", lang)}</AppText>}
@@ -90,6 +92,7 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
   }
 
   return (
+    <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === "ios" ? "padding" : undefined}>
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
       <AppText variant="display">
         {t(editing ? "editBirthTitle" : purpose === "other" ? "theirBirthTitle" : "birthTitle", lang)}
@@ -113,22 +116,23 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
       {purpose === "other" && (
         <View style={styles.section}>
           <AppText variant="headline">{t("name", lang)}</AppText>
-          <TextInput testID="name-input" value={form.name} onChangeText={(name) => set({ name })}
-            placeholder={t("nameHint", lang)} placeholderTextColor={colors.textFaint} autoCorrect={false}
-            style={[styles.input, textStyle("body")]} accessibilityLabel={t("name", lang)} />
+          <TextField testID="name-input" value={form.name} onChangeText={(name) => set({ name })}
+            placeholder={t("nameHint", lang)} autoCorrect={false} accessibilityLabel={t("name", lang)} />
         </View>
       )}
 
       <View style={styles.section}>
         <AppText variant="headline">{t("date", lang)}</AppText>
         <PickerField mode="date" value={form.date} onChange={(d) => set({ date: d })} placeholder={t("chooseDate", lang)}
-          display={isoDate} testID="date-field" minimumDate={new Date(1800, 0, 1)} maximumDate={new Date()} />
+          display={displayDate} testID="date-field" minimumDate={new Date(1800, 0, 1)} maximumDate={new Date()}
+          doneLabel={t("done", lang)} cancelLabel={t("cancel", lang)} />
       </View>
 
       <View style={styles.section}>
         <AppText variant="headline">{t("time", lang)}</AppText>
         <Segmented testID="confidence" value={form.confidence} onChange={(confidence) => set({ confidence })}
-          options={(["exact", "approximate", "unknown"] as const).map((v) => ({ value: v, label: t(v, lang) }))} />
+          options={(["exact", "approximate", "unknown"] as const).map((v) => ({
+            value: v, label: t(v === "approximate" ? "approximateShort" : v, lang) }))} />
         {form.confidence === "exact" && timeField("time", "time-field")}
         {form.confidence === "approximate" && (
           <View style={styles.window}>
@@ -182,6 +186,7 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
         <Button kind="secondary" testID="try-sample" label={t("trySample", lang)} onPress={onSample} />
       )}
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -194,8 +199,5 @@ const styles = StyleSheet.create({
             backgroundColor: colors.surface },
   reviewCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
   reviewRow: { gap: space[1] },
-  input: {
-    minHeight: MIN_TOUCH, paddingHorizontal: space[4], color: colors.ivory,
-    backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,
-  },
+  fill: { flex: 1 },
 });

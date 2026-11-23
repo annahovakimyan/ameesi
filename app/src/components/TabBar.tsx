@@ -13,7 +13,7 @@ export function TabBar<T extends string>({ tabs, value, onChange }: {
         return (
           <Pressable key={tab.value} testID={`tab-${tab.value}`} accessibilityRole="tab" accessibilityState={{ selected }}
             onPress={() => onChange(tab.value)} style={styles.tab}>
-            <AppText variant="label" tone={selected ? "gold" : "textMuted"}>{tab.label}</AppText>
+            <AppText variant="label" tone={selected ? "gold" : "textMuted"} maxFontSizeMultiplier={1.3}>{tab.label}</AppText>
           </Pressable>
         );
       })}

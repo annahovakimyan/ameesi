@@ -32,8 +32,14 @@ export function TourCard({ lang, step, total, title, onRead, onNext, onSkip }: {
       </AppText>
       <AppText variant="title" testID="tour-title">{title}</AppText>
       <Button testID="tour-read" label={t("readMeaning", lang)} onPress={onRead} />
-      <Button kind="secondary" testID="tour-next" label={t(last ? "done" : "next", lang)} onPress={onNext} />
-      {!last && <Button kind="secondary" testID="tour-skip" label={t("skipTour", lang)} onPress={onSkip} />}
+      <View style={styles.row}>
+        {!last && (
+          <View style={styles.flex}><Button kind="secondary" testID="tour-skip" label={t("skipTour", lang)} onPress={onSkip} /></View>
+        )}
+        <View style={styles.flex}>
+          <Button kind="secondary" testID="tour-next" label={t(last ? "done" : "next", lang)} onPress={onNext} />
+        </View>
+      </View>
     </View>
   );
 }
@@ -44,13 +50,17 @@ export function AddSomeonePrompt({ lang, onAdd, onDismiss }: { lang: Lang; onAdd
     <View style={[styles.card, styles.outlined]} testID="add-prompt">
       <AppText variant="headline">{t("addPromptTitle", lang)}</AppText>
       <AppText variant="bodySm" tone="textMuted">{t("addSomeoneHint", lang)}</AppText>
-      <Button kind="secondary" testID="add-prompt-add" label={t("addSomeone", lang)} onPress={onAdd} />
-      <Button kind="secondary" testID="add-prompt-dismiss" label={t("notNow", lang)} onPress={onDismiss} />
+      <View style={styles.row}>
+        <View style={styles.flex}><Button kind="secondary" testID="add-prompt-dismiss" label={t("notNow", lang)} onPress={onDismiss} /></View>
+        <View style={styles.flex}><Button kind="secondary" testID="add-prompt-add" label={t("addSomeone", lang)} onPress={onAdd} /></View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
+  card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[2] },
+  row: { flexDirection: "row", gap: space[2] },
+  flex: { flex: 1 },
   outlined: { backgroundColor: undefined, borderWidth: 1.5, borderColor: colors.border },
 });

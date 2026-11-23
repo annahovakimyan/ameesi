@@ -15,7 +15,8 @@ export interface Profile {
   name: string; // empty for your own profile: shown as "Me"
   request: ChartRequest; // exactly what the server is asked to calculate
   place: Place; // for display and editing (region, country, former names)
-  placeNames?: Partial<Record<"hy" | "en" | "ru", string>>; // the place's name in each language, when known
+  /** The place's name, region and country in each language, when known (fetched after saving). */
+  placeLocalized?: Partial<Record<"hy" | "en" | "ru", { name: string; region: string | null; country: string }>>;
   chart?: Chart; // saved result, so the chart opens offline; dropped when birth details change
   consent?: Consent;
   createdAt: string;
@@ -77,7 +78,10 @@ export function exportJson(profiles: Profile[], now: string): string {
   }, null, 2);
 }
 
-/** The place name to show in a language: the saved translation, else the name it was saved with. */
-export function placeNameIn(p: Profile, lang: "hy" | "en" | "ru"): string {
-  return p.placeNames?.[lang] ?? p.place.name;
+/** The place as shown in a language: the saved translation, else as it was saved. */
+export function placeIn(p: Profile, lang: "hy" | "en" | "ru"): Place {
+  const l = p.placeLocalized?.[lang];
+  return l ? { ...p.place, name: l.name, region: l.region, country: l.country } : p.place;
 }
+
+export const placeNameIn = (p: Profile, lang: "hy" | "en" | "ru") => placeIn(p, lang).name;

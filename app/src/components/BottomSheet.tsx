@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   AccessibilityInfo, Animated, Easing, Modal, PanResponder, Pressable, StyleSheet, useWindowDimensions, View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, MIN_TOUCH, radius, shadowStyle, space } from "../theme";
 
 const OPEN_MS = 200; // design system: 200ms ease-out for sheets
@@ -14,6 +15,7 @@ export function BottomSheet({ visible, onClose, closeLabel, expandLabel, childre
   visible: boolean; onClose: () => void; closeLabel: string; expandLabel: string; children: ReactNode; testID?: string;
 }) {
   const { height: screen } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const full = screen * FULL;
   const hiddenY = full; // fully below the screen
   const halfY = full - screen * HALF;
@@ -79,7 +81,10 @@ export function BottomSheet({ visible, onClose, closeLabel, expandLabel, childre
           }}>
           <View style={styles.handle} />
         </Pressable>
-        <View style={{ height: expanded ? full : screen * HALF, flexShrink: 1 }}>{children}</View>
+        {/* Visible height minus the handle and the phone's bottom inset, so the end can always be scrolled into view. */}
+        <View style={{ height: (expanded ? full : screen * HALF) - MIN_TOUCH - insets.bottom, marginBottom: insets.bottom }}>
+          {children}
+        </View>
       </Animated.View>
     </Modal>
   );

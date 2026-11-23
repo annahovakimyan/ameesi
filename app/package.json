@@ -50,6 +50,9 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/fixtures/"
+    ],
+    "setupFiles": [
+      "./jest.setup.js"
     ]
   }
 }

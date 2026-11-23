@@ -6,6 +6,7 @@ import { Button } from "../components/Button";
 import { Row } from "../components/ChartList";
 import { SettingsSection } from "../components/SettingsSection";
 import type { HouseSystem } from "../api/types";
+import { formatDate } from "../format";
 import { t } from "../i18n";
 import { placeNameIn, type Profile } from "../profiles/profiles";
 import { colors, radius, space } from "../theme";
@@ -15,7 +16,7 @@ export const profileName = (p: Profile, lang: Lang) => (p.kind === "self" ? t("m
 function birthSummary(p: Profile, lang: Lang): string {
   const r = p.request;
   const time = r.time ?? (r.time_window ? `${r.time_window.from}–${r.time_window.to}` : "—");
-  return `${r.date} · ${time} · ${placeNameIn(p, lang)}`;
+  return `${formatDate(r.date)} · ${time} · ${placeNameIn(p, lang)}`;
 }
 
 export function ProfilesScreen({ lang, profiles, activeId, canAddMore, onOpen, onAdd, onEdit, onDelete, onExport,

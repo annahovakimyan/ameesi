@@ -9,9 +9,15 @@ export function Checkbox({ label, checked, onPress, testID, radio }: {
   return (
     <Pressable testID={testID} accessibilityRole={radio ? "radio" : "checkbox"}
       accessibilityState={radio ? { selected: checked } : { checked }} onPress={onPress} style={styles.row}>
-      <View style={[styles.box, radio && styles.round, checked && { backgroundColor: colors.gold, borderColor: colors.gold }]}>
-        {checked && <Icon char="✓" tone="onGold" />}
-      </View>
+      {radio ? (
+        <View style={[styles.box, styles.round, checked && { borderColor: colors.gold }]}>
+          {checked && <View style={styles.dot} />}
+        </View>
+      ) : (
+        <View style={[styles.box, checked && { backgroundColor: colors.gold, borderColor: colors.gold }]}>
+          {checked && <Icon char="✓" tone="onGold" />}
+        </View>
+      )}
       <AppText style={styles.flex}>{label}</AppText>
     </Pressable>
   );
@@ -22,5 +28,6 @@ const styles = StyleSheet.create({
   box: { width: space[6], height: space[6], borderRadius: radius.sm / 2, borderWidth: 2, borderColor: colors.border,
          alignItems: "center", justifyContent: "center" },
   round: { borderRadius: radius.pill },
+  dot: { width: space[3], height: space[3], borderRadius: radius.pill, backgroundColor: colors.gold },
   flex: { flex: 1 },
 });

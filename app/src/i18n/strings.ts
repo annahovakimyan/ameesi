@@ -5,9 +5,10 @@ export const strings = {
   chooseDate: { hy: "Ընտրել ամսաթիվը", en: "Choose date", ru: "Выбрать дату" },
   time: { hy: "Ծննդյան ժամ", en: "Time of birth", ru: "Время рождения" },
   chooseTime: { hy: "Ընտրել ժամը", en: "Choose time", ru: "Выбрать время" },
-  exact: { hy: "Ճշգրիտ", en: "Exact", ru: "Точное" },
-  approximate: { hy: "Մոտավոր", en: "Approximate", ru: "Примерное" },
-  unknown: { hy: "Անհայտ", en: "Unknown", ru: "Неизвестно" },
+  exact: { hy: "Ճշգրիտ", en: "Exact", ru: "Точно" },
+  approximate: { hy: "Մոտավոր", en: "Approximate", ru: "Примерно" },
+  unknown: { hy: "Անհայտ", en: "Unknown", ru: "Не знаю" },
+  approximateShort: { hy: "Մոտավոր", en: "Approx.", ru: "Примерно" }, // segment label: one word must fit a third of 320 px
   from: { hy: "Սկսած", en: "From", ru: "С" },
   to: { hy: "Մինչև", en: "To", ru: "До" },
   unknownTimeNote: {

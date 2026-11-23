@@ -2,7 +2,6 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-
 
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
-jest.mock("react-native-safe-area-context", () => require("react-native-safe-area-context/jest/mock").default);
 jest.mock("expo-font", () => ({ useFonts: () => [true, null], isLoaded: () => true, loadAsync: async () => {} }));
 
 const mockFetch = jest.fn(async () => ({ ok: true, status: 200, json: async () => ({ status: "ok" }) }));

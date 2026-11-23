@@ -19,12 +19,16 @@ const request: ChartRequest = {
   place: { geonames_id: 616635, name: "Gyumri", lat: 40.7942, lon: 43.8453, tz: "Asia/Yerevan" },
   house_system: "placidus", utc_offset_override: null,
 };
-const names = { hy: "Գյումրի", en: "Gyumri", ru: "Гюмри" };
+const names = {
+  hy: { name: "Գյումրի", region: "Շիրակ", country: "Հայաստան" },
+  en: { name: "Gyumri", region: "Shirak", country: "Armenia" },
+  ru: { name: "Гюмри", region: "Ширакская область", country: "Армения" },
+};
 const me = (chart = true, withPlaceNames = true) => ({
   ...newProfile({ kind: "self", name: "", request, place: gyumri, now: NOW, chart: chart ? (exact as Chart) : undefined }),
-  placeNames: withPlaceNames ? names : undefined });
+  placeLocalized: withPlaceNames ? names : undefined });
 const ani = () => ({ ...newProfile({ kind: "other", name: "Ani", request: { ...request, date: "1995-03-01" }, place: gyumri,
-  now: NOW, consent: { kind: "permission", confirmedAt: NOW }, chart: exact as Chart }), placeNames: names });
+  now: NOW, consent: { kind: "permission", confirmedAt: NOW }, chart: exact as Chart }), placeLocalized: names });
 
 function memoryStore(initial: Profile[]): ProfileStore & { saved: Profile[] } {
   const s = { saved: initial, load: async () => s.saved, save: async (p: Profile[]) => { s.saved = p; } };
@@ -60,7 +64,7 @@ test("Profiles tab lists profiles; opening one shows its chart", async () => {
   await start([me(), friend]);
   await fireEvent.press(screen.getByTestId("tab-profiles"));
   expect(screen.getByText("Me")).toBeTruthy();
-  expect(screen.getByText("1995-03-01 · 14:30 · Gyumri")).toBeTruthy();
+  expect(screen.getByText("01.03.1995 · 14:30 · Gyumri")).toBeTruthy();
   await fireEvent.press(screen.getByTestId(`open-${friend.id}`));
   expect(screen.getByTestId("chart-title")).toHaveTextContent("Ani");
 });
@@ -132,12 +136,12 @@ test("edit opens the saved details and saves a recalculated chart", async () => 
   await fireEvent.press(screen.getByTestId("tab-profiles"));
   await fireEvent.press(screen.getByTestId(`edit-${mine.id}`));
   expect(screen.getByText("Edit birth details")).toBeTruthy();
-  expect(screen.getByText("1992-08-14")).toBeTruthy(); // date field shows the saved date
+  expect(screen.getByText("14.08.1992")).toBeTruthy(); // date field shows the saved date
   await fireEvent.press(screen.getByTestId("submit")); // "Save": already complete
   // FR-01: the resolved time zone and UTC are shown before saving
   await waitFor(() => expect(screen.getByText("Check the details")).toBeTruthy());
-  expect(screen.getByTestId("review-local")).toHaveTextContent("1992-08-14 14:30");
-  expect(screen.getByTestId("review-utc")).toHaveTextContent("1992-08-14 10:30 · UTC+04:00");
+  expect(screen.getByTestId("review-local")).toHaveTextContent("14.08.1992 14:30");
+  expect(screen.getByTestId("review-utc")).toHaveTextContent("14.08.1992 10:30 · UTC+04:00");
   expect(screen.getByText("Asia/Yerevan")).toBeTruthy();
   await fireEvent.press(screen.getByTestId("looks-right"));
   await waitFor(() => expect(screen.getByTestId("chart-wheel")).toBeTruthy());
@@ -222,21 +226,20 @@ test("the add-someone prompt opens the form for someone else", async () => {
 test("saved place names follow the language setting", async () => {
   mockFetch.mockImplementation((url: string) => {
     const lang = new URL(url).searchParams.get("lang");
-    const name = { hy: "Գյումրի", en: "Gyumri", ru: "Гюмри" }[lang as "hy"];
-    return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ ...gyumri, name }) });
+    return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ ...gyumri, ...names[lang as "hy"] }) });
   });
   const store = memoryStore([me(true, false)]);
   const { rerender } = await render(<Root lang="en" store={store} now={() => NOW} />);
-  await waitFor(() => expect(store.saved[0].placeNames).toEqual({ hy: "Գյումրի", en: "Gyumri", ru: "Гюмри" }));
+  await waitFor(() => expect(store.saved[0].placeLocalized).toEqual(names));
   expect(mockFetch.mock.calls.map((c) => c[0])).toEqual(expect.arrayContaining([expect.stringContaining("/places/616635?lang=ru")]));
   await rerender(<Root lang="ru" store={store} now={() => NOW} />);
   await fireEvent.press(screen.getByTestId("tab-profiles"));
-  expect(screen.getByText("1992-08-14 · 14:30 · Гюмри")).toBeTruthy();
+  expect(screen.getByText("14.08.1992 · 14:30 · Гюмри")).toBeTruthy();
 });
 
 test("offline: the place name it was saved with is shown", async () => {
   mockFetch.mockRejectedValue(new TypeError("Network request failed"));
   await start([me(true, false)]);
   await fireEvent.press(screen.getByTestId("tab-profiles"));
-  expect(screen.getByText("1992-08-14 · 14:30 · Gyumri")).toBeTruthy();
+  expect(screen.getByText("14.08.1992 · 14:30 · Gyumri")).toBeTruthy();
 });
