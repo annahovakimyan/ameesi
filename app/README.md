@@ -14,9 +14,9 @@ cd server && source .venv/bin/activate && uvicorn app.main:app --host 0.0.0.0   
 cd app && npm install && npx expo start                                         # in another
 ```
 
-The app talks to `EXPO_PUBLIC_API_URL` (default `http://10.0.2.2:8000`, which is your computer's
-localhost as seen from the Android emulator). On a real phone, set it to your computer's LAN address,
-for example `EXPO_PUBLIC_API_URL=http://192.168.1.20:8000 npx expo start`.
+The app talks to the live server at `https://ameesi.onrender.com` by default. To use a local server,
+set `EXPO_PUBLIC_API_URL` in `app/.env`: `http://10.0.2.2:8000` on the Android emulator, or your computer's
+LAN address on a phone (for example `http://192.168.1.20:8000`), then restart with `npx expo start -c`.
 
 To look at screens in a browser (no phone needed): `npx expo start --web`. The date picker
 doesn't work on web; use the Android emulator or a phone for the birth form.

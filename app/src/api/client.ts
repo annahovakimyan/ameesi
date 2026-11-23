@@ -1,7 +1,8 @@
 import type { Chart, ChartRequest, Lang, Place, PlaceSearchResponse } from "./types";
 
-// Android emulator reaches the host machine's localhost at 10.0.2.2.
-export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://10.0.2.2:8000";
+// The live calculation server by default. For a local server set EXPO_PUBLIC_API_URL in app/.env
+// (the Android emulator reaches your computer at http://10.0.2.2:8000).
+export const API_URL = process.env.EXPO_PUBLIC_API_URL || "https://ameesi.onrender.com";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {

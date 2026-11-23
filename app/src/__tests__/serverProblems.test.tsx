@@ -12,7 +12,7 @@ test("server unreachable: the form says so, with the address in development, and
   await render(<BirthInputScreen lang="en" onChart={jest.fn()} />);
   await waitFor(() => expect(screen.getByTestId("server-offline")).toBeTruthy());
   expect(screen.getByText(/Couldn't reach the server/)).toBeTruthy();
-  expect(screen.getByTestId("server-dev-hint")).toHaveTextContent(/http:\/\/10\.0\.2\.2:8000.*EXPO_PUBLIC_API_URL/);
+  expect(screen.getByTestId("server-dev-hint")).toHaveTextContent(/https:\/\/ameesi\.onrender\.com.*EXPO_PUBLIC_API_URL/);
   mockFetch.mockImplementation(() => ok({ status: "ok" }));
   await fireEvent.press(screen.getByTestId("server-retry"));
   await waitFor(() => expect(screen.queryByTestId("server-offline")).toBeNull());

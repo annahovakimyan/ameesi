@@ -103,8 +103,8 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
           <AppText variant="bodySm"><Icon char="⚠" tone="rose" /> {t("errorNetwork", lang)}</AppText>
           {__DEV__ && (
             <AppText variant="caption" tone="textMuted" testID="server-dev-hint">
-              {`Development: looking for the calculation server at ${API_URL}. Set EXPO_PUBLIC_API_URL in app/.env `
-                + "to your computer's address (for example http://192.168.1.20:8000), start the server, and restart Expo with -c."}
+              {`Development: looking for the calculation server at ${API_URL}. If it was asleep, wait a minute and retry. `
+                + "For a local server, set EXPO_PUBLIC_API_URL in app/.env (for example http://192.168.1.20:8000) and restart Expo with -c."}
             </AppText>
           )}
           <Button kind="secondary" testID="server-retry" label={t("retry", lang)}
