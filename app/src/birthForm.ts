@@ -75,3 +75,16 @@ export function formFromProfile(p: Profile): BirthForm {
     consent: p.consent?.kind ?? null,
   };
 }
+
+/** What's still missing before the chart can be calculated, as string ids for the hint under the button. */
+export function missingFields(f: BirthForm, purpose: Purpose = "self") {
+  const out: ("name" | "date" | "time" | "place" | "adult" | "consentTitle")[] = [];
+  if (purpose === "other" && !f.name.trim()) out.push("name");
+  if (!f.date) out.push("date");
+  if (f.confidence === "exact" && !f.time) out.push("time");
+  if (f.confidence === "approximate" && !(f.windowFrom && f.windowTo && hhmm(f.windowTo) > hhmm(f.windowFrom))) out.push("time");
+  if (!f.place) out.push("place");
+  if (purpose === "self" && !f.adult) out.push("adult");
+  if (purpose === "other" && !f.consent) out.push("consentTitle");
+  return out;
+}

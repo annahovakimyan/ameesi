@@ -13,7 +13,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`${API_URL}${path}`, init);
-  } catch {
+  } catch (e) {
+    if (e instanceof Error && e.name === "AbortError") throw e; // cancelled on purpose, not a network failure
     throw new ApiError(0, "network");
   }
   if (!res.ok) {
@@ -40,4 +41,14 @@ export function calculateChart(body: ChartRequest): Promise<Chart> {
 /** One place in a language (for showing saved profiles in the current language). */
 export function getPlace(geonamesId: number, lang: Lang): Promise<Place> {
   return request(`/places/${geonamesId}?lang=${lang}`);
+}
+
+/** True when the calculation server answers its health check. */
+export async function serverReachable(): Promise<boolean> {
+  try {
+    await request("/health");
+    return true;
+  } catch {
+    return false;
+  }
 }

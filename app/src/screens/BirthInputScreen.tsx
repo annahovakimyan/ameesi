@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, TextInput, View } from "react-native";
-import { ApiError, calculateChart } from "../api/client";
+import { API_URL, ApiError, calculateChart, serverReachable } from "../api/client";
 import type { Chart, ChartRequest, Lang, Place } from "../api/types";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
@@ -8,7 +8,7 @@ import { Checkbox } from "../components/Checkbox";
 import { PickerField } from "../components/PickerField";
 import { PlaceSearch } from "../components/PlaceSearch";
 import { Segmented } from "../components/Segmented";
-import { buildRequest, emptyForm, isComplete, offsetFor, type BirthForm, type Purpose } from "../birthForm";
+import { buildRequest, emptyForm, isComplete, missingFields, offsetFor, type BirthForm, type Purpose } from "../birthForm";
 import { hhmm, isoDate } from "../format";
 import { t } from "../i18n";
 import { colors, MIN_TOUCH, radius, space, textStyle } from "../theme";
@@ -23,6 +23,14 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
 }) {
   const [form, setForm] = useState<BirthForm>(initial ?? { ...emptyForm, houseSystem });
   const [review, setReview] = useState<BirthResult | null>(null);
+  const [offline, setOffline] = useState(false);
+
+  // Check the calculation server up front, so a wrong address or no connection is explained at once.
+  useEffect(() => {
+    let current = true;
+    serverReachable().then((ok) => current && setOffline(!ok));
+    return () => { current = false; };
+  }, []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ambiguous, setAmbiguous] = useState<Chart | null>(null);
@@ -84,6 +92,20 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
       <AppText variant="display">
         {t(editing ? "editBirthTitle" : purpose === "other" ? "theirBirthTitle" : "birthTitle", lang)}
       </AppText>
+
+      {offline && (
+        <View style={styles.notice} accessibilityRole="alert" testID="server-offline">
+          <AppText variant="bodySm"><Icon char="⚠" tone="rose" /> {t("errorNetwork", lang)}</AppText>
+          {__DEV__ && (
+            <AppText variant="caption" tone="textMuted" testID="server-dev-hint">
+              {`Development: looking for the calculation server at ${API_URL}. Set EXPO_PUBLIC_API_URL in app/.env `
+                + "to your computer's address (for example http://192.168.1.20:8000), start the server, and restart Expo with -c."}
+            </AppText>
+          )}
+          <Button kind="secondary" testID="server-retry" label={t("retry", lang)}
+            onPress={() => { serverReachable().then((ok) => setOffline(!ok)); }} />
+        </View>
+      )}
 
       {purpose === "other" && (
         <View style={styles.section}>
@@ -147,6 +169,11 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
       {busy ? <ActivityIndicator color={colors.gold} style={{ minHeight: MIN_TOUCH }} />
         : <Button testID="submit" label={t(editing ? "save" : purpose === "other" ? "getTheirChart" : "getChart", lang)} disabled={!isComplete(form, purpose)}
             onPress={() => submit()} />}
+      {!busy && !isComplete(form, purpose) && (
+        <AppText variant="bodySm" tone="textMuted" testID="still-needed">
+          {t("stillNeeded", lang, { items: missingFields(form, purpose).map((k) => t(k, lang)).join(", ") })}
+        </AppText>
+      )}
       {onCancel && !busy && <Button kind="secondary" testID="cancel" label={t("cancel", lang)} onPress={onCancel} />}
     </ScrollView>
   );
@@ -157,6 +184,8 @@ const styles = StyleSheet.create({
   section: { gap: space[2] },
   window: { flexDirection: "row", gap: space[3] },
   flex: { flex: 1, gap: space[1] },
+  notice: { padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.rose, borderRadius: radius.md,
+            backgroundColor: colors.surface },
   reviewCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
   reviewRow: { gap: space[1] },
   input: {

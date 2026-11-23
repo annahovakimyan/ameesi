@@ -141,7 +141,8 @@ test("edit opens the saved details and saves a recalculated chart", async () => 
   expect(screen.getByText("Asia/Yerevan")).toBeTruthy();
   await fireEvent.press(screen.getByTestId("looks-right"));
   await waitFor(() => expect(screen.getByTestId("chart-wheel")).toBeTruthy());
-  expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toEqual(request);
+  const chartCall = mockFetch.mock.calls.find((c) => String(c[0]).endsWith("/charts/calculate"))!;
+  expect(JSON.parse(chartCall[1].body)).toEqual(request);
   expect(store.saved).toHaveLength(1);
   expect(store.saved[0].id).toBe(mine.id);
 });

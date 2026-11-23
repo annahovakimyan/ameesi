@@ -198,6 +198,12 @@ export const strings = {
   share: { hy: "Կիսվել", en: "Share", ru: "Поделиться" },
   bigThree: { hy: "Իմ մեծ եռյակը", en: "My Big Three", ru: "Моя большая тройка" },
   explainedBy: { hy: "Բացատրում է Ameesi-ն", en: "Explained by Ameesi", ru: "Объясняет Ameesi" },
+  stillNeeded: { hy: "Դեռ անհրաժեշտ է՝ {items}", en: "Still needed: {items}", ru: "Ещё нужно: {items}" },
+  placeSearchFailed: {
+    hy: "Չհաջողվեց որոնել վայրերը․ սերվերը հասանելի չէ։",
+    en: "Couldn't search places: the server can't be reached.",
+    ru: "Не удалось найти место: сервер недоступен.",
+  },
   bodies: { hy: "Մոլորակներ", en: "Planets", ru: "Планеты" },
   angles: { hy: "Անկյուններ", en: "Angles", ru: "Углы" },
   aspects: { hy: "Ասպեկտներ", en: "Aspects", ru: "Аспекты" },

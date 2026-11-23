@@ -35,7 +35,7 @@ describe("BirthInputScreen", () => {
     await act(async () => {
       jest.advanceTimersByTime(300);
     });
-    expect(mockFetch.mock.calls[0][0]).toContain("q=Leninakan&lang=hy");
+    expect(mockFetch.mock.calls.map((c) => c[0])).toContainEqual(expect.stringContaining("/places?q=Leninakan&lang=hy"));
     expect(await screen.findByText("Գյումրի")).toBeTruthy();
     expect(screen.getByText(/նախկինում՝ Leninakan/)).toBeTruthy();
   });
@@ -46,7 +46,7 @@ describe("BirthInputScreen", () => {
     await act(async () => {
       jest.advanceTimersByTime(300);
     });
-    expect(mockFetch).not.toHaveBeenCalled();
+    expect(mockFetch.mock.calls.filter((c) => String(c[0]).includes("/places"))).toHaveLength(0);
   });
 
   test("unknown time hides the time field and explains why", async () => {
