@@ -12,6 +12,7 @@ import type { ProfileStore } from "../profiles/store";
 import { colors, space } from "../theme";
 import { BirthInputScreen, type BirthResult } from "./BirthInputScreen";
 import { ChartScreen } from "./ChartScreen";
+import { sampleChart, samplePlace } from "../sample";
 import { ProfilesScreen, profileName } from "./ProfilesScreen";
 
 type Editor = { purpose: Purpose; profileId?: string };
@@ -29,6 +30,7 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
   const [tab, setTab] = useState<"chart" | "profiles">("chart");
   const [editor, setEditor] = useState<Editor | null>(null);
   const [calc, setCalc] = useState<"idle" | "busy" | "error">("idle");
+  const [sample, setSample] = useState(false); // showing the bundled sample chart; nothing saved
 
   useEffect(() => {
     store.load().then((ps) => {
@@ -107,13 +109,24 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
     setTab("chart");
   };
 
+  if (sample) {
+    return (
+      <View style={styles.fill} testID="sample-mode">
+        <AppText variant="bodySm" tone="gold" style={styles.sampleNote}>{t("sampleNote", lang)}</AppText>
+        <ChartScreen chart={sampleChart} lang={lang} title={t("sampleTitle", lang)} tour
+          place={{ ...samplePlace, name: lang === "hy" ? "Գյումրի" : lang === "ru" ? "Гюмри" : "Gyumri" }}
+          onBack={() => setSample(false)} />
+      </View>
+    );
+  }
+
   // First launch (or after deleting everything): your own birth details.
   if (editor || profiles.length === 0) {
     const editing = editor?.profileId ? profiles.find((p) => p.id === editor.profileId) : undefined;
     return (
       <BirthInputScreen key={editor?.profileId ?? editor?.purpose ?? "first"} lang={lang} purpose={editor?.purpose ?? "self"}
         initial={editing ? formFromProfile(editing) : undefined} editing={!!editing} onChart={saveFromForm}
-        houseSystem={houseSystem}
+        houseSystem={houseSystem} onSample={editor ? undefined : () => setSample(true)}
         onCancel={profiles.length > 0 ? () => setEditor(null) : undefined} />
     );
   }
@@ -165,5 +178,6 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
+  sampleNote: { paddingHorizontal: space[4], paddingTop: space[4] },
   centre: { alignItems: "center", justifyContent: "center", gap: space[4], padding: space[4] },
 });

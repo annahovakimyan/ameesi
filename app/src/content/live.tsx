@@ -23,7 +23,8 @@ export function LiveContentProvider({ lang, children }: { lang: Lang; children: 
     };
   }, [lang]);
 
-  const source = useMemo<ContentSource>(() => usePlaceholders ? placeholderSource() : {
+  // In development, an empty content table (nothing approved yet) shows placeholders so screens can be tried.
+  const source = useMemo<ContentSource>(() => usePlaceholders || (__DEV__ && entries.size === 0) ? placeholderSource() : {
     isPlaceholder: false,
     get: (id, l) => {
       const e = entries.get(id);

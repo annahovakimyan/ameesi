@@ -204,6 +204,13 @@ export const strings = {
     en: "Couldn't search places: the server can't be reached.",
     ru: "Не удалось найти место: сервер недоступен.",
   },
+  trySample: { hy: "Փորձել օրինակով", en: "Try a sample chart", ru: "Посмотреть пример" },
+  sampleTitle: { hy: "Օրինակ", en: "Sample", ru: "Пример" },
+  sampleNote: {
+    hy: "Օրինակի քարտեզ (Գյումրի, 14 օգոստոսի 1992)։ Ոչինչ չի պահպանվում։",
+    en: "Sample chart (Gyumri, 14 August 1992). Nothing is saved.",
+    ru: "Пример карты (Гюмри, 14 августа 1992). Ничего не сохраняется.",
+  },
   bodies: { hy: "Մոլորակներ", en: "Planets", ru: "Планеты" },
   angles: { hy: "Անկյուններ", en: "Angles", ru: "Углы" },
   aspects: { hy: "Ասպեկտներ", en: "Aspects", ru: "Аспекты" },

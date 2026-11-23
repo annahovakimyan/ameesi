@@ -17,9 +17,11 @@ export interface BirthResult { chart: Chart; request: ChartRequest; place: Place
 
 /** Birth details for your own chart (18+ confirmation) or someone else's (name and consent).
  *  With `initial`, edits saved details. */
-export function BirthInputScreen({ lang, onChart, purpose = "self", initial, editing, onCancel, houseSystem = "placidus" }: {
+export function BirthInputScreen({ lang, onChart, purpose = "self", initial, editing, onCancel, houseSystem = "placidus",
+  onSample }: {
   lang: Lang; onChart: (r: BirthResult) => void; purpose?: Purpose; initial?: BirthForm; editing?: boolean;
   onCancel?: () => void; houseSystem?: BirthForm["houseSystem"];
+  onSample?: () => void; // open the bundled sample chart (development, or when the server can't be reached)
 }) {
   const [form, setForm] = useState<BirthForm>(initial ?? { ...emptyForm, houseSystem });
   const [review, setReview] = useState<BirthResult | null>(null);
@@ -104,6 +106,7 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
           )}
           <Button kind="secondary" testID="server-retry" label={t("retry", lang)}
             onPress={() => { serverReachable().then((ok) => setOffline(!ok)); }} />
+          {onSample && <Button kind="secondary" testID="try-sample-offline" label={t("trySample", lang)} onPress={onSample} />}
         </View>
       )}
 
@@ -175,6 +178,9 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
         </AppText>
       )}
       {onCancel && !busy && <Button kind="secondary" testID="cancel" label={t("cancel", lang)} onPress={onCancel} />}
+      {onSample && __DEV__ && !offline && !busy && (
+        <Button kind="secondary" testID="try-sample" label={t("trySample", lang)} onPress={onSample} />
+      )}
     </ScrollView>
   );
 }

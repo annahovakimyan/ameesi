@@ -5,6 +5,10 @@ calculation server returns; it never calculates astrology (see CLAUDE.md).
 
 ## Run
 
+**Without a server:** start Expo and tap "Try a sample chart" on the birth form. It opens a bundled chart
+(real server output for Gyumri, 14 August 1992) so the wheel, explanations, list, tour and share card can
+be tried. Entering your own birth details needs the calculation server (below, or online: server/README.md).
+
 ```
 cd server && source .venv/bin/activate && uvicorn app.main:app --host 0.0.0.0   # in one terminal
 cd app && npm install && npx expo start                                         # in another
