@@ -199,6 +199,8 @@ export const strings = {
   warn_utc_offset_overridden: { hy: "UTC շեղումը նշված է ձեռքով։", en: "The UTC offset was set by hand.", ru: "Смещение UTC указано вручную." },
   share: { hy: "Կիսվել", en: "Share", ru: "Поделиться" },
   bigThree: { hy: "Իմ մեծ եռյակը", en: "My Big Three", ru: "Моя большая тройка" },
+  keyAspects: { hy: "Գլխավոր ասպեկտներ", en: "Key aspects", ru: "Главные аспекты" },
+  sharePreview: { hy: "Ահա թե ինչ կկիսվեք", en: "This is what you’ll share", ru: "Вот что вы отправите" },
   explainedBy: { hy: "Բացատրում է Ameesi-ն", en: "Explained by Ameesi", ru: "Объясняет Ameesi" },
   stillNeeded: { hy: "Դեռ անհրաժեշտ է՝ {items}", en: "Still needed: {items}", ru: "Ещё нужно: {items}" },
   placeSearchFailed: {

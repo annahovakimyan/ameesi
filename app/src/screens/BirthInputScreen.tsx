@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { type ComponentRef, useEffect, useRef, useState } from "react";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { API_URL, ApiError, calculateChart, serverReachable } from "../api/client";
 import type { Chart, ChartRequest, Lang, Place } from "../api/types";
 import { AppText, Icon } from "../components/AppText";
@@ -37,6 +37,12 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
     return () => { current = false; };
   }, []);
   const [busy, setBusy] = useState(false);
+  // Birthplace: while it's being typed, keep the field at the top so it and its results stay above the keyboard.
+  const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
+  const placeY = useRef(0);
+  const [placeFocused, setPlaceFocused] = useState(false);
+  const { height } = useWindowDimensions();
+  const showPlace = () => setTimeout(() => scrollRef.current?.scrollTo({ y: Math.max(0, placeY.current - space[4]), animated: true }), 100);
   const [error, setError] = useState<string | null>(null);
   const [ambiguous, setAmbiguous] = useState<Chart | null>(null);
   const set = (patch: Partial<BirthForm>) => setForm((f) => ({ ...f, ...patch }));
@@ -92,8 +98,8 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
   }
 
   return (
-    <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-    <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
+    <KeyboardAvoidingView style={styles.fill} behavior="padding">
+    <ScrollView ref={scrollRef} contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
       <AppText variant="display">
         {t(editing ? "editBirthTitle" : purpose === "other" ? "theirBirthTitle" : "birthTitle", lang)}
       </AppText>
@@ -143,9 +149,11 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
         {form.confidence === "unknown" && <AppText variant="bodySm" tone="textMuted">{t("unknownTimeNote", lang)}</AppText>}
       </View>
 
-      <View style={styles.section}>
+      <View style={styles.section} testID="place-section" onLayout={(e) => { placeY.current = e.nativeEvent.layout.y; }}>
         <AppText variant="headline">{t("place", lang)}</AppText>
-        <PlaceSearch lang={lang} value={form.place} onChange={(place) => set({ place })} />
+        <PlaceSearch lang={lang} value={form.place}
+          onChange={(place) => { set({ place }); if (place) setPlaceFocused(false); }}
+          onFocus={() => { setPlaceFocused(true); showPlace(); }} onResults={showPlace} />
       </View>
 
       {purpose === "self" ? (
@@ -185,6 +193,8 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
       {onSample && __DEV__ && !offline && !busy && (
         <Button kind="secondary" testID="try-sample" label={t("trySample", lang)} onPress={onSample} />
       )}
+      {/* Room to scroll the birthplace to the top even when it's near the end of the form */}
+      {placeFocused && <View style={{ height: height / 2 }} testID="place-room" />}
     </ScrollView>
     </KeyboardAvoidingView>
   );

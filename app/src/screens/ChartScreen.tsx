@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import type { Chart, Lang, Place } from "../api/types";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
@@ -32,6 +32,7 @@ export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addP
   const [step, setStep] = useState(0);
   const [details, setDetails] = useState(false);
   const cardRef = useRef<ViewRef>(null);
+  const [sharing, setSharing] = useState(false); // the share preview is open
   const confidence = chart.time.confidence;
   const [view, setView] = useState<"wheel" | "list">("wheel");
   // Switching between wheel and list keeps the selected element (design system: SegmentedControl).
@@ -47,13 +48,18 @@ export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addP
           {title ?? ""}
         </AppText>
         <Button kind="secondary" compact icon="share" testID="share" label={t("share", lang)}
-          onPress={() => { shareCard(cardRef.current).catch(() => {}); }} />
+          onPress={() => setSharing(true)} />
       </View>
-      {/* Off-screen: rendered so it can be captured as an image, never shown */}
-      <View style={styles.offscreen} pointerEvents="none" importantForAccessibility="no-hide-descendants"
-        accessibilityElementsHidden>
-        <ShareCard ref={cardRef} chart={chart} lang={lang} />
-      </View>
+      {/* Share preview: the image is captured from what's on screen, so it always renders */}
+      <Modal visible={sharing} transparent animationType="fade" onRequestClose={() => setSharing(false)}>
+        <ScrollView style={styles.scrim} contentContainerStyle={styles.preview}>
+          <AppText variant="headline" style={styles.hint}>{t("sharePreview", lang)}</AppText>
+          <ShareCard ref={cardRef} chart={chart} lang={lang} width={Math.min(width - space[4] * 2, 400)} />
+          <Button testID="share-send" icon="share" label={t("share", lang)}
+            onPress={() => { shareCard(cardRef.current).catch(() => {}).finally(() => setSharing(false)); }} />
+          <Button kind="secondary" testID="share-cancel" label={t("cancel", lang)} onPress={() => setSharing(false)} />
+        </ScrollView>
+      </Modal>
       <Segmented testID="view" value={view} onChange={setView}
         options={[{ value: "wheel", label: t("wheel", lang) }, { value: "list", label: t("list", lang) }]} />
 
@@ -135,7 +141,8 @@ function CalcDetails({ chart, lang, place, onEdit }: { chart: Chart; lang: Lang;
 }
 
 const styles = StyleSheet.create({
-  offscreen: { position: "absolute", left: -10000, top: 0 },
+  scrim: { flex: 1, backgroundColor: colors.bg },
+  preview: { padding: space[4], paddingTop: space[8], gap: space[4], alignItems: "stretch" },
   notice: { padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.glassEdge, borderRadius: radius.lg,
             backgroundColor: colors.surface },
   details: { padding: space[4], gap: space[3], backgroundColor: colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.glassEdge },

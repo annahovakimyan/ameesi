@@ -14,8 +14,10 @@ export function placeLabel(p: Place): string {
   return [p.name, p.region, p.country].filter(Boolean).join(", ");
 }
 
-export function PlaceSearch({ lang, value, onChange }: {
+export function PlaceSearch({ lang, value, onChange, onFocus, onResults }: {
   lang: Lang; value: Place | null; onChange: (p: Place | null) => void;
+  onFocus?: () => void; // e.g. scroll the field into view above the keyboard
+  onResults?: () => void; // results appeared below the field
 }) {
   const [query, setQuery] = useState(value ? placeLabel(value) : "");
   const [results, setResults] = useState<Place[] | null>(null);
@@ -30,7 +32,7 @@ export function PlaceSearch({ lang, value, onChange }: {
     const controller = new AbortController();
     const timer = setTimeout(() => {
       searchPlaces(query, lang, controller.signal)
-        .then((r) => { setFailed(false); setOffline(false); setResults(r.results); })
+        .then((r) => { setFailed(false); setOffline(false); setResults(r.results); onResults?.(); })
         .catch((e) => {
           if (e?.name === "AbortError") return; // the user kept typing
           if (__DEV__) {
@@ -38,6 +40,7 @@ export function PlaceSearch({ lang, value, onChange }: {
             setFailed(false);
             setOffline(true);
             setResults(offlinePlaces(query, lang));
+            onResults?.();
             return;
           }
           setResults(null);
@@ -60,6 +63,7 @@ export function PlaceSearch({ lang, value, onChange }: {
           if (value) onChange(null);
         }}
         placeholder={t("placeHint", lang)}
+        onFocus={onFocus}
         autoCorrect={false}
         accessibilityLabel={t("place", lang)}
       />

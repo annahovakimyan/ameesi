@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     minHeight: MIN_TOUCH, borderRadius: radius.pill, alignItems: "center", justifyContent: "center", overflow: "hidden",
     paddingHorizontal: space[6], paddingVertical: space[2],
   },
-  label: { textAlign: "center" },
-  content: { flexDirection: "row", alignItems: "center", gap: space[2] },
+  label: { textAlign: "center", flexShrink: 1 },
+  content: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space[2], maxWidth: "100%" },
   compact: { paddingHorizontal: space[4] },
 });

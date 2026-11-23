@@ -72,3 +72,18 @@ test("the disabled button explains what's still needed", async () => {
   await fireEvent.press(screen.getByTestId("adult"));
   expect(screen.getByTestId("still-needed")).toHaveTextContent("Still needed: Date of birth, Place of birth");
 });
+
+test("typing the birthplace makes room to keep the field above the keyboard, until a place is chosen", async () => {
+  mockFetch.mockImplementation((url: string) => ok(url.includes("/places")
+    ? { results: [{ geonames_id: 616635, name: "Gyumri", former_names_matched: [], region: "Shirak", country: "Armenia",
+        country_code: "AM", lat: 40.79, lon: 43.85, tz: "Asia/Yerevan" }] }
+    : { status: "ok" }));
+  await render(<BirthInputScreen lang="en" onChart={jest.fn()} />);
+  expect(screen.queryByTestId("place-room")).toBeNull();
+  await fireEvent(screen.getByTestId("place-input"), "focus");
+  expect(screen.getByTestId("place-room")).toBeTruthy();
+  await fireEvent.changeText(screen.getByTestId("place-input"), "Gyu");
+  await waitFor(() => expect(screen.getByTestId("place-616635")).toBeTruthy());
+  await fireEvent.press(screen.getByTestId("place-616635"));
+  expect(screen.queryByTestId("place-room")).toBeNull();
+});
