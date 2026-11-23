@@ -64,7 +64,7 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
           return (
             <G key={s}>
               <Line {...radial(i * 30, R.signInner, R.outer)} stroke={colors.divider} strokeWidth={STROKE.hairline} />
-              <SvgText x={g.x} y={g.y + glyphText.fontSize! / 3} fontSize={glyphText.fontSize} fill={colors.lavender}
+              <SvgText x={g.x} y={g.y + glyphText.fontSize! / 3} fontSize={glyphText.fontSize} fontFamily={glyphText.fontFamily} fill={colors.lavender}
                 textAnchor="middle">{signGlyph(s)}</SvgText>
             </G>
           );
@@ -80,7 +80,7 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
             <G key={h.house}>
               <Line {...radial(h.cusp_lon, R.aspect, R.signInner)} stroke={colors.divider}
                 strokeWidth={STROKE.hairline} strokeOpacity={h.uncertain ? UNCERTAIN_OPACITY : 1} />
-              <SvgText x={n.x} y={n.y + caption.fontSize! / 3} fontSize={caption.fontSize} fill={colors.textFaint}
+              <SvgText x={n.x} y={n.y + caption.fontSize! / 3} fontSize={caption.fontSize} fontFamily={caption.fontFamily} fill={colors.textFaint}
                 textAnchor="middle">{h.house}</SvgText>
             </G>
           );

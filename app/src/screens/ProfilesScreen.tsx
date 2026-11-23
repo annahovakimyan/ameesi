@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import type { Lang } from "../api/types";
-import { AppText } from "../components/AppText";
+import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { Row } from "../components/ChartList";
 import { t } from "../i18n";
@@ -33,7 +33,7 @@ export function ProfilesScreen({ lang, profiles, activeId, canAddMore, onOpen, o
           {confirming === p.id ? (
             <View style={styles.actions}>
               <AppText variant="bodySm" accessibilityRole="alert">
-                ⚠︎ {t("deleteConfirm", lang, { name: profileName(p, lang) })}
+                <Icon char="⚠" /> {t("deleteConfirm", lang, { name: profileName(p, lang) })}
               </AppText>
               <Button kind="secondary" testID={`confirm-delete-${p.id}`} label={t("delete", lang)}
                 onPress={() => { setConfirming(null); onDelete(p.id); }} />

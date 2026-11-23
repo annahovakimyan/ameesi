@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import type { Chart, Lang } from "../api/types";
-import { AppText } from "../components/AppText";
+import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { ChartList } from "../components/ChartList";
 import { ChartWheel } from "../components/ChartWheel";
@@ -42,7 +42,7 @@ export function ChartScreen({ chart, lang, onBack, title }: {
         <ChartList chart={chart} lang={lang} onSelect={setSelection} />
       )}
 
-      {chart.warnings.map((w) => <AppText key={w.code} tone="gold" variant="bodySm">⚠︎ {w.message}</AppText>)}
+      {chart.warnings.map((w) => <AppText key={w.code} tone="gold" variant="bodySm"><Icon char="⚠" tone="gold" /> {w.message}</AppText>)}
       <AppText variant="caption" tone="textFaint">
         {chart.meta.house_system_used
           ? t("calcDetails", lang, { houses: t(chart.meta.house_system_used, lang), tzdata: chart.meta.tzdata })

@@ -7,7 +7,7 @@ import { bodyGlyph, formatDegrees, signGlyph } from "../format";
 import { houseId, houseTerm, inTitle, retroTitle, t, term } from "../i18n";
 import type { Selection } from "../selection";
 import { colors, radius, space } from "../theme";
-import { AppText } from "./AppText";
+import { AppText, Icon } from "./AppText";
 import { BottomSheet } from "./BottomSheet";
 import { Button } from "./Button";
 
@@ -137,7 +137,7 @@ export function ExplanationSheet({ chart, lang, selection, onSelect, onClose }: 
 
         {notices(selection, chart, lang).map((n) => (
           <View key={n} style={styles.notice} accessibilityRole="alert">
-            <AppText tone="gold">ⓘ</AppText>
+            <Icon char="ⓘ" tone="gold" />
             <AppText variant="bodySm" style={styles.flex}>{n}</AppText>
           </View>
         ))}

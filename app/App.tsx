@@ -1,3 +1,4 @@
+import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -8,12 +9,14 @@ import { Segmented } from "./src/components/Segmented";
 import { LiveContentProvider } from "./src/content/live";
 import { deviceProfileStore } from "./src/profiles/store";
 import { Root } from "./src/screens/Root";
-import { colors, space } from "./src/theme";
+import { colors, FONTS, space } from "./src/theme";
 
 const profileStore = deviceProfileStore(AsyncStorage);
 
 export default function App() {
   const [lang, setLang] = useState<Lang>("hy"); // Armenian is the default
+  const [fontsLoaded] = useFonts(FONTS);
+  if (!fontsLoaded) return <View style={styles.root} />;
 
   return (
     <SafeAreaProvider>

@@ -44,7 +44,9 @@ npm run generate     # after design/tokens.json or content/glossary.json changes
 - [x] Birth input: date, exact / approximate / unknown time, place search with former names, 18+ check
 - [x] Clock-change confirmation (the user picks the right UTC offset)
 - [x] Chart list: bodies, angles, aspects, stelliums, elements and modalities, uncertain flags
-- [ ] Fonts (Noto Sans / Serif Armenian): system font for now
+- [x] Fonts: Ameesi Sans, Ameesi Serif and Ameesi Glyphs in `assets/fonts`, merged from Noto by
+      `scripts/build_fonts.py` (React Native can't fall back between custom fonts, and Noto Sans Armenian has
+      no digits). SIL Open Font License 1.1.
 - [x] Chart wheel: signs, houses, axes, aspect lines (gold harmonious, rose tense, dashed if uncertain),
       tap a planet to highlight it and see its placement and aspects
 - [x] Tap-to-explain bottom sheet with placeholder texts: tap a planet on the wheel, or any planet, angle,

@@ -3,7 +3,7 @@ import { ActivityIndicator, Share, StyleSheet, View } from "react-native";
 import { calculateChart } from "../api/client";
 import type { Lang } from "../api/types";
 import { formFromProfile, type Purpose } from "../birthForm";
-import { AppText } from "../components/AppText";
+import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { TabBar } from "../components/TabBar";
 import { t } from "../i18n";
@@ -106,7 +106,7 @@ export function Root({ lang, store, now = () => new Date().toISOString() }: {
           <View style={[styles.fill, styles.centre]}>
             {calc === "error" ? (
               <>
-                <AppText tone="rose" accessibilityRole="alert">⚠︎ {t("errorNetwork", lang)}</AppText>
+                <AppText tone="rose" accessibilityRole="alert"><Icon char="⚠" tone="rose" /> {t("errorNetwork", lang)}</AppText>
                 <Button kind="secondary" testID="retry" label={t("retry", lang)} onPress={() => active && recalc(active)} />
               </>
             ) : (

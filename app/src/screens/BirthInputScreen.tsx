@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { ApiError, calculateChart } from "../api/client";
 import type { Chart, ChartRequest, Lang, Place } from "../api/types";
-import { AppText } from "../components/AppText";
+import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { Checkbox } from "../components/Checkbox";
 import { PickerField } from "../components/PickerField";
@@ -114,7 +114,7 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
         </View>
       )}
 
-      {error && <AppText tone="rose" accessibilityRole="alert">⚠︎ {error}</AppText>}
+      {error && <AppText tone="rose" accessibilityRole="alert"><Icon char="⚠" tone="rose" /> {error}</AppText>}
       {busy ? <ActivityIndicator color={colors.gold} style={{ minHeight: MIN_TOUCH }} />
         : <Button testID="submit" label={t(editing ? "save" : purpose === "other" ? "getTheirChart" : "getChart", lang)} disabled={!isComplete(form, purpose)}
             onPress={() => submit()} />}

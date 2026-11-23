@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, View } from "react-native";
 import { colors, MIN_TOUCH, radius, space } from "../theme";
-import { AppText } from "./AppText";
+import { AppText, Icon } from "./AppText";
 
 /** Checkbox, or a radio button with `radio` (round, one of a group). */
 export function Checkbox({ label, checked, onPress, testID, radio }: {
@@ -10,7 +10,7 @@ export function Checkbox({ label, checked, onPress, testID, radio }: {
     <Pressable testID={testID} accessibilityRole={radio ? "radio" : "checkbox"}
       accessibilityState={radio ? { selected: checked } : { checked }} onPress={onPress} style={styles.row}>
       <View style={[styles.box, radio && styles.round, checked && { backgroundColor: colors.gold, borderColor: colors.gold }]}>
-        {checked && <AppText variant="label" tone="onGold">✓</AppText>}
+        {checked && <Icon char="✓" tone="onGold" />}
       </View>
       <AppText style={styles.flex}>{label}</AppText>
     </Pressable>

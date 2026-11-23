@@ -7,3 +7,9 @@ export function AppText({ variant = "body", tone = "ivory", style, ...props }:
   TextProps & { variant?: TextVariant; tone?: Tone }) {
   return <Text {...props} style={[textStyle(variant), { color: colors[tone] }, style]} />;
 }
+
+/** An icon character (⚠ ⓘ ✓) in the glyph font, inside or beside text. */
+export function Icon({ char, tone = "ivory" }: { char: "⚠" | "ⓘ" | "✓"; tone?: Tone }) {
+  return <Text style={[textStyle("glyph"), { color: colors[tone] }]} accessibilityElementsHidden
+    importantForAccessibility="no">{char + "\uFE0E"}</Text>;
+}

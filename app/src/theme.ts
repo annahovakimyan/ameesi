@@ -19,13 +19,27 @@ export function shadowStyle(name: keyof typeof shadow): ViewStyle {
 
 export type TextVariant = keyof typeof typeTokens;
 
+/** Font files (assets/fonts, built from Noto by scripts/build_fonts.py), registered in App.tsx. */
+export const FONTS = {
+  "AmeesiSans-Regular": require("../assets/fonts/AmeesiSans-Regular.ttf"),
+  "AmeesiSans-SemiBold": require("../assets/fonts/AmeesiSans-SemiBold.ttf"),
+  "AmeesiSerif-SemiBold": require("../assets/fonts/AmeesiSerif-SemiBold.ttf"),
+  "AmeesiGlyphs-Regular": require("../assets/fonts/AmeesiGlyphs-Regular.ttf"),
+} as const;
+
+/** The font file for a token family and weight. One file per weight: no synthetic bold on Android. */
+export function fontFamily(family: string, weight: string): keyof typeof FONTS {
+  if (family === "display") return "AmeesiSerif-SemiBold";
+  if (family === "symbols") return "AmeesiGlyphs-Regular";
+  return Number(weight) >= 600 ? "AmeesiSans-SemiBold" : "AmeesiSans-Regular";
+}
+
 /** React Native text style for a design-system type style. */
 export function textStyle(variant: TextVariant): TextStyle {
-  const { family: _family, ...style } = typeTokens[variant] as (typeof typeTokens)[TextVariant] & {
+  const { family, fontWeight, ...style } = typeTokens[variant] as (typeof typeTokens)[TextVariant] & {
     letterSpacing?: number;
   };
-  // Fonts (Noto Sans / Serif Armenian) are loaded in a later step; system font until then.
-  return style as TextStyle;
+  return { ...style, fontFamily: fontFamily(family, fontWeight) } as TextStyle;
 }
 
 export const MIN_TOUCH = space[12];
