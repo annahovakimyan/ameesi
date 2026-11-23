@@ -2,16 +2,18 @@ import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import type { Chart, Lang } from "./src/api/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { Lang } from "./src/api/types";
 import { Segmented } from "./src/components/Segmented";
 import { LiveContentProvider } from "./src/content/live";
-import { BirthInputScreen } from "./src/screens/BirthInputScreen";
-import { ChartScreen } from "./src/screens/ChartScreen";
+import { deviceProfileStore } from "./src/profiles/store";
+import { Root } from "./src/screens/Root";
 import { colors, space } from "./src/theme";
+
+const profileStore = deviceProfileStore(AsyncStorage);
 
 export default function App() {
   const [lang, setLang] = useState<Lang>("hy"); // Armenian is the default
-  const [chart, setChart] = useState<Chart | null>(null);
 
   return (
     <SafeAreaProvider>
@@ -22,9 +24,7 @@ export default function App() {
           options={[{ value: "hy", label: "Հայ" }, { value: "en", label: "Eng" }, { value: "ru", label: "Рус" }]} />
       </View>
       <LiveContentProvider lang={lang}>
-        {chart
-          ? <ChartScreen chart={chart} lang={lang} onBack={() => setChart(null)} />
-          : <BirthInputScreen lang={lang} onChart={setChart} />}
+        <Root lang={lang} store={profileStore} />
       </LiveContentProvider>
     </SafeAreaView>
     </SafeAreaProvider>

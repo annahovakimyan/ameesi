@@ -11,7 +11,9 @@ import { t } from "../i18n";
 import type { Selection } from "../selection";
 import { space } from "../theme";
 
-export function ChartScreen({ chart, lang, onBack }: { chart: Chart; lang: Lang; onBack: () => void }) {
+export function ChartScreen({ chart, lang, onBack, title }: {
+  chart: Chart; lang: Lang; onBack?: () => void; title?: string;
+}) {
   const [view, setView] = useState<"wheel" | "list">("wheel");
   // Switching between wheel and list keeps the selected element (design system: SegmentedControl).
   const [selection, setSelection] = useState<Selection | null>(null);
@@ -20,7 +22,8 @@ export function ChartScreen({ chart, lang, onBack }: { chart: Chart; lang: Lang;
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Button kind="secondary" label={t("back", lang)} onPress={onBack} testID="back" />
+      {onBack && <Button kind="secondary" label={t("back", lang)} onPress={onBack} testID="back" />}
+      {title && <AppText variant="titleLg" accessibilityRole="header" testID="chart-title">{title}</AppText>}
       <Segmented testID="view" value={view} onChange={setView}
         options={[{ value: "wheel", label: t("wheel", lang) }, { value: "list", label: t("list", lang) }]} />
 

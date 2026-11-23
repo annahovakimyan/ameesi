@@ -1,5 +1,6 @@
 import type { Place } from "../api/types";
-import { buildRequest, emptyForm, isComplete, offsetFor, type BirthForm } from "../birthForm";
+import { buildRequest, emptyForm, formFromProfile, isComplete, offsetFor, type BirthForm } from "../birthForm";
+import { newProfile } from "../profiles/profiles";
 
 const gyumri: Place = {
   geonames_id: 616635, name: "Gyumri", former_names_matched: [], region: "Shirak", country: "Armenia",
@@ -41,4 +42,19 @@ test("offsetFor turns a chosen UTC moment into minutes east of UTC", () => {
   expect(offsetFor("2021-03-14T02:30", "2021-03-14T07:30Z")).toBe(-300);
   expect(offsetFor("2021-03-14T02:30", "2021-03-14T06:30Z")).toBe(-240);
   expect(offsetFor("1992-08-14T14:30", "1992-08-14T10:30Z")).toBe(240);
+});
+
+test("someone else's details need a name and a consent choice instead of the 18+ box", () => {
+  const other = { ...base, adult: false };
+  expect(isComplete(other, "other")).toBe(false);
+  expect(isComplete({ ...other, name: "Ani" }, "other")).toBe(false);
+  expect(isComplete({ ...other, name: "Ani", consent: "permission" }, "other")).toBe(true);
+  expect(isComplete({ ...other, name: "  ", consent: "guardian" }, "other")).toBe(false);
+});
+
+test("editing a profile rebuilds the same request", () => {
+  const f = { ...base, confidence: "approximate" as const, time: null, windowFrom: at(13), windowTo: at(15, 30) };
+  const req = buildRequest(f);
+  const p = newProfile({ kind: "self", name: "", request: req, place: gyumri, now: "2026-11-23T00:00:00Z" });
+  expect(buildRequest(formFromProfile(p))).toEqual(req);
 });

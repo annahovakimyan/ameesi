@@ -55,5 +55,8 @@ npm run generate     # after design/tokens.json or content/glossary.json changes
       language, cached on the device, refreshed at most daily and on a language change. Needs `app/.env`
       (copy `.env.example`); without it, or with `EXPO_PUBLIC_CONTENT_SOURCE=placeholder`, placeholders show.
 - [ ] Houses tappable on the wheel (sheet already supports them)
-- [ ] Profiles (saved charts)
+- [x] Profiles (saved on the phone): your own plus one more free, consent for someone else's, edit (drops the
+      saved chart and recalculates), delete with confirmation, export as JSON; saved charts open offline.
+      Chart and Profiles tabs.
+- [ ] Cloud backup of profiles for signed-in accounts (anonymous sign-in is enabled in Supabase)
 - [ ] House system setting (Placidus is always used for now)

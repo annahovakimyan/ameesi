@@ -1,19 +1,27 @@
 import { useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { ApiError, calculateChart } from "../api/client";
-import type { Chart, Lang } from "../api/types";
+import type { Chart, ChartRequest, Lang, Place } from "../api/types";
 import { AppText } from "../components/AppText";
 import { Button } from "../components/Button";
+import { Checkbox } from "../components/Checkbox";
 import { PickerField } from "../components/PickerField";
 import { PlaceSearch } from "../components/PlaceSearch";
 import { Segmented } from "../components/Segmented";
-import { buildRequest, emptyForm, isComplete, offsetFor, type BirthForm } from "../birthForm";
+import { buildRequest, emptyForm, isComplete, offsetFor, type BirthForm, type Purpose } from "../birthForm";
 import { hhmm, isoDate } from "../format";
 import { t } from "../i18n";
-import { colors, MIN_TOUCH, radius, space } from "../theme";
+import { colors, MIN_TOUCH, radius, space, textStyle } from "../theme";
 
-export function BirthInputScreen({ lang, onChart }: { lang: Lang; onChart: (c: Chart) => void }) {
-  const [form, setForm] = useState<BirthForm>(emptyForm);
+export interface BirthResult { chart: Chart; request: ChartRequest; place: Place; form: BirthForm }
+
+/** Birth details for your own chart (18+ confirmation) or someone else's (name and consent).
+ *  With `initial`, edits saved details. */
+export function BirthInputScreen({ lang, onChart, purpose = "self", initial, editing, onCancel }: {
+  lang: Lang; onChart: (r: BirthResult) => void; purpose?: Purpose; initial?: BirthForm; editing?: boolean;
+  onCancel?: () => void;
+}) {
+  const [form, setForm] = useState<BirthForm>(initial ?? emptyForm);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ambiguous, setAmbiguous] = useState<Chart | null>(null);
@@ -23,11 +31,12 @@ export function BirthInputScreen({ lang, onChart }: { lang: Lang; onChart: (c: C
     setBusy(true);
     setError(null);
     try {
-      const chart = await calculateChart(buildRequest(form, override));
+      const request = buildRequest(form, override, purpose);
+      const chart = await calculateChart(request);
       if (chart.time.dst_ambiguity) setAmbiguous(chart);
       else {
         setAmbiguous(null);
-        onChart(chart);
+        onChart({ chart, request, place: form.place!, form });
       }
     } catch (e) {
       setError(t(e instanceof ApiError && e.status === 0 ? "errorNetwork" : "errorGeneric", lang));
@@ -43,7 +52,18 @@ export function BirthInputScreen({ lang, onChart }: { lang: Lang; onChart: (c: C
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <AppText variant="display">{t("birthTitle", lang)}</AppText>
+      <AppText variant="display">
+        {t(editing ? "editBirthTitle" : purpose === "other" ? "theirBirthTitle" : "birthTitle", lang)}
+      </AppText>
+
+      {purpose === "other" && (
+        <View style={styles.section}>
+          <AppText variant="headline">{t("name", lang)}</AppText>
+          <TextInput testID="name-input" value={form.name} onChangeText={(name) => set({ name })}
+            placeholder={t("nameHint", lang)} placeholderTextColor={colors.textFaint} autoCorrect={false}
+            style={[styles.input, textStyle("body")]} accessibilityLabel={t("name", lang)} />
+        </View>
+      )}
 
       <View style={styles.section}>
         <AppText variant="headline">{t("date", lang)}</AppText>
@@ -70,13 +90,17 @@ export function BirthInputScreen({ lang, onChart }: { lang: Lang; onChart: (c: C
         <PlaceSearch lang={lang} value={form.place} onChange={(place) => set({ place })} />
       </View>
 
-      <Pressable testID="adult" accessibilityRole="checkbox" accessibilityState={{ checked: form.adult }}
-        onPress={() => set({ adult: !form.adult })} style={styles.check}>
-        <View style={[styles.box, form.adult && { backgroundColor: colors.gold, borderColor: colors.gold }]}>
-          {form.adult && <AppText variant="label" tone="onGold">✓</AppText>}
+      {purpose === "self" ? (
+        <Checkbox testID="adult" label={t("adult", lang)} checked={form.adult} onPress={() => set({ adult: !form.adult })} />
+      ) : (
+        <View style={styles.section} accessibilityRole="radiogroup">
+          <AppText variant="headline">{t("consentTitle", lang)}</AppText>
+          <Checkbox radio testID="consent-permission" label={t("consentPermission", lang)}
+            checked={form.consent === "permission"} onPress={() => set({ consent: "permission" })} />
+          <Checkbox radio testID="consent-guardian" label={t("consentGuardian", lang)}
+            checked={form.consent === "guardian"} onPress={() => set({ consent: "guardian" })} />
         </View>
-        <AppText>{t("adult", lang)}</AppText>
-      </Pressable>
+      )}
 
       {ambiguous?.time.dst_ambiguity && (
         <View style={styles.section}>
@@ -92,7 +116,9 @@ export function BirthInputScreen({ lang, onChart }: { lang: Lang; onChart: (c: C
 
       {error && <AppText tone="rose" accessibilityRole="alert">⚠︎ {error}</AppText>}
       {busy ? <ActivityIndicator color={colors.gold} style={{ minHeight: MIN_TOUCH }} />
-        : <Button testID="submit" label={t("getChart", lang)} disabled={!isComplete(form)} onPress={() => submit()} />}
+        : <Button testID="submit" label={t(editing ? "save" : purpose === "other" ? "getTheirChart" : "getChart", lang)} disabled={!isComplete(form, purpose)}
+            onPress={() => submit()} />}
+      {onCancel && !busy && <Button kind="secondary" testID="cancel" label={t("cancel", lang)} onPress={onCancel} />}
     </ScrollView>
   );
 }
@@ -102,7 +128,8 @@ const styles = StyleSheet.create({
   section: { gap: space[2] },
   window: { flexDirection: "row", gap: space[3] },
   flex: { flex: 1, gap: space[1] },
-  check: { flexDirection: "row", alignItems: "center", gap: space[3], minHeight: MIN_TOUCH },
-  box: { width: space[6], height: space[6], borderRadius: radius.sm / 2, borderWidth: 2, borderColor: colors.border,
-         alignItems: "center", justifyContent: "center" },
+  input: {
+    minHeight: MIN_TOUCH, paddingHorizontal: space[4], color: colors.ivory,
+    backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,
+  },
 });
