@@ -211,6 +211,11 @@ export const strings = {
     en: "Sample chart (Gyumri, 14 August 1992). Nothing is saved.",
     ru: "Пример карты (Гюмри, 14 августа 1992). Ничего не сохраняется.",
   },
+  offlinePlaces: {
+    hy: "Առանց սերվերի՝ միայն փորձնական վայրեր (Գյումրի, Երևան)։",
+    en: "No server: test places only (Gyumri, Yerevan).",
+    ru: "Без сервера: только тестовые места (Гюмри, Ереван).",
+  },
   bodies: { hy: "Մոլորակներ", en: "Planets", ru: "Планеты" },
   angles: { hy: "Անկյուններ", en: "Angles", ru: "Углы" },
   aspects: { hy: "Ասպեկտներ", en: "Aspects", ru: "Аспекты" },

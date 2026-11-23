@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import { searchPlaces } from "../api/client";
+import { offlinePlaces } from "../sample/places";
 import type { Lang, Place } from "../api/types";
 import { t } from "../i18n";
 import { colors, MIN_TOUCH, radius, space, textStyle } from "../theme";
@@ -18,6 +19,7 @@ export function PlaceSearch({ lang, value, onChange }: {
   const [query, setQuery] = useState(value ? placeLabel(value) : "");
   const [results, setResults] = useState<Place[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const [offline, setOffline] = useState(false); // development: showing the built-in test places
 
   useEffect(() => {
     if (value || query.trim().length < 2) {
@@ -27,9 +29,16 @@ export function PlaceSearch({ lang, value, onChange }: {
     const controller = new AbortController();
     const timer = setTimeout(() => {
       searchPlaces(query, lang, controller.signal)
-        .then((r) => { setFailed(false); setResults(r.results); })
+        .then((r) => { setFailed(false); setOffline(false); setResults(r.results); })
         .catch((e) => {
           if (e?.name === "AbortError") return; // the user kept typing
+          if (__DEV__) {
+            // Development without a server: offer the built-in test places instead of an error.
+            setFailed(false);
+            setOffline(true);
+            setResults(offlinePlaces(query, lang));
+            return;
+          }
           setResults(null);
           setFailed(true);
         });
@@ -58,6 +67,9 @@ export function PlaceSearch({ lang, value, onChange }: {
         <AppText variant="bodySm" tone="rose" accessibilityRole="alert" testID="place-error" style={styles.error}>
           {t("placeSearchFailed", lang)}
         </AppText>
+      )}
+      {offline && results && (
+        <AppText variant="caption" tone="gold" testID="offline-places" style={styles.error}>{t("offlinePlaces", lang)}</AppText>
       )}
       {results && (
         <View style={styles.results}>

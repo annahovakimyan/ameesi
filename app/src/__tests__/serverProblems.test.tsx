@@ -25,13 +25,30 @@ test("server reachable: no notice", async () => {
   expect(screen.queryByTestId("server-offline")).toBeNull();
 });
 
-test("a failed place search says so instead of showing nothing", async () => {
+test("a failed place search says so instead of showing nothing (release builds)", async () => {
+  const dev = (global as unknown as { __DEV__: boolean }).__DEV__;
+  (global as unknown as { __DEV__: boolean }).__DEV__ = false;
   jest.useFakeTimers();
   mockFetch.mockRejectedValue(new TypeError("Network request failed"));
   await render(<BirthInputScreen lang="hy" onChart={jest.fn()} />);
   await fireEvent.changeText(screen.getByTestId("place-input"), "Gyumri");
   await act(async () => { jest.advanceTimersByTime(300); });
   await waitFor(() => expect(screen.getByTestId("place-error")).toHaveTextContent(/սերվերը հասանելի չէ/));
+  jest.useRealTimers();
+  (global as unknown as { __DEV__: boolean }).__DEV__ = dev;
+});
+
+test("development without a server: Gyumri and Yerevan as test places, in the user's language", async () => {
+  jest.useFakeTimers();
+  mockFetch.mockRejectedValue(new TypeError("Network request failed"));
+  await render(<BirthInputScreen lang="hy" onChart={jest.fn()} />);
+  await fireEvent.changeText(screen.getByTestId("place-input"), "Leninakan");
+  await act(async () => { jest.advanceTimersByTime(300); });
+  await waitFor(() => expect(screen.getByTestId("offline-places")).toBeTruthy());
+  expect(screen.getByText("Գյումրի")).toBeTruthy();
+  expect(screen.getByText(/նախկինում՝ Leninakan/)).toBeTruthy();
+  await fireEvent.press(screen.getByTestId("place-616635"));
+  expect(screen.getByTestId("still-needed")).not.toHaveTextContent(/Ծննդավայր/);
   jest.useRealTimers();
 });
 
