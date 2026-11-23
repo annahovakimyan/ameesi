@@ -47,3 +47,22 @@ lets the app read approved rows only, and the app has no insert, update or delet
 ## Tests
 
 Use a small fake set of entries (for example "Test text for sign.sun.leo") in fixtures. Never copy real texts into tests.
+
+## Importing entries
+
+`server/scripts/import_content.py` checks entries and loads them into Supabase. It never stores texts in this
+repository; it reads a CSV or JSON export of the private workbook.
+
+1. Start from the template: `python scripts/import_content.py --template blank.csv` gives every entry in the
+   content plan (`content/entry-ids.json`, 608 per language) in hy, en and ru, with a plain-English `element`
+   column. Columns: `id, element, lang, text, status, reviewer, reviewed_at, source_notes`.
+2. Fill in texts and statuses in the workbook and export it as CSV. Rows with empty text are skipped.
+3. Check and preview (writes nothing): `python scripts/import_content.py entries.csv`. It refuses unknown ids,
+   duplicates, empty or placeholder texts, and approved entries without a reviewer and review date; it warns
+   about "will", "always" and "destined" in English approved texts; it reports approved coverage per language.
+4. With `SUPABASE_URL` and `SUPABASE_SECRET_KEY` set in your shell (never in a file in this repository), the
+   preview also compares with Supabase. Add `--apply` to write new and changed entries. `--prune` also deletes
+   entries that aren't in the file; more than 20 deletions also need `--confirm-prune`.
+
+The app checks that every id it can show is in `content/entry-ids.json`; regenerate that file with
+`--write-ids` if the content plan changes.

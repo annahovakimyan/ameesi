@@ -56,3 +56,23 @@ test("every entry carries what it explains, for its heading", () => {
   expect(sign).toMatchObject({ id: "sign.sun.leo", kind: "sign", sign: "leo" });
   expect(house).toMatchObject({ id: "house.sun.09", kind: "house", house: 9 });
 });
+
+// The app and the content plan must agree: every id the app asks for exists in content/entry-ids.json.
+import planIds from "../../../content/entry-ids.json";
+import type { Selection } from "../selection";
+
+test("every entry id the app can request is in the content plan", () => {
+  const plan = new Set(planIds.ids);
+  for (const c of [chart, unknown as Chart]) {
+    const sels: Selection[] = [
+      ...c.bodies.map((b) => ({ kind: "body", id: b.id }) as Selection),
+      ...(["asc", "mc", "dsc", "ic"] as const).map((id) => ({ kind: "angle", id }) as Selection),
+      ...c.aspects.map((a) => ({ kind: "aspect", a: a.a, b: a.b, type: a.type }) as Selection),
+      ...Array.from({ length: 12 }, (_, i) => ({ kind: "house", n: i + 1 }) as Selection),
+      ...c.stelliums.map((s) => ({ kind: "stellium", stellium: s }) as Selection),
+    ];
+    for (const sel of sels) {
+      for (const e of entriesFor(sel, c)) expect([e.id, plan.has(e.id)]).toEqual([e.id, true]);
+    }
+  }
+});
