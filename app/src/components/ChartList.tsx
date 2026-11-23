@@ -12,7 +12,11 @@ export function Row({ title, subtitle, glyph, flags, onPress, testID }: {
 }) {
   const inner = (
     <>
-      {glyph && <AppText variant="glyph" tone="lavender" style={styles.glyph}>{glyph}</AppText>}
+      {glyph && (
+        <View style={styles.tile}>
+          <AppText variant="glyph" tone="gold" maxFontSizeMultiplier={1} style={styles.glyph}>{glyph}</AppText>
+        </View>
+      )}
       <View style={{ flex: 1 }}>
         <AppText variant="headline">{title}</AppText>
         <AppText variant="bodySm" tone="textMuted">{[subtitle, ...(flags ?? [])].join(" · ")}</AppText>
@@ -105,6 +109,8 @@ const styles = StyleSheet.create({
   group: { backgroundColor: colors.surface, borderRadius: radius.lg, overflow: "hidden", borderWidth: 1, borderColor: colors.glassEdge },
   row: { flexDirection: "row", alignItems: "center", gap: space[3], paddingHorizontal: space[4], paddingVertical: space[3],
          borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.glassEdge },
-  glyph: { minWidth: space[8], textAlign: "center" },
+  glyph: { textAlign: "center" },
+  tile: { minWidth: space[12] - space[2], height: space[12] - space[2], borderRadius: radius.md, paddingHorizontal: space[1],
+          backgroundColor: colors.wheelNight, borderWidth: 1, borderColor: colors.glassEdge, alignItems: "center", justifyContent: "center" },
   tappable: { minHeight: MIN_TOUCH },
 });

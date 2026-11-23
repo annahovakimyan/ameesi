@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { API_URL, ApiError, calculateChart, serverReachable } from "../api/client";
 import type { Chart, ChartRequest, Lang, Place } from "../api/types";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { Checkbox } from "../components/Checkbox";
+import { OrbitLoader } from "../components/Ornaments";
 import { TextField } from "../components/TextField";
 import { TimeField } from "../components/TimeField";
 import { PickerField } from "../components/PickerField";
@@ -172,7 +173,7 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
       )}
 
       {error && <AppText tone="rose" accessibilityRole="alert"><Icon char="⚠" tone="rose" /> {error}</AppText>}
-      {busy ? <ActivityIndicator color={colors.gold} style={{ minHeight: MIN_TOUCH }} />
+      {busy ? <View style={styles.loader}><OrbitLoader testID="busy" /></View>
         : <Button testID="submit" label={t(editing ? "save" : purpose === "other" ? "getTheirChart" : "getChart", lang)} disabled={!isComplete(form, purpose)}
             onPress={() => submit()} />}
       {!busy && !isComplete(form, purpose) && (
@@ -199,4 +200,5 @@ const styles = StyleSheet.create({
   reviewCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.glassEdge },
   reviewRow: { gap: space[1] },
   fill: { flex: 1 },
+  loader: { alignItems: "center", minHeight: MIN_TOUCH },
 });

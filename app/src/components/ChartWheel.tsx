@@ -68,14 +68,14 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
     <View style={{ width: size, height: size }} testID="chart-wheel">
       <Svg width={size} height={size}>
         {/* Zodiac ring */}
-        <Circle cx={c} cy={c} r={c * R.outer} fill={colors.surface} stroke={colors.border} strokeWidth={STROKE.hairline} />
+        <Circle cx={c} cy={c} r={c * R.outer} fill={colors.surface} stroke={colors.gold} strokeOpacity={0.6} strokeWidth={STROKE.hairline} />
         <Circle cx={c} cy={c} r={c * R.signInner} fill={colors.wheelNight} stroke={colors.border} strokeWidth={STROKE.hairline} />
         {SIGNS.map((s, i) => {
           const g = at(i * 30 + 15, R.signGlyph);
           return (
             <G key={s}>
-              <Line {...radial(i * 30, R.signInner, R.outer)} stroke={colors.divider} strokeWidth={STROKE.hairline} />
-              <SvgText x={g.x} y={g.y + glyphText.fontSize! / 3} fontSize={glyphText.fontSize} fontFamily={glyphText.fontFamily} fill={colors.lavender}
+              <Line {...radial(i * 30, R.signInner, R.outer)} stroke={colors.glassEdge} strokeWidth={STROKE.hairline} />
+              <SvgText x={g.x} y={g.y + glyphText.fontSize! / 3} fontSize={glyphText.fontSize} fontFamily={glyphText.fontFamily} fill={colors.gold}
                 textAnchor="middle">{signGlyph(s)}</SvgText>
             </G>
           );

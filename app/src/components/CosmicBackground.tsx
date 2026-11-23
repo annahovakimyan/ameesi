@@ -72,6 +72,13 @@ export function CosmicBackground({ children }: { children: ReactNode }) {
           <Ellipse cx={width * 0.85} cy={height * 0.12} rx={width * 0.7} ry={height * 0.22} fill="url(#lav)" />
           <Ellipse cx={width * 0.1} cy={height * 0.55} rx={width * 0.8} ry={height * 0.25} fill="url(#pom)" />
           <Ellipse cx={width * 0.7} cy={height * 0.92} rx={width * 0.7} ry={height * 0.2} fill="url(#gold)" />
+          {/* Celestial waves: layered soft hills along the bottom, a gold crest on the front one */}
+          <Path d={`M0 ${height * 0.86} C${width * 0.3} ${height * 0.8} ${width * 0.55} ${height * 0.9} ${width} ${height * 0.82} L${width} ${height} L0 ${height} Z`}
+            fill={colors.glowLavender} />
+          <Path d={`M0 ${height * 0.92} C${width * 0.35} ${height * 0.86} ${width * 0.7} ${height * 0.96} ${width} ${height * 0.9} L${width} ${height} L0 ${height} Z`}
+            fill={colors.glowPomegranate} />
+          <Path d={`M0 ${height * 0.92} C${width * 0.35} ${height * 0.86} ${width * 0.7} ${height * 0.96} ${width} ${height * 0.9}`}
+            fill="none" stroke={colors.glassEdge} strokeWidth={1} />
         </Svg>
         {twinkle.map((opacity, layer) => (
           <Animated.View key={layer} style={[StyleSheet.absoluteFill, { opacity }]}>

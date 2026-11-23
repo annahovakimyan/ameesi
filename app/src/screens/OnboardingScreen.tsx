@@ -3,6 +3,7 @@ import type { Lang } from "../api/types";
 import { AppText } from "../components/AppText";
 import { Button } from "../components/Button";
 import { Checkbox } from "../components/Checkbox";
+import { ArchPortal, CrescentDivider } from "../components/Ornaments";
 import { t } from "../i18n";
 import { colors, radius, space } from "../theme";
 
@@ -15,8 +16,10 @@ export function OnboardingScreen({ lang, onLang, onContinue }: {
   return (
     <ScrollView contentContainerStyle={styles.screen}>
       <View style={styles.hero}>
-        <AppText variant="wordmark" accessibilityRole="header">Ameesi</AppText>
-        <AppText variant="title" tone="gold" testID="tagline">{t("tagline", lang)}</AppText>
+        <ArchPortal size={132} />
+        <AppText variant="wordmark" accessibilityRole="header" style={styles.centre}>Ameesi</AppText>
+        <AppText variant="title" tone="gold" testID="tagline" style={styles.centre}>{t("tagline", lang)}</AppText>
+        <CrescentDivider width={160} />
       </View>
       <View style={styles.card}>
       <View style={styles.section} accessibilityRole="radiogroup">
@@ -37,5 +40,6 @@ const styles = StyleSheet.create({
   section: { gap: space[2] },
   card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[6],
           borderWidth: 1, borderColor: colors.glassEdge },
-  hero: { gap: space[2], paddingTop: space[12] },
+  hero: { gap: space[3], paddingTop: space[6], alignItems: "center" },
+  centre: { textAlign: "center" },
 });

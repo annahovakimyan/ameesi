@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, BackHandler, Share, StyleSheet, View } from "react-native";
+import { BackHandler, Share, StyleSheet, View } from "react-native";
 import { calculateChart, getPlace } from "../api/client";
 import type { HouseSystem, Lang } from "../api/types";
 import { formFromProfile, type Purpose } from "../birthForm";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { TabBar } from "../components/TabBar";
+import { OrbitLoader } from "../components/Ornaments";
 import { t } from "../i18n";
 import { canAdd, exportJson, newProfile, placeIn, removeProfile, upsertProfile, type Profile } from "../profiles/profiles";
 import type { ProfileStore } from "../profiles/store";
@@ -103,7 +104,7 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
     return () => sub.remove();
   }, [sample, editor, tab, profiles?.length]);
 
-  if (!profiles) return <ActivityIndicator color={colors.gold} style={styles.fill} />;
+  if (!profiles) return <View style={[styles.fill, styles.centre]}><OrbitLoader /></View>;
 
   const saveFromForm = ({ chart, request, place, form }: BirthResult) => {
     const at = now();
@@ -175,7 +176,7 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
               </>
             ) : (
               <>
-                <ActivityIndicator color={colors.gold} />
+                <OrbitLoader testID="calculating" />
                 <AppText tone="textMuted">{t("calculating", lang)}</AppText>
               </>
             )}
@@ -183,7 +184,8 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
         )}
       </View>
       <TabBar value={tab} onChange={setTab}
-        tabs={[{ value: "chart", label: t("tabChart", lang) }, { value: "profiles", label: t("tabProfiles", lang) }]} />
+        tabs={[{ value: "chart", label: t("tabChart", lang), icon: "chart" },
+          { value: "profiles", label: t("tabProfiles", lang), icon: "profiles" }]} />
     </View>
   );
 }

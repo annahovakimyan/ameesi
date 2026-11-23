@@ -6,6 +6,7 @@ import { Button } from "../components/Button";
 import { ChartList } from "../components/ChartList";
 import { ChartWheel } from "../components/ChartWheel";
 import { ExplanationSheet } from "../components/ExplanationSheet";
+import { RadiantHalo } from "../components/Ornaments";
 import { AddSomeonePrompt, TourCard, tourSteps } from "../components/TourCard";
 import { ShareCard, shareCard, type ViewRef } from "../components/ShareCard";
 import { Segmented } from "../components/Segmented";
@@ -45,7 +46,7 @@ export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addP
         <AppText variant="titleLg" accessibilityRole="header" testID="chart-title" style={styles.flex} numberOfLines={2}>
           {title ?? ""}
         </AppText>
-        <Button kind="secondary" compact testID="share" label={t("share", lang)}
+        <Button kind="secondary" compact icon="share" testID="share" label={t("share", lang)}
           onPress={() => { shareCard(cardRef.current).catch(() => {}); }} />
       </View>
       {/* Off-screen: rendered so it can be captured as an image, never shown */}
@@ -77,6 +78,7 @@ export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addP
       {view === "wheel" ? (
         <>
           <View style={styles.centre}>
+            <RadiantHalo size={width - space[4] * 2} />
             <ChartWheel chart={chart} lang={lang} size={width - space[4] * 2} selected={selectedBody}
               onSelect={setSelection} />
           </View>
@@ -140,6 +142,6 @@ const styles = StyleSheet.create({
   screen: { padding: space[4], gap: space[4], paddingBottom: space[8] },
   header: { flexDirection: "row", alignItems: "center", gap: space[3] },
   flex: { flex: 1 },
-  centre: { alignItems: "center" },
+  centre: { alignItems: "center", paddingVertical: space[3] },
   hint: { textAlign: "center" },
 });

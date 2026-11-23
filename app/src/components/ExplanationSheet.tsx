@@ -9,6 +9,7 @@ import type { Selection } from "../selection";
 import { colors, radius, space } from "../theme";
 import { AppText, Icon } from "./AppText";
 import { BottomSheet } from "./BottomSheet";
+import { CrescentDivider } from "./Ornaments";
 import { Button } from "./Button";
 
 type Header = { glyph?: string; title: string; facts: string };
@@ -133,6 +134,7 @@ export function ExplanationSheet({ chart, lang, selection, onSelect, onClose }: 
           {h.glyph && <AppText variant="glyphLg" tone="gold">{h.glyph}</AppText>}
           <AppText variant="titleLg" accessibilityRole="header">{h.title}</AppText>
           <AppText variant="bodySm" tone="textMuted">{h.facts}</AppText>
+          <CrescentDivider width={120} />
         </View>
 
         {notices(selection, chart, lang).map((n) => (
