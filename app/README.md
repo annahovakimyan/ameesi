@@ -69,3 +69,19 @@ npm run generate     # after design/tokens.json or content/glossary.json changes
       explanation; then a one-time prompt to add someone (FR-11)
 - [x] Settings in the Profiles tab: language, house system (recalculates saved charts), About with source code
       link and license notices (FR-17), delete all my data
+
+## Building for the Google Play closed test
+
+Builds run on Expo's EAS service (`eas.json`): `preview` makes an APK to install directly, `production` makes
+the app bundle for Google Play. You need an Expo account (`npx eas-cli login`, MIT-licensed CLI).
+
+1. Set the app's public settings as EAS environment variables (not in the repository), for the `preview` and
+   `production` environments: `EXPO_PUBLIC_API_URL` (the deployed calculation server, see server/README.md),
+   `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_KEY`. For example:
+   `npx eas-cli env:create --environment production --name EXPO_PUBLIC_API_URL --value https://… --visibility plaintext`
+2. `npx eas-cli build --platform android --profile preview` for a test APK, or `--profile production` for Play.
+3. `npx eas-cli submit --platform android --profile production` uploads to the closed-testing track (`alpha`) as a
+   draft. It needs a Google Play service-account key, which you upload to EAS, never to this repository.
+
+The app asks only for internet access. Android auto-backup is off, so "Profiles are saved on this phone only"
+stays true. Versions: `version` in app.json for people; EAS increments the Android `versionCode`.
