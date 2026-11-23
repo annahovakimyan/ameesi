@@ -3,7 +3,7 @@ import Svg, { Circle, G, Line, Text as SvgText } from "react-native-svg";
 import type { AspectType, BodyId, Chart, Lang, SignId } from "../api/types";
 import { bodyLabel } from "../chartText";
 import { bodyGlyph, signGlyph } from "../format";
-import { colors, MIN_TOUCH, textStyle } from "../theme";
+import { colors, dash, MIN_TOUCH, space, stroke, textStyle } from "../theme";
 import { polar, screenAngle, spread } from "../wheel/geometry";
 import { AppText } from "./AppText";
 
@@ -13,12 +13,14 @@ const SIGNS: SignId[] = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", 
 // Ring radii as fractions of the wheel's radius.
 const R = { outer: 0.98, signInner: 0.82, signGlyph: 0.9, planetTick: 0.78, planetGlyph: 0.67,
   houseNumber: 0.47, aspect: 0.4 };
-// Line widths. The design system has no stroke tokens yet, so they live here, in one place.
-const STROKE = { hairline: 1, line: 1.5, axis: 2 };
+const STROKE = stroke;
 const MIN_GLYPH_SEPARATION = 9; // degrees between planet glyphs on the ring
+const UNCERTAIN_OPACITY = 0.5; // dashes mean "tense", so uncertain lines are drawn faint instead
 
-const ASPECT_COLOUR: Record<AspectType, string> = {
-  conjunction: colors.lavender, sextile: colors.gold, trine: colors.gold, square: colors.rose, opposition: colors.rose,
+// Design system: trine and sextile gold solid; square and opposition rose dashed; conjunctions no line.
+const ASPECT_STYLE: Record<Exclude<AspectType, "conjunction">, { colour: string; dash?: string }> = {
+  sextile: { colour: colors.gold }, trine: { colour: colors.gold },
+  square: { colour: colors.rose, dash: dash.tense }, opposition: { colour: colors.rose, dash: dash.tense },
 };
 
 /** The body whose glyph centre is nearest the touch, if within half a touch target. */
@@ -62,7 +64,7 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
           return (
             <G key={s}>
               <Line {...radial(i * 30, R.signInner, R.outer)} stroke={colors.divider} strokeWidth={STROKE.hairline} />
-              <SvgText x={g.x} y={g.y + glyphText.fontSize! / 3} fontSize={glyphText.fontSize} fill={colors.textMuted}
+              <SvgText x={g.x} y={g.y + glyphText.fontSize! / 3} fontSize={glyphText.fontSize} fill={colors.lavender}
                 textAnchor="middle">{signGlyph(s)}</SvgText>
             </G>
           );
@@ -77,8 +79,8 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
           return (
             <G key={h.house}>
               <Line {...radial(h.cusp_lon, R.aspect, R.signInner)} stroke={colors.divider}
-                strokeWidth={STROKE.hairline} strokeDasharray={h.uncertain ? "4 4" : undefined} />
-              <SvgText x={n.x} y={n.y + caption.fontSize! / 3} fontSize={caption.fontSize} fill={colors.lavender}
+                strokeWidth={STROKE.hairline} strokeOpacity={h.uncertain ? UNCERTAIN_OPACITY : 1} />
+              <SvgText x={n.x} y={n.y + caption.fontSize! / 3} fontSize={caption.fontSize} fill={colors.textFaint}
                 textAnchor="middle">{h.house}</SvgText>
             </G>
           );
@@ -90,7 +92,7 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
           return (
             <G key={k}>
               <Line {...radial(a.lon, R.aspect, R.signInner)} stroke={colors.ivory} strokeWidth={STROKE.axis}
-                strokeDasharray={a.uncertain ? "6 4" : undefined} />
+                strokeOpacity={a.uncertain ? UNCERTAIN_OPACITY : 1} />
               <Line {...radial(a.lon + 180, R.aspect, R.signInner)} stroke={colors.ivory} strokeWidth={STROKE.hairline} />
             </G>
           );
@@ -99,12 +101,15 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
         {/* Aspects */}
         <Circle cx={c} cy={c} r={c * R.aspect} fill="none" stroke={colors.divider} strokeWidth={STROKE.hairline} />
         {chart.aspects.map((a) => {
+          if (a.type === "conjunction") return null;
           const p = at(lonOf[a.a], R.aspect), q = at(lonOf[a.b], R.aspect);
           const dim = selected && selected !== a.a && selected !== a.b;
+          const unsure = uncertainAspect.has(`${a.a}-${a.b}-${a.type}`);
+          const style = ASPECT_STYLE[a.type];
           return (
             <Line key={`${a.a}-${a.b}`} testID={`aspect-${a.a}-${a.b}`} x1={p.x} y1={p.y} x2={q.x} y2={q.y}
-              stroke={ASPECT_COLOUR[a.type]} strokeWidth={STROKE.line} strokeOpacity={dim ? 0.2 : 1}
-              strokeDasharray={uncertainAspect.has(`${a.a}-${a.b}-${a.type}`) ? "4 4" : undefined} />
+              stroke={style.colour} strokeWidth={STROKE.line} strokeDasharray={style.dash}
+              strokeOpacity={dim ? 0.2 : unsure ? UNCERTAIN_OPACITY : 1} />
           );
         })}
 
@@ -112,6 +117,12 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
         {chart.bodies.map((b) => (
           <Line key={b.id} {...radial(b.lon, R.planetTick, R.signInner)}
             stroke={selected === b.id ? colors.gold : colors.ivory} strokeWidth={STROKE.line} />
+        ))}
+
+        {/* Gold ring round the selected planet's glyph */}
+        {glyphs.filter((g) => g.b.id === selected).map((g) => (
+          <Circle key="ring" testID="selected-ring" cx={g.x} cy={g.y} r={MIN_TOUCH / 2 - space[1]} fill="none"
+            stroke={colors.gold} strokeWidth={STROKE.axis} />
         ))}
       </Svg>
 

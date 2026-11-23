@@ -110,3 +110,14 @@ export const radius = {
   "xl": 24,
   "pill": 999
 } as const;
+
+export const stroke = {
+  "hairline": 1,
+  "line": 1.5,
+  "icon": 1.75,
+  "axis": 2
+} as const;
+
+export const dash = {
+  "tense": "5 4"
+} as const;

@@ -1,7 +1,7 @@
 import type { TextStyle } from "react-native";
-import { colors, radius, space, type as typeTokens } from "./generated/tokens";
+import { colors, dash, radius, space, stroke, type as typeTokens } from "./generated/tokens";
 
-export { colors, radius, space };
+export { colors, dash, radius, space, stroke };
 
 export type TextVariant = keyof typeof typeTokens;
 

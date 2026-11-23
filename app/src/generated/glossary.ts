@@ -5,414 +5,759 @@ export const terms = {
     "hy": "Արեգակ",
     "en": "Sun",
     "ru": "Солнце",
+    "short": {
+      "hy": "Արեգակ",
+      "en": "Sun",
+      "ru": "Солнце"
+    },
     "status": "agreed"
   },
   "body.moon": {
     "hy": "Լուսին",
     "en": "Moon",
     "ru": "Луна",
+    "short": {
+      "hy": "Լուսին",
+      "en": "Moon",
+      "ru": "Луна"
+    },
     "status": "agreed"
   },
   "body.mercury": {
     "hy": "Փայլածու",
     "en": "Mercury",
     "ru": "Меркурий",
+    "short": {
+      "hy": "Փայլածու",
+      "en": "Mercury",
+      "ru": "Меркурий"
+    },
     "status": "agreed"
   },
   "body.venus": {
     "hy": "Արուսյակ",
     "en": "Venus",
     "ru": "Венера",
+    "short": {
+      "hy": "Արուսյակ",
+      "en": "Venus",
+      "ru": "Венера"
+    },
     "status": "agreed"
   },
   "body.mars": {
     "hy": "Հրատ",
     "en": "Mars",
     "ru": "Марс",
+    "short": {
+      "hy": "Հրատ",
+      "en": "Mars",
+      "ru": "Марс"
+    },
     "status": "agreed"
   },
   "body.jupiter": {
     "hy": "Լուսնթագ",
     "en": "Jupiter",
     "ru": "Юпитер",
+    "short": {
+      "hy": "Լուսնթագ",
+      "en": "Jupiter",
+      "ru": "Юпитер"
+    },
     "status": "agreed"
   },
   "body.saturn": {
     "hy": "Երևակ",
     "en": "Saturn",
     "ru": "Сатурн",
+    "short": {
+      "hy": "Երևակ",
+      "en": "Saturn",
+      "ru": "Сатурн"
+    },
     "status": "agreed"
   },
   "body.uranus": {
     "hy": "Ուրան",
     "en": "Uranus",
     "ru": "Уран",
+    "short": {
+      "hy": "Ուրան",
+      "en": "Uranus",
+      "ru": "Уран"
+    },
     "status": "agreed"
   },
   "body.neptune": {
     "hy": "Նեպտուն",
     "en": "Neptune",
     "ru": "Нептун",
+    "short": {
+      "hy": "Նեպտուն",
+      "en": "Neptune",
+      "ru": "Нептун"
+    },
     "status": "agreed"
   },
   "body.pluto": {
     "hy": "Պլուտոն",
     "en": "Pluto",
     "ru": "Плутон",
+    "short": {
+      "hy": "Պլուտոն",
+      "en": "Pluto",
+      "ru": "Плутон"
+    },
     "status": "agreed"
   },
   "sign.aries": {
     "hy": "Խոյ",
     "en": "Aries",
     "ru": "Овен",
+    "short": {
+      "hy": "Խոյ",
+      "en": "Aries",
+      "ru": "Овен"
+    },
     "status": "agreed"
   },
   "sign.taurus": {
     "hy": "Ցուլ",
     "en": "Taurus",
     "ru": "Телец",
+    "short": {
+      "hy": "Ցուլ",
+      "en": "Taurus",
+      "ru": "Телец"
+    },
     "status": "agreed"
   },
   "sign.gemini": {
     "hy": "Երկվորյակներ",
     "en": "Gemini",
     "ru": "Близнецы",
+    "short": {
+      "hy": "Երկվորյակներ",
+      "en": "Gemini",
+      "ru": "Близнецы"
+    },
     "status": "agreed"
   },
   "sign.cancer": {
     "hy": "Խեցգետին",
     "en": "Cancer",
     "ru": "Рак",
+    "short": {
+      "hy": "Խեցգետին",
+      "en": "Cancer",
+      "ru": "Рак"
+    },
     "status": "agreed"
   },
   "sign.leo": {
     "hy": "Առյուծ",
     "en": "Leo",
     "ru": "Лев",
+    "short": {
+      "hy": "Առյուծ",
+      "en": "Leo",
+      "ru": "Лев"
+    },
     "status": "agreed"
   },
   "sign.virgo": {
     "hy": "Կույս",
     "en": "Virgo",
     "ru": "Дева",
+    "short": {
+      "hy": "Կույս",
+      "en": "Virgo",
+      "ru": "Дева"
+    },
     "status": "agreed"
   },
   "sign.libra": {
     "hy": "Կշեռք",
     "en": "Libra",
     "ru": "Весы",
+    "short": {
+      "hy": "Կշեռք",
+      "en": "Libra",
+      "ru": "Весы"
+    },
     "status": "agreed"
   },
   "sign.scorpio": {
     "hy": "Կարիճ",
     "en": "Scorpio",
     "ru": "Скорпион",
+    "short": {
+      "hy": "Կարիճ",
+      "en": "Scorpio",
+      "ru": "Скорпион"
+    },
     "status": "agreed"
   },
   "sign.sagittarius": {
     "hy": "Աղեղնավոր",
     "en": "Sagittarius",
     "ru": "Стрелец",
+    "short": {
+      "hy": "Աղեղնավոր",
+      "en": "Sagittarius",
+      "ru": "Стрелец"
+    },
     "status": "agreed"
   },
   "sign.capricorn": {
     "hy": "Այծեղջյուր",
     "en": "Capricorn",
     "ru": "Козерог",
+    "short": {
+      "hy": "Այծեղջյուր",
+      "en": "Capricorn",
+      "ru": "Козерог"
+    },
     "status": "agreed"
   },
   "sign.aquarius": {
     "hy": "Ջրհոս",
     "en": "Aquarius",
     "ru": "Водолей",
+    "short": {
+      "hy": "Ջրհոս",
+      "en": "Aquarius",
+      "ru": "Водолей"
+    },
     "status": "agreed"
   },
   "sign.pisces": {
     "hy": "Ձկներ",
     "en": "Pisces",
     "ru": "Рыбы",
+    "short": {
+      "hy": "Ձկներ",
+      "en": "Pisces",
+      "ru": "Рыбы"
+    },
     "status": "agreed"
   },
   "house.1": {
     "hy": "1-ին տուն",
     "en": "1st house",
     "ru": "1-й дом",
+    "short": {
+      "hy": "1-ին տուն",
+      "en": "1st house",
+      "ru": "1-й дом"
+    },
     "status": "agreed"
   },
   "house.2": {
     "hy": "2-րդ տուն",
     "en": "2nd house",
     "ru": "2-й дом",
+    "short": {
+      "hy": "2-րդ տուն",
+      "en": "2nd house",
+      "ru": "2-й дом"
+    },
     "status": "agreed"
   },
   "house.3": {
     "hy": "3-րդ տուն",
     "en": "3rd house",
     "ru": "3-й дом",
+    "short": {
+      "hy": "3-րդ տուն",
+      "en": "3rd house",
+      "ru": "3-й дом"
+    },
     "status": "agreed"
   },
   "house.4": {
     "hy": "4-րդ տուն",
     "en": "4th house",
     "ru": "4-й дом",
+    "short": {
+      "hy": "4-րդ տուն",
+      "en": "4th house",
+      "ru": "4-й дом"
+    },
     "status": "agreed"
   },
   "house.5": {
     "hy": "5-րդ տուն",
     "en": "5th house",
     "ru": "5-й дом",
+    "short": {
+      "hy": "5-րդ տուն",
+      "en": "5th house",
+      "ru": "5-й дом"
+    },
     "status": "agreed"
   },
   "house.6": {
     "hy": "6-րդ տուն",
     "en": "6th house",
     "ru": "6-й дом",
+    "short": {
+      "hy": "6-րդ տուն",
+      "en": "6th house",
+      "ru": "6-й дом"
+    },
     "status": "agreed"
   },
   "house.7": {
     "hy": "7-րդ տուն",
     "en": "7th house",
     "ru": "7-й дом",
+    "short": {
+      "hy": "7-րդ տուն",
+      "en": "7th house",
+      "ru": "7-й дом"
+    },
     "status": "agreed"
   },
   "house.8": {
     "hy": "8-րդ տուն",
     "en": "8th house",
     "ru": "8-й дом",
+    "short": {
+      "hy": "8-րդ տուն",
+      "en": "8th house",
+      "ru": "8-й дом"
+    },
     "status": "agreed"
   },
   "house.9": {
     "hy": "9-րդ տուն",
     "en": "9th house",
     "ru": "9-й дом",
+    "short": {
+      "hy": "9-րդ տուն",
+      "en": "9th house",
+      "ru": "9-й дом"
+    },
     "status": "agreed"
   },
   "house.10": {
     "hy": "10-րդ տուն",
     "en": "10th house",
     "ru": "10-й дом",
+    "short": {
+      "hy": "10-րդ տուն",
+      "en": "10th house",
+      "ru": "10-й дом"
+    },
     "status": "agreed"
   },
   "house.11": {
     "hy": "11-րդ տուն",
     "en": "11th house",
     "ru": "11-й дом",
+    "short": {
+      "hy": "11-րդ տուն",
+      "en": "11th house",
+      "ru": "11-й дом"
+    },
     "status": "agreed"
   },
   "house.12": {
     "hy": "12-րդ տուն",
     "en": "12th house",
     "ru": "12-й дом",
+    "short": {
+      "hy": "12-րդ տուն",
+      "en": "12th house",
+      "ru": "12-й дом"
+    },
     "status": "agreed"
   },
   "aspect.conjunction": {
     "hy": "Միացում",
     "en": "Conjunction",
     "ru": "Соединение",
+    "short": {
+      "hy": "Միացում",
+      "en": "Conjunction",
+      "ru": "Соединение"
+    },
     "status": "agreed"
   },
   "aspect.sextile": {
     "hy": "Սեքստիլ",
     "en": "Sextile",
     "ru": "Секстиль",
+    "short": {
+      "hy": "Սեքստիլ",
+      "en": "Sextile",
+      "ru": "Секстиль"
+    },
     "status": "agreed"
   },
   "aspect.square": {
     "hy": "Քառակուսի (քառակուսային ասպեկտ)",
     "en": "Square",
     "ru": "Квадратура",
+    "short": {
+      "hy": "Քառակուսի",
+      "en": "Square",
+      "ru": "Квадратура"
+    },
     "status": "agreed"
   },
   "aspect.trine": {
     "hy": "Տրին (եռանկյունային ասպեկտ)",
     "en": "Trine",
     "ru": "Трин",
+    "short": {
+      "hy": "Տրին",
+      "en": "Trine",
+      "ru": "Трин"
+    },
     "status": "agreed"
   },
   "aspect.opposition": {
     "hy": "Ընդդիմադրություն",
     "en": "Opposition",
     "ru": "Оппозиция",
+    "short": {
+      "hy": "Ընդդիմադրություն",
+      "en": "Opposition",
+      "ru": "Оппозиция"
+    },
     "status": "agreed"
   },
   "angle.asc": {
     "hy": "Ասցենդենտ (ծագող նշան)",
     "en": "Ascendant",
     "ru": "Асцендент",
+    "short": {
+      "hy": "Ասցենդենտ",
+      "en": "Ascendant",
+      "ru": "Асцендент"
+    },
     "status": "agreed"
   },
   "angle.mc": {
     "hy": "Միջին երկինք (MC)",
     "en": "Midheaven",
     "ru": "Середина неба",
+    "short": {
+      "hy": "Միջին երկինք",
+      "en": "Midheaven",
+      "ru": "Середина неба"
+    },
     "status": "agreed"
   },
   "angle.dsc": {
     "hy": "Դեսցենդենտ",
     "en": "Descendant",
     "ru": "Десцендент",
+    "short": {
+      "hy": "Դեսցենդենտ",
+      "en": "Descendant",
+      "ru": "Десцендент"
+    },
     "status": "agreed"
   },
   "angle.ic": {
     "hy": "Երկնքի հատակ (IC)",
     "en": "Imum Coeli (IC)",
     "ru": "Основание неба",
+    "short": {
+      "hy": "Երկնքի հատակ",
+      "en": "IC",
+      "ru": "Основание неба"
+    },
     "status": "agreed"
   },
   "body.north_node": {
     "hy": "Հյուսիսային լուսնային հանգույց",
     "en": "North Node",
     "ru": "Северный лунный узел",
+    "short": {
+      "hy": "Հյուսիսային լուսնային հանգույց",
+      "en": "North Node",
+      "ru": "Северный лунный узел"
+    },
     "status": "agreed"
   },
   "body.chiron": {
     "hy": "Քիրոն",
     "en": "Chiron",
     "ru": "Хирон",
+    "short": {
+      "hy": "Քիրոն",
+      "en": "Chiron",
+      "ru": "Хирон"
+    },
     "status": "agreed"
   },
   "concept.retrograde": {
     "hy": "Հետադարձ շարժում",
     "en": "Retrograde",
     "ru": "Ретроградное движение",
+    "short": {
+      "hy": "Հետադարձ շարժում",
+      "en": "Retrograde",
+      "ru": "Ретроградное движение"
+    },
     "status": "agreed"
   },
   "concept.stellium": {
     "hy": "Ստելիում",
     "en": "Stellium",
     "ru": "Стеллиум",
+    "short": {
+      "hy": "Ստելիում",
+      "en": "Stellium",
+      "ru": "Стеллиум"
+    },
     "status": "agreed"
   },
   "element.fire": {
     "hy": "Կրակ",
     "en": "Fire",
     "ru": "Огонь",
+    "short": {
+      "hy": "Կրակ",
+      "en": "Fire",
+      "ru": "Огонь"
+    },
     "status": "agreed"
   },
   "element.earth": {
     "hy": "Հող",
     "en": "Earth",
     "ru": "Земля",
+    "short": {
+      "hy": "Հող",
+      "en": "Earth",
+      "ru": "Земля"
+    },
     "status": "agreed"
   },
   "element.air": {
     "hy": "Օդ",
     "en": "Air",
     "ru": "Воздух",
+    "short": {
+      "hy": "Օդ",
+      "en": "Air",
+      "ru": "Воздух"
+    },
     "status": "agreed"
   },
   "element.water": {
     "hy": "Ջուր",
     "en": "Water",
     "ru": "Вода",
+    "short": {
+      "hy": "Ջուր",
+      "en": "Water",
+      "ru": "Вода"
+    },
     "status": "agreed"
   },
   "modality.cardinal": {
     "hy": "Կարդինալ",
     "en": "Cardinal",
     "ru": "Кардинальный",
+    "short": {
+      "hy": "Կարդինալ",
+      "en": "Cardinal",
+      "ru": "Кардинальный"
+    },
     "status": "agreed"
   },
   "modality.fixed": {
     "hy": "Ֆիքսված",
     "en": "Fixed",
     "ru": "Фиксированный",
+    "short": {
+      "hy": "Ֆիքսված",
+      "en": "Fixed",
+      "ru": "Фиксированный"
+    },
     "status": "agreed"
   },
   "modality.mutable": {
     "hy": "Փոփոխական",
     "en": "Mutable",
     "ru": "Мутабельный",
+    "short": {
+      "hy": "Փոփոխական",
+      "en": "Mutable",
+      "ru": "Мутабельный"
+    },
     "status": "agreed"
   },
   "category.basics": {
     "hy": "Հիմունքներ",
     "en": "Basics",
     "ru": "Основы",
+    "short": {
+      "hy": "Հիմունքներ",
+      "en": "Basics",
+      "ru": "Основы"
+    },
     "status": "agreed"
   },
   "category.planet_in_sign": {
     "hy": "Մոլորակները նշաններում",
     "en": "Planet in sign",
     "ru": "Планеты в знаках",
+    "short": {
+      "hy": "Մոլորակները նշաններում",
+      "en": "Planet in sign",
+      "ru": "Планеты в знаках"
+    },
     "status": "agreed"
   },
   "category.planet_in_house": {
     "hy": "Մոլորակները տներում",
     "en": "Planet in house",
     "ru": "Планеты в домах",
+    "short": {
+      "hy": "Մոլորակները տներում",
+      "en": "Planet in house",
+      "ru": "Планеты в домах"
+    },
     "status": "agreed"
   },
   "category.angle_in_sign": {
     "hy": "Անկյունները նշաններում",
     "en": "Angle in sign",
     "ru": "Углы в знаках",
+    "short": {
+      "hy": "Անկյունները նշաններում",
+      "en": "Angle in sign",
+      "ru": "Углы в знаках"
+    },
     "status": "agreed"
   },
   "category.aspect_pairs": {
     "hy": "Մոլորակների ասպեկտներ",
     "en": "Aspect pairs",
     "ru": "Аспекты планет",
+    "short": {
+      "hy": "Մոլորակների ասպեկտներ",
+      "en": "Aspect pairs",
+      "ru": "Аспекты планет"
+    },
     "status": "agreed"
   },
   "category.retrograde_planets": {
     "hy": "Հետադարձ մոլորակներ",
     "en": "Retrograde planets",
     "ru": "Ретроградные планеты",
+    "short": {
+      "hy": "Հետադարձ մոլորակներ",
+      "en": "Retrograde planets",
+      "ru": "Ретроградные планеты"
+    },
     "status": "agreed"
   },
   "category.elements_and_modalities": {
     "hy": "Տարրեր և որակներ",
     "en": "Elements and modalities",
     "ru": "Стихии и модальности",
+    "short": {
+      "hy": "Տարրեր և որակներ",
+      "en": "Elements and modalities",
+      "ru": "Стихии и модальности"
+    },
     "status": "agreed"
   },
   "body.south_node": {
     "hy": "Հարավային լուսնային հանգույց",
     "en": "South Node",
     "ru": "Южный лунный узел",
+    "short": {
+      "hy": "Հարավային լուսնային հանգույց",
+      "en": "South Node",
+      "ru": "Южный лунный узел"
+    },
     "status": "to check"
   },
   "concept.natal_chart": {
     "hy": "Ծննդյան քարտեզ",
     "en": "Natal chart",
     "ru": "Натальная карта",
+    "short": {
+      "hy": "Ծննդյան քարտեզ",
+      "en": "Natal chart",
+      "ru": "Натальная карта"
+    },
     "status": "to check"
   },
   "concept.house": {
     "hy": "Տուն",
     "en": "House",
     "ru": "Дом",
+    "short": {
+      "hy": "Տուն",
+      "en": "House",
+      "ru": "Дом"
+    },
     "status": "to check"
   },
   "concept.sign": {
     "hy": "Նշան",
     "en": "Sign",
     "ru": "Знак",
+    "short": {
+      "hy": "Նշան",
+      "en": "Sign",
+      "ru": "Знак"
+    },
     "status": "to check"
   },
   "concept.aspect": {
     "hy": "Ասպեկտ",
     "en": "Aspect",
     "ru": "Аспект",
+    "short": {
+      "hy": "Ասպեկտ",
+      "en": "Aspect",
+      "ru": "Аспект"
+    },
     "status": "to check"
   },
   "concept.orb": {
     "hy": "Օրբիս",
     "en": "Orb",
     "ru": "Орбис",
+    "short": {
+      "hy": "Օրբիս",
+      "en": "Orb",
+      "ru": "Орбис"
+    },
     "status": "to check"
   },
   "concept.element": {
     "hy": "Տարր",
     "en": "Element",
     "ru": "Стихия",
+    "short": {
+      "hy": "Տարր",
+      "en": "Element",
+      "ru": "Стихия"
+    },
     "status": "to check"
   },
   "concept.modality": {
     "hy": "Որակ",
     "en": "Modality",
     "ru": "Модальность",
+    "short": {
+      "hy": "Որակ",
+      "en": "Modality",
+      "ru": "Модальность"
+    },
     "status": "to check"
   }
 } as const;

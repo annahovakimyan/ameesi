@@ -1,5 +1,5 @@
 import { terms } from "../generated/glossary";
-import { houseTerm, t, term } from "../i18n";
+import { houseTerm, t, term, termFull } from "../i18n";
 import { strings } from "../i18n/strings";
 
 const BODIES = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto",
@@ -37,4 +37,15 @@ test("interface strings exist in all languages and fill variables", () => {
     expect([id, !!(s.hy && s.en && s.ru)]).toEqual([id, true]);
   }
   expect(t("formerly", "en", { name: "Leninakan" })).toBe("formerly Leninakan");
+});
+
+test("labels use the short form; the full form keeps the gloss", () => {
+  expect(term("angle.asc", "hy")).toBe("Ասցենդենտ");
+  expect(termFull("angle.asc", "hy")).toBe("Ասցենդենտ (ծագող նշան)");
+  expect(term("aspect.square", "hy")).toBe("Քառակուսի");
+  expect(term("angle.ic", "en")).toBe("IC");
+  expect(term("angle.ic", "ru")).toBe("Основание неба"); // no short form given: falls back to full
+  for (const entry of Object.values(terms)) {
+    for (const lang of ["hy", "en", "ru"] as const) expect(entry.short[lang]).not.toMatch(/[()]/);
+  }
 });

@@ -256,14 +256,22 @@
   "en": "Square",
   "hy": "Քառակուսի (քառակուսային ասպեկտ)",
   "ru": "Квадратура",
-  "status": "agreed"
+  "status": "agreed",
+  "short": {
+   "hy": "Քառակուսի"
+  },
+  "short_status": "to check"
  },
  {
   "category": "Astrological aspects",
   "en": "Trine",
   "hy": "Տրին (եռանկյունային ասպեկտ)",
   "ru": "Трин",
-  "status": "agreed"
+  "status": "agreed",
+  "short": {
+   "hy": "Տրին"
+  },
+  "short_status": "to check"
  },
  {
   "category": "Astrological aspects",
@@ -277,14 +285,22 @@
   "en": "Ascendant",
   "hy": "Ասցենդենտ (ծագող նշան)",
   "ru": "Асцендент",
-  "status": "agreed"
+  "status": "agreed",
+  "short": {
+   "hy": "Ասցենդենտ"
+  },
+  "short_status": "to check"
  },
  {
   "category": "Chart angles",
   "en": "Midheaven",
   "hy": "Միջին երկինք (MC)",
   "ru": "Середина неба",
-  "status": "agreed"
+  "status": "agreed",
+  "short": {
+   "hy": "Միջին երկինք"
+  },
+  "short_status": "to check"
  },
  {
   "category": "Chart angles",
@@ -298,7 +314,12 @@
   "en": "Imum Coeli (IC)",
   "hy": "Երկնքի հատակ (IC)",
   "ru": "Основание неба",
-  "status": "agreed"
+  "status": "agreed",
+  "short": {
+   "en": "IC",
+   "hy": "Երկնքի հատակ"
+  },
+  "short_status": "to check"
  },
  {
   "category": "Additional astrological concepts",

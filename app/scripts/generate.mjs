@@ -21,11 +21,17 @@ export function tokensSource() {
   }
   const space = Object.fromEntries(t.spacing.tokens.map((s) => [Number(s.name.split("-")[1]), px(s.value)]));
   const radius = Object.fromEntries(t.radius.tokens.map((r) => [r.name.replace("radius-", ""), px(r.value)]));
+  const stroke = Object.fromEntries(t.stroke.tokens.filter((s) => s.name.startsWith("stroke-"))
+    .map((s) => [camel(s.name.replace("stroke-", "")), px(s.value)]));
+  const dash = Object.fromEntries(t.stroke.tokens.filter((s) => s.name.startsWith("dash-"))
+    .map((s) => [camel(s.name.replace("dash-", "")), s.value]));
   return HEADER +
     `export const colors = ${JSON.stringify(colors, null, 2)} as const;\n\n` +
     `export const type = ${JSON.stringify(type, null, 2)} as const;\n\n` +
     `export const space = ${JSON.stringify(space, null, 2)} as const;\n\n` +
-    `export const radius = ${JSON.stringify(radius, null, 2)} as const;\n`;
+    `export const radius = ${JSON.stringify(radius, null, 2)} as const;\n\n` +
+    `export const stroke = ${JSON.stringify(stroke, null, 2)} as const;\n\n` +
+    `export const dash = ${JSON.stringify(dash, null, 2)} as const;\n`;
 }
 
 const ANGLES = { Ascendant: "asc", Midheaven: "mc", Descendant: "dsc", "Imum Coeli (IC)": "ic" };
@@ -64,7 +70,9 @@ export function glossarySource() {
     const id = termId(entry); // "Combined terminology examples" are examples only: skipped
     if (!id) continue;
     if (terms[id]) throw new Error(`duplicate glossary id ${id}`);
-    terms[id] = { hy: entry.hy, en: entry.en, ru: entry.ru, status: entry.status };
+    // Labels use `short` where the glossary gives one (e.g. without a gloss in brackets).
+    const short = { hy: entry.hy, en: entry.en, ru: entry.ru, ...(entry.short ?? {}) };
+    terms[id] = { hy: entry.hy, en: entry.en, ru: entry.ru, short, status: entry.status };
   }
   return HEADER + `export const terms = ${JSON.stringify(terms, null, 2)} as const;\n\n` +
     "export type TermId = keyof typeof terms;\n";

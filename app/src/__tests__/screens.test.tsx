@@ -68,7 +68,7 @@ describe("ChartScreen list view", () => {
     expect(screen.getByText("Արեգակ")).toBeTruthy();
     expect(screen.getByText("Փայլածու")).toBeTruthy();
     expect(screen.getByText(/Առյուծ 21°52′ · 9-րդ տուն/)).toBeTruthy(); // Sun 21.88° Leo, 9th house
-    expect(screen.getByText("Ասցենդենտ (ծագող նշան)")).toBeTruthy();
+    expect(screen.getByText("Ասցենդենտ")).toBeTruthy(); // short form, no gloss
   });
 
   test("marks retrograde bodies", async () => {
@@ -105,9 +105,15 @@ describe("ChartScreen wheel view", () => {
     expect(screen.getByText("Tap a planet to see its details")).toBeTruthy();
   });
 
-  test("draws one line per aspect", async () => {
+  test("draws aspect lines per the design system: tense dashed, harmonious solid, conjunctions none", async () => {
     await render(<ChartScreen chart={exact as Chart} lang="en" onBack={jest.fn()} />);
-    for (const a of (exact as Chart).aspects) expect(screen.getByTestId(`aspect-${a.a}-${a.b}`)).toBeTruthy();
+    for (const a of (exact as Chart).aspects) {
+      const line = screen.queryByTestId(`aspect-${a.a}-${a.b}`);
+      if (a.type === "conjunction") expect(line).toBeNull();
+      else if (a.type === "square" || a.type === "opposition") expect(line?.props.strokeDasharray).toBeTruthy();
+      else expect(line?.props.strokeDasharray).toBeFalsy();
+    }
+    expect((exact as Chart).aspects.some((a) => a.type === "square" || a.type === "opposition")).toBe(true);
   });
 
   test("tapping a planet shows its placement and aspects; tapping again clears it", async () => {
@@ -119,6 +125,7 @@ describe("ChartScreen wheel view", () => {
     expect(card).toHaveTextContent(/Sun.*Leo 21°52′ · 9th house/);
     expect(screen.getAllByText(/orb \d+°\d\d′/)).toHaveLength(sunAspects.length);
     expect(screen.getByTestId("wheel-sun")).toBeSelected();
+    expect(screen.getByTestId("selected-ring")).toBeTruthy();
     await fireEvent(screen.getByTestId("wheel-sun"), "accessibilityAction", { nativeEvent: { actionName: "activate" } });
     expect(screen.queryByTestId("selection")).toBeNull();
   });
