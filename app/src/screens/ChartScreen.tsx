@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import type { Chart, Lang, Place } from "../api/types";
 import { AppText, Icon } from "../components/AppText";
@@ -7,6 +7,7 @@ import { ChartList } from "../components/ChartList";
 import { ChartWheel } from "../components/ChartWheel";
 import { ExplanationSheet } from "../components/ExplanationSheet";
 import { AddSomeonePrompt, TourCard, tourSteps } from "../components/TourCard";
+import { ShareCard, shareCard, type ViewRef } from "../components/ShareCard";
 import { Segmented } from "../components/Segmented";
 import { t } from "../i18n";
 import { strings } from "../i18n/strings";
@@ -28,6 +29,7 @@ export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addP
   const steps = tourSteps(chart, lang);
   const [step, setStep] = useState(0);
   const [details, setDetails] = useState(false);
+  const cardRef = useRef<ViewRef>(null);
   const confidence = chart.time.confidence;
   const [view, setView] = useState<"wheel" | "list">("wheel");
   // Switching between wheel and list keeps the selected element (design system: SegmentedControl).
@@ -39,6 +41,13 @@ export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addP
     <ScrollView contentContainerStyle={styles.screen}>
       {onBack && <Button kind="secondary" label={t("back", lang)} onPress={onBack} testID="back" />}
       {title && <AppText variant="titleLg" accessibilityRole="header" testID="chart-title">{title}</AppText>}
+      <Button kind="secondary" testID="share" label={t("share", lang)}
+        onPress={() => { shareCard(cardRef.current).catch(() => {}); }} />
+      {/* Off-screen: rendered so it can be captured as an image, never shown */}
+      <View style={styles.offscreen} pointerEvents="none" importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden>
+        <ShareCard ref={cardRef} chart={chart} lang={lang} />
+      </View>
       <Segmented testID="view" value={view} onChange={setView}
         options={[{ value: "wheel", label: t("wheel", lang) }, { value: "list", label: t("list", lang) }]} />
 
@@ -119,6 +128,7 @@ function CalcDetails({ chart, lang, place, onEdit }: { chart: Chart; lang: Lang;
 }
 
 const styles = StyleSheet.create({
+  offscreen: { position: "absolute", left: -10000, top: 0 },
   notice: { padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.border, borderRadius: radius.md,
             backgroundColor: colors.surface },
   details: { padding: space[4], gap: space[3], backgroundColor: colors.surface, borderRadius: radius.lg },
