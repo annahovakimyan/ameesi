@@ -189,3 +189,88 @@
 5976392	2017370		Russian Soviet Federated Socialist Republic				1		
 5976393	2017370		Russian Socialist Federative Soviet Republic				1		
 8043265	2017370		Rossiya						
+110728	146970		Khankendy						
+110729	146970	ru	Степанакерт				1		
+1637961	146970	en	Khankendi	1					
+9870305	146970		Xankǝndi	1					
+13522292	146970		Stepanakert				1	1923	2023
+17085954	146970	ru	Ханкенди	1					
+19335572	146970		Vararakn				1		1847
+19335574	146970	en	Stepanakert				1		
+19335576	146970	hy	Ստեփանակերտ	1				1923	
+20460721	146970	hy	Խանքենդի				1	1847	1923
+20460722	146970	hy	Վարարակն				1		1847
+20460723	146970	hyw	Ստեփանակերտ						
+110898	147105		Shoushi						
+110899	147105		Shusha						
+110900	147105		Shushi						
+1941101	147105	en	Shusha						
+1941105	147105	hy	Շուշի	1					
+1941106	147105		Шуша						
+3951367	147105	hy	Shushe						
+3951368	147105	hy	Շուշե						
+6067837	147105	ru	Шуша						
+110985	147163		Shusha Rayonu						
+110986	147163		Shushinskiy Rayon						
+2185489	147163		Şuşa	1	1				
+5649404	147163		Şuşa Rayonu						
+5649405	147163	hy	Shushi Shrjan						
+5649406	147163	hy	Շուշի Շրջան						
+13694872	147163	en	Shusha		1				
+20334611	147163	en	Shusha Rayon						
+111183	147287		Saatly Rayonu						
+111184	147287		Saatlinskiy Rayon						
+2185470	147287		Saatlı	1	1				
+5649412	147287		Saatlı Rayonu						
+112605	148105		Hadrout						
+112606	148105		Gadrut						
+3954292	148105	hy	Հադրութ						
+3954293	148105		Гадрут						
+6068072	148105	ru	Гадрут						
+8462015	148105	hy	Hadrut’						
+2185491	409420		Tǝrtǝr	1	1				
+5651308	409420		Tərtər Rayonu						
+17847559	409420	hy	Թարթառի շրջան						
+17847570	409420	en	Tartar District						
+17847584	409420	ru	Тертерский район						
+2185529	409421		Xankǝndi	1	1				
+9710235	409421		Stepanakert						
+9710236	409421	hy	Ստեփանակերտ						
+2185532	409423		Xocavǝnd		1				
+11659249	409423	en	Khojavend District						
+11659250	409423	en	Khojavend		1				
+17847614	409423	hyw	Մարտունիի շրջան						
+17847617	409423	hy	Մարտունու շրջան						
+17847637	409423	ru	Ходжавендский район						
+337144	584544		Zyumyurkhach						
+20872051	584544	ru	Зумурксан						
+341122	587056		Bardinskiy Rayon						
+2185200	587056		Bǝrdǝ	1	1				
+16453660	587056	en	Barda District						
+16453661	587056	en	Barda		1				
+17856683	587056	ru	Бардинский район						
+341219	587116		Azärbayjan Respublikasy						
+341220	587116		Azerbaidzhanian Soviet Socialist Republic				1		
+341222	587116		Azärbaycan						
+341225	587116		Azerbaydzhanskaya Sovetskaya Sotsialisticheskaya Respublika				1		
+341226	587116		Azerbaydzhan Soviet Socialist Republic				1		
+341227	587116		Azerbaijan Soviet Socialist Republic				1		
+1560143	587116	en	Azerbaijan	1					
+1560156	587116	hy	Ադրբեջան	1					
+1560176	587116	ru	Азербайджан	1					
+2198838	587116		Azerbaijani Republic						
+3955223	587116	en	Republic of Azerbaijan						
+20445775	587116	hyw	Ազրպէյճան						
+341647	587379		Mardakert						
+341648	587379		Martakert						
+1663022	587379	en	Ağdǝrǝ						
+1663023	587379	ru	Мардакерт						
+3955687	587379	hy	Մարտակերտ						
+6068175	587379	hy	Martakert						
+11648456	587379	en	Aghdara						
+13288062	587379	ru	Агдере						
+370761	616070		Yagdan						
+4097015	616070	en	Yaghdan						
+12097871	616070	hy	Յաղդան						
+19805893	616070	hy	Yaxdan						
+20271587	616070	ru	Ягдан						

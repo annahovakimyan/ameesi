@@ -1,6 +1,6 @@
 """Download GeoNames and build server/data/places.sqlite.
 
-    python scripts/build_places.py            # download (about 220 MB) and build
+    python scripts/build_places.py            # download (about 225 MB) and build
     python scripts/build_places.py --no-download
 
 Data © GeoNames (geonames.org), CC BY 4.0. Raw files go in server/data/raw/ (git-ignored).
@@ -16,7 +16,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app import places  # noqa: E402
 
 BASE = "https://download.geonames.org/export/dump/"
-FILES = ["cities500.zip", "alternateNamesV2.zip", "admin1CodesASCII.txt", "countryInfo.txt"]
+FILES = ["cities500.zip", "alternateNamesV2.zip", "admin1CodesASCII.txt", "countryInfo.txt"] + [
+    f"{c}.zip" for c in places.COUNTRY_FILES]  # every village in Armenia, Azerbaijan, Georgia
 RAW = Path(__file__).resolve().parent.parent / "data" / "raw"
 
 

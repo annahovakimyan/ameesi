@@ -31,3 +31,6 @@ uvicorn app.main:app --reload  # http://localhost:8000/docs
 - [x] Unknown time: local-noon chart, no houses or angles, Moon flagged if it changes sign that day
 - [ ] Golden charts in `tests/golden/charts.csv` (the tests are written; they skip until rows are added)
 - [x] `GET /places`: former Soviet names, Armenian/English/Russian spellings, display names in the requested language
+- [x] Every village in Armenia, Azerbaijan and Georgia (GeoNames country files), not only places over 500 people
+- [x] Region rules in `app/place_overrides.json`: Nagorno-Karabakh shows Armenian place names in every language
+      (`app/translit.py` where GeoNames has none) and uses Armenian time

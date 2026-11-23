@@ -107,11 +107,16 @@ def test_bad_requests(client):
 
 
 def test_missing_database_is_explicit(tmp_path):
+    previous = app.dependency_overrides.get(places.get_db_path)
     app.dependency_overrides[places.get_db_path] = lambda: tmp_path / "nope.sqlite"
     try:
         assert TestClient(app).get("/places", params={"q": "Gyumri"}).status_code == 503
     finally:
-        app.dependency_overrides.clear()
+        # Restore, not clear: later tests in this module still need the fixture database.
+        if previous:
+            app.dependency_overrides[places.get_db_path] = previous
+        else:
+            app.dependency_overrides.pop(places.get_db_path, None)
 
 
 @pytest.mark.parametrize("raw,norm", [
@@ -137,7 +142,64 @@ def test_override_changes_country(client, monkeypatch):
 
 
 def test_override_file_is_valid():
-    for gid, o in places.load_overrides().items():
+    overrides, regions = places.load_overrides()
+    for gid, o in overrides.items():
         assert isinstance(gid, int)
-        assert set(o) <= {"names", "country_code", "_what"}
+        assert set(o) <= {"names", "country_code", "tz", "_what"}
         assert set(o.get("names", {})) <= set(places.LANGS)
+    for r in regions:
+        assert set(r) <= {"id", "_what", "admin1", "places", "names", "tz"}
+        assert r.get("names") in (None, "armenian")
+
+
+# --- country files: villages under 500 people --------------------------------
+
+YAGHDAN, MARTAKERT, HADRUT, STEPANAKERT, SHUSHI, OUTSIDE = 616070, 587379, 148105, 146970, 147105, 584544
+
+
+def test_small_village_from_country_file(client):
+    assert ids(search(client, "Yaghdan"))[0] == YAGHDAN
+    assert ids(search(client, "Յաղդան", "hy"))[0] == YAGHDAN
+
+
+def test_place_in_both_files_appears_once(client):
+    assert ids(search(client, "Gyumri")).count(GYUMRI) == 1
+
+
+# --- Nagorno-Karabakh: Armenian names in every language, Armenian time ----------
+
+@pytest.mark.parametrize("q,gid,lang,name", [
+    ("Martakert", MARTAKERT, "en", "Martakert"),
+    ("Мартакерт", MARTAKERT, "ru", "Мартакерт"),
+    ("Hadrut", HADRUT, "ru", "Гадрут"),
+    ("Khankendi", STEPANAKERT, "en", "Stepanakert"),
+    ("Ханкенди", STEPANAKERT, "ru", "Степанакерт"),
+    ("Stepanakert", STEPANAKERT, "hy", "Ստեփանակերտ"),
+    ("Shusha", SHUSHI, "en", "Shushi"),
+])
+def test_karabakh_places_show_armenian_names(client, q, gid, lang, name):
+    p = next(p for p in search(client, q, lang) if p["geonames_id"] == gid)
+    assert p["name"] == name
+
+
+def test_karabakh_keeps_country_and_uses_armenian_time(client):
+    p = search(client, "Stepanakert")[0]
+    assert p["country_code"] == "AZ" and p["country"] == "Azerbaijan"
+    assert p["tz"] == "Asia/Yerevan"
+
+
+def test_shown_name_is_not_repeated_as_a_former_name(client):
+    # GeoNames marks "Stepanakert" historic; it's the shown name, so it isn't listed as "formerly".
+    p = search(client, "Stepanakert")[0]
+    assert all(f["name"] != "Stepanakert" for f in p["former_names_matched"])
+
+
+def test_transliterations_are_searchable_but_never_shown(client):
+    # Yaghdan has a Russian name (Ягдан); a transliteration of Յաղդան is "Яхдан"
+    assert ids(search(client, "Яхдан", "ru"))[0] == YAGHDAN
+    assert search(client, "Яхдан", "ru")[0]["name"] == "Ягдан"
+
+
+def test_rest_of_azerbaijan_unchanged(client):
+    p = search(client, "Zumurxan")[0]
+    assert p["geonames_id"] == OUTSIDE and p["tz"] == "Asia/Baku" and p["name"] == "Zümürxan"

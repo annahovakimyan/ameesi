@@ -1,4 +1,29 @@
 {
-  "_comment": "Display overrides for GeoNames places, regions and countries, keyed by geonames_id. 'names' replaces the shown name per language; 'country_code' changes the country shown for a place. Searching still uses every GeoNames name. Read at startup; no database rebuild needed.",
-  "616051": {"_what": "Yerevan (region). GeoNames only has the classical spelling Երէվան.", "names": {"hy": "Երևան"}}
+  "_comment": "Display rules for GeoNames places. 'places': per geonames_id, 'names' replaces the shown name per language, 'country_code' the country, 'tz' the time zone. 'regions': rules for every place in the listed admin1 codes (and listed places). Searching still uses every GeoNames name. Read at startup; no database rebuild needed.",
+  "places": {
+    "616051": {
+      "_what": "Yerevan (region). GeoNames only has the classical spelling Երէվան.",
+      "names": {
+        "hy": "Երևան"
+      }
+    }
+  },
+  "regions": [
+    {
+      "id": "nagorno-karabakh",
+      "_what": "Former Nagorno-Karabakh Autonomous Oblast: today's Khankendi (Stepanakert), Shusha, Shusha City, Khojaly and Khojavend districts, plus Martakert. Founder's decisions (2026-11-23): show the Armenian place name in every language (transliterated where GeoNames has none), keep the country as GeoNames gives it, and use Armenian time. Baku and Yerevan clocks differed for 1,603 days (1992-96, 2012-15); outside those periods the two agree, so Yerevan time is correct before 1992 and after 2015 too.",
+      "admin1": [
+        "AZ.61",
+        "AZ.55",
+        "AZ.56",
+        "AZ.64",
+        "AZ.65"
+      ],
+      "places": [
+        587379
+      ],
+      "names": "armenian",
+      "tz": "Asia/Yerevan"
+    }
+  ]
 }

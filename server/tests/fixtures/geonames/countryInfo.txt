@@ -1,3 +1,4 @@
 #ISO	ISO3	ISO-Numeric	fips	Country	Capital	Area(in sq km)	Population	Continent	tld	CurrencyCode	CurrencyName	Phone	Postal Code Format	Postal Code Regex	Languages	geonameid	neighbours	EquivalentFipsCode
 AM	ARM	051	AM	Armenia	Yerevan	29800	3086700	AS	.am	AMD	Dram	374	####	^(\d{4})$	hy	174982	GE,IR,AZ,TR	
 RU	RUS	643	RS	Russia	Moscow	17100000	143513328	EU	.ru	RUB	Ruble	7	######	^(\d{6})$	ru,tt,xal,cau,ady,kv,ce,tyv,cv,udm,tut,mns,bua,myv,mdf,chm,ba,inh,kbd,krc,av,sah,nog	2017370	GE,CN,BY,UA,KZ,LV,PL,EE,LT,FI,MN,NO,AZ,KP	
+AZ	AZE	031	AJ	Azerbaijan	Baku	86600	10246996	AS	.az	AZN	Manat	994	AZ ####	^(?:AZ )*(\d{4})$	az,ru,hy	587116	GE,IR,AM,TR,RU	

@@ -1,4 +1,4 @@
-"""Place search over GeoNames (cities500 + alternate names), stored in SQLite.
+"""Place search over GeoNames (cities500, full Armenia/Azerbaijan/Georgia files, alternate names), in SQLite.
 
 Data © GeoNames (geonames.org), CC BY 4.0. Build the database with scripts/build_places.py.
 """
@@ -11,6 +11,8 @@ import sys
 import unicodedata
 from pathlib import Path
 
+from .translit import to_cyrillic, to_latin
+
 DEFAULT_DB = Path(__file__).resolve().parent.parent / "data" / "places.sqlite"
 LANGS = ("hy", "en", "ru")
 SEARCH_LANGS = {"", "hy", "hyw", "en", "ru"}  # names searched; "" = no language given
@@ -18,6 +20,9 @@ LAUNCH_COUNTRY = "AM"
 MAX_RESULTS = 10
 MAX_FORMER_NAMES = 3
 MIN_QUERY = 2
+# Every populated place in these countries, not only those over 500 people (villages matter here).
+COUNTRY_FILES = ("AM", "AZ", "GE")
+SKIP_FEATURES = {"PPLX"}  # neighbourhoods; abandoned (PPLQ) and historical (PPLH) places stay
 SCRIPT = {"hy": re.compile(r"[԰-֏]"), "ru": re.compile(r"[Ѐ-ӿ]"),
           "en": re.compile(r"^[\x00-ɏ’ʼ‘]+$")}
 
@@ -26,12 +31,14 @@ OVERRIDES_FILE = Path(__file__).resolve().parent / "place_overrides.json"
 csv.field_size_limit(sys.maxsize)
 
 
-def load_overrides() -> dict[int, dict]:
+def load_overrides() -> tuple[dict[int, dict], list[dict]]:
+    """Per-place overrides (keyed by geonames_id) and region rules from place_overrides.json."""
     raw = json.loads(OVERRIDES_FILE.read_text(encoding="utf-8"))
-    return {int(k): v for k, v in raw.items() if not k.startswith("_")}
+    places = {int(k): v for k, v in raw.get("places", {}).items() if not k.startswith("_")}
+    return places, raw.get("regions", [])
 
 
-OVERRIDES = load_overrides()
+OVERRIDES, REGIONS = load_overrides()
 _APOSTROPHES = str.maketrans("", "", "’'‘ʼ`´ʻ")
 
 
@@ -51,7 +58,8 @@ def get_db_path() -> Path:
 
 SCHEMA = """
 CREATE TABLE places (geonames_id INTEGER PRIMARY KEY, name TEXT, country_code TEXT,
-                     admin1_id INTEGER, lat REAL, lon REAL, tz TEXT, population INTEGER);
+                     admin1_id INTEGER, admin1_code TEXT, lat REAL, lon REAL, tz TEXT,
+                     population INTEGER);
 CREATE TABLE names (geonames_id INTEGER, lang TEXT, name TEXT, norm TEXT, preferred INTEGER,
                     short INTEGER, historic INTEGER, year_from INTEGER, year_to INTEGER);
 CREATE TABLE countries (code TEXT PRIMARY KEY, geonames_id INTEGER, name TEXT);
@@ -83,20 +91,36 @@ def build(raw_dir: Path, out: Path) -> None:
     con.executemany("INSERT INTO countries VALUES (?,?,?)", [(c, g, n) for c, (g, n) in countries.items()])
     con.executemany("INSERT INTO admin1 VALUES (?,?,?)", [(c, g, n) for c, (g, n) in admin1.items()])
 
-    places, names = [], []
-    for r in _tsv(raw_dir / "cities500.txt"):
-        gid, admin = int(r[0]), admin1.get(f"{r[8]}.{r[10]}")
-        places.append((gid, r[1], r[8], admin[0] if admin else None,
-                       float(r[4]), float(r[5]), r[17], int(r[14] or 0)))
-        for n in {r[1], r[2]}:
-            names.append((gid, "", n, normalise(n), 0, 0, 0, None, None))
-    con.executemany("INSERT INTO places VALUES (?,?,?,?,?,?,?,?)", places)
+    places, names, seen = [], [], set()
+    sources = [raw_dir / "cities500.txt"] + [raw_dir / f"{c}.txt" for c in COUNTRY_FILES]
+    for path in sources:
+        if not path.is_file():
+            continue
+        for r in _tsv(path):
+            gid = int(r[0])
+            if gid in seen or r[6] != "P" or r[7] in SKIP_FEATURES:
+                continue
+            seen.add(gid)
+            code = f"{r[8]}.{r[10]}"
+            admin = admin1.get(code)
+            places.append((gid, r[1], r[8], admin[0] if admin else None, code,
+                           float(r[4]), float(r[5]), r[17], int(r[14] or 0)))
+            for n in {r[1], r[2]}:
+                names.append((gid, "", n, normalise(n), 0, 0, 0, None, None))
+    con.executemany("INSERT INTO places VALUES (?,?,?,?,?,?,?,?,?)", places)
 
     wanted = {p[0] for p in places} | {g for g, _ in countries.values()} | {g for g, _ in admin1.values()}
+    place_ids = {p[0] for p in places}
     for r in _tsv(raw_dir / "alternateNamesV2.txt"):
         if r[2] in SEARCH_LANGS and int(r[1]) in wanted:
-            names.append((int(r[1]), r[2], r[3], normalise(r[3]), r[4] == "1", r[5] == "1",
-                          r[7] == "1", _year(r[8]), _year(r[9])))
+            row = (int(r[1]), r[2], r[3], normalise(r[3]), r[4] == "1", r[5] == "1",
+                   r[7] == "1", _year(r[8]), _year(r[9]))
+            names.append(row)
+            # Armenian place names are also findable as typed in Latin or Cyrillic ("Мартакерт"),
+            # even where GeoNames has no English or Russian entry. Search only, never displayed.
+            if r[2] == "hy" and row[0] in place_ids and SCRIPT["hy"].search(r[3]):
+                for xlit in {to_latin(r[3]), to_cyrillic(r[3])}:
+                    names.append((row[0], "xlit", xlit, normalise(xlit), 0, 0) + row[6:])
         if len(names) > 200_000:
             con.executemany("INSERT INTO names VALUES (?,?,?,?,?,?,?,?,?)", names)
             names.clear()
@@ -110,16 +134,31 @@ def build(raw_dir: Path, out: Path) -> None:
 
 # --- search --------------------------------------------------------------
 
-def _display_name(con, gid: int, lang: str, fallback: str) -> str:
-    override = OVERRIDES.get(gid, {}).get("names", {}).get(lang)
-    if override:
-        return override
+def _region_of(gid: int, admin1_code: str | None) -> dict | None:
+    for r in REGIONS:
+        if gid in r.get("places", []) or admin1_code in r.get("admin1", []):
+            return r
+    return None
+
+
+def _name_in(con, gid: int, lang: str) -> str | None:
+    """Best current GeoNames name in a language, written in that language's script."""
     rows = con.execute("SELECT name, preferred, short, historic FROM names "
                        "WHERE geonames_id = ? AND lang = ?", (gid, lang)).fetchall()
     rows = [r for r in rows if not r[3] and SCRIPT[lang].search(r[0])]
-    if not rows:
-        return fallback
-    return min(rows, key=lambda r: (not r[1], not r[2], len(r[0])))[0]
+    return min(rows, key=lambda r: (not r[1], not r[2], len(r[0])))[0] if rows else None
+
+
+def _display_name(con, gid: int, lang: str, fallback: str, region: dict | None = None) -> str:
+    override = OVERRIDES.get(gid, {}).get("names", {}).get(lang)
+    if override:
+        return override
+    if region and region.get("names") == "armenian":
+        # The Armenian name in every language: as written in Armenian, else transliterated.
+        hy = _name_in(con, gid, "hy")
+        if hy:
+            return hy if lang == "hy" else to_latin(hy) if lang == "en" else to_cyrillic(hy)
+    return _name_in(con, gid, lang) or fallback
 
 
 def search(db_path: Path, query: str, lang: str) -> list[dict]:
@@ -150,21 +189,25 @@ def search(db_path: Path, query: str, lang: str) -> list[dict]:
 
         results = []
         for gid in top:
-            name, cc, admin_id, lat, lon, tz = con.execute(
-                "SELECT name, country_code, admin1_id, lat, lon, tz FROM places WHERE geonames_id = ?",
-                (gid,)).fetchone()
+            name, cc, admin_id, admin_code, lat, lon, tz = con.execute(
+                "SELECT name, country_code, admin1_id, admin1_code, lat, lon, tz FROM places "
+                "WHERE geonames_id = ?", (gid,)).fetchone()
+            rule = _region_of(gid, admin_code)
             cc = OVERRIDES.get(gid, {}).get("country_code", cc)
+            tz = OVERRIDES.get(gid, {}).get("tz") or (rule or {}).get("tz") or tz
+            shown = _display_name(con, gid, lang, name, rule)
             c_gid, c_name = con.execute("SELECT geonames_id, name FROM countries WHERE code = ?",
                                         (cc,)).fetchone() or (None, cc)
             region = None
             if admin_id:
                 a_name = con.execute("SELECT name FROM admin1 WHERE geonames_id = ?", (admin_id,)).fetchone()
                 region = _display_name(con, admin_id, lang, a_name[0] if a_name else None)
-            matched = [] if gid in current else sorted(former.get(gid, {}).values(),
-                                                       key=lambda f: (f["from"] or 0, f["name"]))[:MAX_FORMER_NAMES]
+            matched = [] if gid in current else sorted(
+                (f for f in former.get(gid, {}).values() if normalise(f["name"]) != normalise(shown)),
+                key=lambda f: (f["from"] or 0, f["name"]))[:MAX_FORMER_NAMES]
             results.append({
                 "geonames_id": gid,
-                "name": _display_name(con, gid, lang, name),
+                "name": shown,
                 "former_names_matched": matched,
                 "region": region,
                 "country": _display_name(con, c_gid, lang, c_name) if c_gid else c_name,
