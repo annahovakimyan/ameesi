@@ -1,0 +1,195 @@
+import { useEffect, useState } from "react";
+import { ActivityIndicator, BackHandler, Share, StyleSheet, View } from "react-native";
+import { calculateChart, getPlace } from "../api/client";
+import type { HouseSystem, Lang } from "../api/types";
+import { formFromProfile, type Purpose } from "../birthForm";
+import { AppText, Icon } from "../components/AppText";
+import { Button } from "../components/Button";
+import { TabBar } from "../components/TabBar";
+import { t } from "../i18n";
+import { canAdd, exportJson, newProfile, placeIn, removeProfile, upsertProfile, type Profile } from "../profiles/profiles";
+import type { ProfileStore } from "../profiles/store";
+import { colors, space } from "../theme";
+import { BirthInputScreen, type BirthResult } from "./BirthInputScreen";
+import { ChartScreen } from "./ChartScreen";
+import { sampleChart, samplePlace } from "../sample";
+import { ProfilesScreen, profileName } from "./ProfilesScreen";
+
+type Editor = { purpose: Purpose; profileId?: string };
+
+/** The app after language choice: first your own birth details, then Chart and Profiles tabs. */
+export function Root({ lang, store, now = () => new Date().toISOString(), houseSystem = "placidus",
+  onLang = () => {}, onHouseSystem = () => {}, onDeleteAll = () => {},
+  tourDone = true, onTourDone = () => {}, addPromptDone = true, onAddPromptDone = () => {} }: {
+  lang: Lang; store: ProfileStore; now?: () => string; houseSystem?: HouseSystem;
+  onLang?: (l: Lang) => void; onHouseSystem?: (h: HouseSystem) => void; onDeleteAll?: () => void;
+  tourDone?: boolean; onTourDone?: () => void; addPromptDone?: boolean; onAddPromptDone?: () => void;
+}) {
+  const [profiles, setProfiles] = useState<Profile[] | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [tab, setTab] = useState<"chart" | "profiles">("chart");
+  const [editor, setEditor] = useState<Editor | null>(null);
+  const [calc, setCalc] = useState<"idle" | "busy" | "error">("idle");
+  const [sample, setSample] = useState(false); // showing the bundled sample chart; nothing saved
+
+  useEffect(() => {
+    store.load().then((ps) => {
+      setProfiles(ps);
+      setActiveId((ps.find((p) => p.kind === "self") ?? ps[0])?.id ?? null);
+    });
+  }, [store]);
+
+  const commit = (next: Profile[]) => {
+    setProfiles(next);
+    store.save(next).catch(() => {});
+  };
+
+  // House system setting (FR-04): apply it to every profile; changed ones drop their chart and recalculate.
+  useEffect(() => {
+    if (!profiles?.some((p) => p.request.house_system !== houseSystem)) return;
+    const at = now();
+    const next = profiles.reduce((acc, p) => p.request.house_system === houseSystem ? acc
+      : upsertProfile(acc, { ...p, request: { ...p.request, house_system: houseSystem } }, at), profiles);
+    commit(next);
+    setCalc("idle");
+  }, [houseSystem, profiles]);
+
+  // Place names in all three languages, so profiles follow the language setting. Best effort: offline
+  // or on error the name the place was saved with is shown.
+  useEffect(() => {
+    const missing = profiles?.filter((p) => !p.placeLocalized || Object.keys(p.placeLocalized).length < 3) ?? [];
+    for (const p of missing) {
+      Promise.all((["hy", "en", "ru"] as const).map((l) => getPlace(p.place.geonames_id, l)
+        .then((pl) => [l, { name: pl.name, region: pl.region, country: pl.country }] as const)))
+        .then((pairs) => setProfiles((cur) => {
+          const target = cur?.find((x) => x.id === p.id);
+          if (!cur || !target) return cur;
+          const next = upsertProfile(cur, { ...target, placeLocalized: Object.fromEntries(pairs) }, target.updatedAt);
+          store.save(next).catch(() => {});
+          return next;
+        }))
+        .catch(() => {});
+    }
+  }, [profiles?.map((p) => `${p.id}:${p.place.geonames_id}:${p.placeLocalized ? 1 : 0}`).join(",")]);
+
+  const active = profiles?.find((p) => p.id === activeId) ?? null;
+
+  // A profile without a saved chart (new device, or birth details edited) is recalculated on opening.
+  const recalc = (p: Profile) => {
+    setCalc("busy");
+    calculateChart(p.request)
+      .then((chart) => {
+        setCalc("idle");
+        setProfiles((cur) => {
+          const next = upsertProfile(cur ?? [], { ...p, chart }, now(), true);
+          store.save(next).catch(() => {});
+          return next;
+        });
+      })
+      .catch(() => setCalc("error"));
+  };
+  useEffect(() => {
+    if (active && !active.chart && calc === "idle" && tab === "chart" && !editor) recalc(active);
+  }, [active, tab, editor]);
+
+  // Android back button: leave the form, the sample or the Profiles tab instead of closing the app.
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (sample) { setSample(false); return true; }
+      if (editor && (profiles?.length ?? 0) > 0) { setEditor(null); return true; }
+      if (tab === "profiles") { setTab("chart"); return true; }
+      return false;
+    });
+    return () => sub.remove();
+  }, [sample, editor, tab, profiles?.length]);
+
+  if (!profiles) return <ActivityIndicator color={colors.gold} style={styles.fill} />;
+
+  const saveFromForm = ({ chart, request, place, form }: BirthResult) => {
+    const at = now();
+    const existing = editor?.profileId ? profiles.find((p) => p.id === editor.profileId) : undefined;
+    const purpose = editor?.purpose ?? "self";
+    const profile = existing
+      ? { ...existing, name: form.name.trim() || existing.name, request, place, chart,
+          placeLocalized: existing.place.geonames_id === place.geonames_id ? existing.placeLocalized : undefined,
+          consent: existing.kind === "other" && form.consent ? { kind: form.consent, confirmedAt: at } : existing.consent }
+      : newProfile({ kind: purpose, name: form.name, request, place, chart, now: at,
+          consent: purpose === "other" && form.consent ? { kind: form.consent, confirmedAt: at } : undefined });
+    commit(upsertProfile(profiles, profile, at, true));
+    setActiveId(profile.id);
+    setEditor(null);
+    setTab("chart");
+  };
+
+  if (sample) {
+    return (
+      <View style={styles.fill} testID="sample-mode">
+        <AppText variant="bodySm" tone="gold" style={styles.sampleNote}>{t("sampleNote", lang)}</AppText>
+        <ChartScreen chart={sampleChart} lang={lang} title={t("sampleTitle", lang)} tour
+          place={{ ...samplePlace, name: lang === "hy" ? "Գյումրի" : lang === "ru" ? "Гюмри" : "Gyumri" }}
+          onBack={() => setSample(false)} />
+      </View>
+    );
+  }
+
+  // First launch (or after deleting everything): your own birth details.
+  if (editor || profiles.length === 0) {
+    const editing = editor?.profileId ? profiles.find((p) => p.id === editor.profileId) : undefined;
+    return (
+      <BirthInputScreen key={editor?.profileId ?? editor?.purpose ?? "first"} lang={lang} purpose={editor?.purpose ?? "self"}
+        initial={editing ? formFromProfile(editing) : undefined} editing={!!editing} onChart={saveFromForm}
+        houseSystem={houseSystem} onSample={editor ? undefined : () => setSample(true)}
+        onCancel={profiles.length > 0 ? () => setEditor(null) : undefined} />
+    );
+  }
+
+  const addOther = canAdd(profiles, "other");
+  return (
+    <View style={styles.fill}>
+      <View style={styles.fill}>
+        {tab === "profiles" ? (
+          <ProfilesScreen lang={lang} profiles={profiles} activeId={activeId} canAddMore={addOther.ok}
+            onOpen={(id) => { setActiveId(id); setCalc("idle"); setTab("chart"); }}
+            onAdd={() => setEditor({ purpose: canAdd(profiles, "self").ok ? "self" : "other" })}
+            onEdit={(id) => setEditor({ purpose: profiles.find((p) => p.id === id)!.kind, profileId: id })}
+            onDelete={(id) => {
+              const next = removeProfile(profiles, id);
+              commit(next);
+              if (id === activeId) setActiveId(next[0]?.id ?? null);
+            }}
+            onExport={() => { Share.share({ message: exportJson(profiles, now()), title: "Ameesi" }).catch(() => {}); }}
+            houseSystem={houseSystem} onLang={onLang} onHouseSystem={onHouseSystem}
+            onDeleteAll={() => { setProfiles([]); setActiveId(null); setTab("chart"); onDeleteAll(); }} />
+        ) : active?.chart ? (
+          <ChartScreen key={active.id} chart={active.chart} lang={lang} title={profileName(active, lang)}
+            tour={active.kind === "self" && !tourDone} onTourDone={onTourDone}
+            addPrompt={active.kind === "self" && tourDone && !addPromptDone && addOther.ok}
+            onAddPromptDone={onAddPromptDone} onAddSomeone={() => setEditor({ purpose: "other" })}
+            place={placeIn(active, lang)} onEditDetails={() => setEditor({ purpose: active.kind, profileId: active.id })} />
+        ) : (
+          <View style={[styles.fill, styles.centre]}>
+            {calc === "error" ? (
+              <>
+                <AppText tone="rose" accessibilityRole="alert"><Icon char="⚠" tone="rose" /> {t("errorNetwork", lang)}</AppText>
+                <Button kind="secondary" testID="retry" label={t("retry", lang)} onPress={() => active && recalc(active)} />
+              </>
+            ) : (
+              <>
+                <ActivityIndicator color={colors.gold} />
+                <AppText tone="textMuted">{t("calculating", lang)}</AppText>
+              </>
+            )}
+          </View>
+        )}
+      </View>
+      <TabBar value={tab} onChange={setTab}
+        tabs={[{ value: "chart", label: t("tabChart", lang) }, { value: "profiles", label: t("tabProfiles", lang) }]} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  fill: { flex: 1 },
+  sampleNote: { paddingHorizontal: space[4], paddingTop: space[4] },
+  centre: { alignItems: "center", justifyContent: "center", gap: space[4], padding: space[4] },
+});

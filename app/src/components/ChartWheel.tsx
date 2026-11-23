@@ -1,0 +1,172 @@
+import { Pressable, StyleSheet, View } from "react-native";
+import Svg, { Circle, G, Line, Text as SvgText } from "react-native-svg";
+import type { AspectType, BodyId, Chart, Lang, SignId } from "../api/types";
+import { bodyLabel } from "../chartText";
+import { houseTerm } from "../i18n";
+import type { Selection } from "../selection";
+import { bodyGlyph, signGlyph } from "../format";
+import { colors, dash, MIN_TOUCH, space, stroke, textStyle } from "../theme";
+import { polar, screenAngle, spread } from "../wheel/geometry";
+import { AppText } from "./AppText";
+
+const SIGNS: SignId[] = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpio",
+  "sagittarius", "capricorn", "aquarius", "pisces"];
+
+// Ring radii as fractions of the wheel's radius.
+const R = { outer: 0.98, signInner: 0.82, signGlyph: 0.9, planetTick: 0.78, planetGlyph: 0.67,
+  houseNumber: 0.47, aspect: 0.4 };
+const STROKE = stroke;
+const MIN_GLYPH_SEPARATION = 9; // degrees between planet glyphs on the ring
+const UNCERTAIN_OPACITY = 0.5; // dashes mean "tense", so uncertain lines are drawn faint instead
+
+// Design system: trine and sextile gold solid; square and opposition rose dashed; conjunctions no line.
+const ASPECT_STYLE: Record<Exclude<AspectType, "conjunction">, { colour: string; dash?: string }> = {
+  sextile: { colour: colors.gold }, trine: { colour: colors.gold },
+  square: { colour: colors.rose, dash: dash.tense }, opposition: { colour: colors.rose, dash: dash.tense },
+};
+
+/** The target (planet glyph or house number) nearest the touch, if within half a touch target. */
+export function nearestTarget<T>(targets: { value: T; x: number; y: number }[], x: number, y: number): T | null {
+  let best: T | null = null;
+  let bestDist = MIN_TOUCH / 2;
+  for (const g of targets) {
+    const d = Math.hypot(g.x - x, g.y - y);
+    if (d <= bestDist) {
+      best = g.value;
+      bestDist = d;
+    }
+  }
+  return best;
+}
+
+export function ChartWheel({ chart, lang, size, selected, onSelect }: {
+  chart: Chart; lang: Lang; size: number; selected: BodyId | null; onSelect: (s: Selection) => void;
+}) {
+  const c = size / 2;
+  const asc = chart.angles?.asc.lon ?? null;
+  const at = (lon: number, frac: number) => polar(c, c, c * frac, screenAngle(lon, asc));
+  const radial = (lon: number, from: number, to: number) => {
+    const a = at(lon, from), b = at(lon, to);
+    return { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
+  };
+  const lonOf = Object.fromEntries(chart.bodies.map((b) => [b.id, b.lon])) as Record<BodyId, number>;
+  const display = spread(chart.bodies.map((b) => b.lon), MIN_GLYPH_SEPARATION);
+  const uncertainAspect = new Set(chart.aspects_uncertain.map((u) => `${u.a}-${u.b}-${u.type}`));
+  const glyphText = textStyle("glyph");
+  const glyphs = chart.bodies.map((b, i) => ({ b, ...at(display[i], R.planetGlyph) }));
+  const houseMid = (i: number) => {
+    const h = chart.houses![i].cusp_lon, next = chart.houses![(i + 1) % 12].cusp_lon;
+    return h + ((((next - h) % 360) + 360) % 360) / 2;
+  };
+  const houseSpots = (chart.houses ?? []).map((h, i) => ({ n: h.house, ...at(houseMid(i), R.houseNumber) }));
+  const targets: { value: Selection; x: number; y: number }[] = [
+    ...glyphs.map((g) => ({ value: { kind: "body", id: g.b.id } as Selection, x: g.x, y: g.y })),
+    ...houseSpots.map((h) => ({ value: { kind: "house", n: h.n } as Selection, x: h.x, y: h.y })),
+  ];
+
+  return (
+    <View style={{ width: size, height: size }} testID="chart-wheel">
+      <Svg width={size} height={size}>
+        {/* Zodiac ring */}
+        <Circle cx={c} cy={c} r={c * R.outer} fill={colors.surface} stroke={colors.border} strokeWidth={STROKE.hairline} />
+        <Circle cx={c} cy={c} r={c * R.signInner} fill={colors.bg} stroke={colors.border} strokeWidth={STROKE.hairline} />
+        {SIGNS.map((s, i) => {
+          const g = at(i * 30 + 15, R.signGlyph);
+          return (
+            <G key={s}>
+              <Line {...radial(i * 30, R.signInner, R.outer)} stroke={colors.divider} strokeWidth={STROKE.hairline} />
+              <SvgText x={g.x} y={g.y + glyphText.fontSize! / 3} fontSize={glyphText.fontSize} fontFamily={glyphText.fontFamily} fill={colors.lavender}
+                textAnchor="middle">{signGlyph(s)}</SvgText>
+            </G>
+          );
+        })}
+
+        {/* Houses (not shown when the birth time is unknown) */}
+        {chart.houses?.map((h, i) => {
+          const n = at(houseMid(i), R.houseNumber);
+          const caption = textStyle("caption");
+          return (
+            <G key={h.house}>
+              <Line {...radial(h.cusp_lon, R.aspect, R.signInner)} stroke={colors.divider}
+                strokeWidth={STROKE.hairline} strokeOpacity={h.uncertain ? UNCERTAIN_OPACITY : 1} />
+              <SvgText x={n.x} y={n.y + caption.fontSize! / 3} fontSize={caption.fontSize} fontFamily={caption.fontFamily} fill={colors.textFaint}
+                textAnchor="middle">{h.house}</SvgText>
+            </G>
+          );
+        })}
+
+        {/* Angles: Ascendant–Descendant and MC–IC axes */}
+        {chart.angles && (["asc", "mc"] as const).map((k) => {
+          const a = chart.angles![k];
+          return (
+            <G key={k}>
+              <Line {...radial(a.lon, R.aspect, R.signInner)} stroke={colors.ivory} strokeWidth={STROKE.axis}
+                strokeOpacity={a.uncertain ? UNCERTAIN_OPACITY : 1} />
+              <Line {...radial(a.lon + 180, R.aspect, R.signInner)} stroke={colors.ivory} strokeWidth={STROKE.hairline} />
+            </G>
+          );
+        })}
+
+        {/* Aspects */}
+        <Circle cx={c} cy={c} r={c * R.aspect} fill="none" stroke={colors.divider} strokeWidth={STROKE.hairline} />
+        {chart.aspects.map((a) => {
+          if (a.type === "conjunction") return null;
+          const p = at(lonOf[a.a], R.aspect), q = at(lonOf[a.b], R.aspect);
+          const dim = selected && selected !== a.a && selected !== a.b;
+          const unsure = uncertainAspect.has(`${a.a}-${a.b}-${a.type}`);
+          const style = ASPECT_STYLE[a.type];
+          return (
+            <Line key={`${a.a}-${a.b}`} testID={`aspect-${a.a}-${a.b}`} x1={p.x} y1={p.y} x2={q.x} y2={q.y}
+              stroke={style.colour} strokeWidth={STROKE.line} strokeDasharray={style.dash}
+              strokeOpacity={dim ? 0.2 : unsure ? UNCERTAIN_OPACITY : 1} />
+          );
+        })}
+
+        {/* Planet ticks at the exact longitude */}
+        {chart.bodies.map((b) => (
+          <Line key={b.id} {...radial(b.lon, R.planetTick, R.signInner)}
+            stroke={selected === b.id ? colors.gold : colors.ivory} strokeWidth={STROKE.line} />
+        ))}
+
+        {/* Gold ring round the selected planet's glyph */}
+        {glyphs.filter((g) => g.b.id === selected).map((g) => (
+          <Circle key="ring" testID="selected-ring" cx={g.x} cy={g.y} r={MIN_TOUCH / 2 - space[1]} fill="none"
+            stroke={colors.gold} strokeWidth={STROKE.axis} />
+        ))}
+      </Svg>
+
+      {/* Planet glyphs. Close planets would have overlapping 48 px targets, so touch goes through one
+          layer that picks the nearest glyph; screen readers get one labelled element per planet. */}
+      {glyphs.map(({ b, x, y }) => {
+        const isSelected = selected === b.id;
+        return (
+          <View key={b.id} testID={`wheel-${b.id}`} pointerEvents="none" accessible accessibilityRole="button"
+            accessibilityLabel={bodyLabel(b, lang)} accessibilityState={{ selected: isSelected }}
+            accessibilityActions={[{ name: "activate" }]}
+            onAccessibilityAction={(e) => e.nativeEvent.actionName === "activate" && onSelect({ kind: "body", id: b.id })}
+            style={[styles.glyph, { left: x - MIN_TOUCH / 2, top: y - MIN_TOUCH / 2 }]}>
+            <AppText variant="glyph" tone={isSelected ? "gold" : "ivory"} maxFontSizeMultiplier={1}>{bodyGlyph(b.id)}</AppText>
+          </View>
+        );
+      })}
+      {houseSpots.map((h) => (
+        <View key={h.n} testID={`wheel-house-${h.n}`} pointerEvents="none" accessible accessibilityRole="button"
+          accessibilityLabel={houseTerm(h.n, lang)} accessibilityActions={[{ name: "activate" }]}
+          onAccessibilityAction={(e) => e.nativeEvent.actionName === "activate" && onSelect({ kind: "house", n: h.n })}
+          style={[styles.glyph, { left: h.x - MIN_TOUCH / 2, top: h.y - MIN_TOUCH / 2 }]} />
+      ))}
+      <Pressable testID="wheel-touch" accessible={false} importantForAccessibility="no"
+        style={StyleSheet.absoluteFill}
+        onPress={(e) => {
+          // Android/iOS give locationX/Y; the web preview gives offsetX/Y. Both are relative to this layer.
+          const n = e.nativeEvent as unknown as Record<string, number | undefined>;
+          const hit = nearestTarget(targets, n.locationX ?? n.offsetX ?? NaN, n.locationY ?? n.offsetY ?? NaN);
+          if (hit) onSelect(hit);
+        }} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  glyph: { position: "absolute", width: MIN_TOUCH, height: MIN_TOUCH, alignItems: "center", justifyContent: "center" },
+});

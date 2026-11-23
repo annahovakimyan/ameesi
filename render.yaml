@@ -1,0 +1,12 @@
+# Render Blueprint: runs the Ameesi calculation server from server/Dockerfile.
+# In Render: New → Blueprint → connect this repository → choose the branch → Apply.
+services:
+  - type: web
+    name: ameesi-server
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./server/Dockerfile
+    dockerContext: ./server
+    healthCheckPath: /health
+    autoDeploy: true

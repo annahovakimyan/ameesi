@@ -1,67 +1,176 @@
-"""Ameesi calculation server. Run: uvicorn app.main:app --reload"""
-from __future__ import annotations
-
+import logging
+import time as _time
 from contextlib import asynccontextmanager
-from datetime import date, time
+from datetime import date, datetime, time, timedelta, timezone
+from pathlib import Path
 from typing import Literal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+import swisseph as swe
+from fastapi import Depends, FastAPI, HTTPException, Query
 
-from . import engine
+from . import engine, places
+from .models import ChartRequest
+from .timezones import TZDATA_VERSION, resolve_local
+from .uncertainty import flag_uncertain, moon_changes_sign
+
+SAMPLE_STEP = timedelta(minutes=5)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    engine.init()  # fail at startup if the ephemeris files are missing
+async def lifespan(_app):
+    engine.init_ephemeris()
     yield
 
 
-app = FastAPI(title="Ameesi calculation server", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Ameesi calculation server", lifespan=lifespan)
+
+# CLAUDE.md rule 6: no birth data in logs. Run uvicorn with --no-access-log (its log includes query
+# strings such as ?q=Leninakan) and log only method, path, status and duration here.
+request_log = logging.getLogger("ameesi.requests")
+if not request_log.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+    request_log.addHandler(_handler)
+    request_log.setLevel(logging.INFO)
 
 
-class Place(BaseModel):
-    geonames_id: int | None = None
-    name: str | None = None
-    lat: float = Field(ge=-90, le=90)
-    lon: float = Field(ge=-180, le=180)
-    tz: str
-
-
-class TimeWindow(BaseModel):
-    from_: str = Field(alias="from", pattern=r"^\d{2}:\d{2}$")
-    to: str = Field(pattern=r"^\d{2}:\d{2}$")
-
-
-class ChartRequest(BaseModel):
-    date: date
-    time: str | None = Field(default=None, pattern=r"^\d{2}:\d{2}$")
-    time_confidence: Literal["exact", "approximate", "unknown"]
-    time_window: TimeWindow | None = None
-    place: Place
-    house_system: Literal["placidus", "whole_sign"] = "placidus"
-    utc_offset_override: int | None = Field(default=None, ge=-840, le=840)
+@app.middleware("http")
+async def log_requests(request, call_next):
+    start = _time.perf_counter()
+    response = await call_next(request)
+    request_log.info("%s %s %s %.0fms", request.method, request.url.path, response.status_code,
+                     (_time.perf_counter() - start) * 1000)
+    return response
 
 
 @app.get("/health")
 def health():
-    return {"ok": True, "engine": engine.ENGINE_VERSION}
+    """For the host's health checks: versions, and whether the place database is built."""
+    return {"status": "ok", "engine": engine.ENGINE_VERSION, "swisseph": swe.version, "tzdata": TZDATA_VERSION,
+            "places_db": places.get_db_path().is_file()}
+
+
+def r2(x: float) -> float:
+    return round(x, 2)
+
+
+def to_response(chart: dict) -> dict:
+    """Round for display. Full precision stays inside the engine."""
+    bodies = [{**b, "lon": r2(b["lon"]), "lat": r2(b["lat"]), "speed": round(b["speed"], 4),
+               "sign_deg": r2(b["sign_deg"])} for b in chart["bodies"].values()]
+    angles = ({k: {**a, "lon": r2(a["lon"]), "sign_deg": r2(a["sign_deg"])}
+               for k, a in chart["angles"].items()} if chart["angles"] else None)
+    houses = ([{**h, "cusp_lon": r2(h["cusp_lon"])} for h in chart["houses"]]
+              if chart["houses"] else None)
+    aspects = [{**a, "separation": r2(a["separation"]), "orb": r2(a["orb"])} for a in chart["aspects"]]
+    return {"bodies": bodies, "angles": angles, "houses": houses, "aspects": aspects,
+            "aspects_uncertain": chart["aspects_uncertain"],
+            "stelliums": chart["stelliums"], "balance": chart["balance"]}
+
+
+def window_times(d: date, start: time, end: time) -> tuple[list[time], time]:
+    """Every 5 minutes from start to end (both included), and the midpoint."""
+    t0, t1 = datetime.combine(d, start), datetime.combine(d, end)
+    samples, t = [], t0
+    while t <= t1:
+        samples.append(t.time())
+        t += SAMPLE_STEP
+    if samples[-1] != end:
+        samples.append(end)
+    return samples, (t0 + (t1 - t0) / 2).time()
 
 
 @app.post("/charts/calculate")
-def calculate(req: ChartRequest):
+def calculate_chart(req: ChartRequest):
     try:
-        return engine.calculate(
-            birth_date=req.date,
-            birth_time=time.fromisoformat(req.time) if req.time else None,
-            time_confidence=req.time_confidence,
-            time_window={"from": req.time_window.from_, "to": req.time_window.to} if req.time_window else None,
-            lat=req.place.lat, lon=req.place.lon, tz=req.place.tz,
-            house_system=req.house_system, utc_offset_override=req.utc_offset_override,
-        )
-    except (engine.EngineError, ValueError) as e:
-        raise HTTPException(status_code=422, detail=str(e))
-    except Exception as e:  # unknown time zone and similar input errors
-        if e.__class__.__name__ == "ZoneInfoNotFoundError":
-            raise HTTPException(status_code=422, detail=f"unknown time zone: {req.place.tz}")
-        raise
+        ZoneInfo(req.place.tz)
+    except (ZoneInfoNotFoundError, ValueError):
+        raise HTTPException(422, f"unknown time zone: {req.place.tz}")
+
+    def utc_at(t: time) -> datetime:
+        return resolve_local(req.date, t, req.place.tz, req.utc_offset_override)["utc_dt"]
+
+    def chart_at(t: time, with_houses: bool = True) -> dict:
+        return engine.calculate(utc_at(t), req.place.lat, req.place.lon, req.house_system, with_houses)
+
+    # The moment the chart is drawn for
+    if req.time_confidence == "exact":
+        report_time = req.time
+    elif req.time_confidence == "approximate":
+        samples, report_time = window_times(req.date, req.time_window.from_, req.time_window.to)
+    else:
+        report_time = time(12, 0)
+
+    resolved = resolve_local(req.date, report_time, req.place.tz, req.utc_offset_override)
+    meta = {
+        "engine": engine.ENGINE_VERSION,
+        "swisseph": swe.version,
+        "tzdata": TZDATA_VERSION,
+        "zodiac": "tropical",
+        "house_system_requested": req.house_system,
+        "house_system_used": None,
+        "node": "true",
+        "calculated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    time_block = {
+        "local": f"{req.date.isoformat()}T{report_time.strftime('%H:%M')}",
+        "utc": resolved["utc"],
+        "utc_offset_minutes": resolved["utc_offset_minutes"],
+        "offset_source": resolved["offset_source"],
+        "confidence": req.time_confidence,
+        "dst_ambiguity": resolved["dst_ambiguity"],
+    }
+    if req.time_confidence == "approximate":
+        time_block["window"] = {"from": req.time_window.from_.strftime("%H:%M"),
+                                "to": req.time_window.to.strftime("%H:%M")}
+
+    if resolved["dst_ambiguity"]:
+        # Don't guess: the app asks the user and resends with utc_offset_override.
+        return {"meta": meta, "time": time_block, "bodies": [], "angles": None, "houses": None,
+                "aspects": [], "aspects_uncertain": [], "stelliums": [], "balance": None,
+                "warnings": [{"code": "needs_confirmation",
+                              "message": "This local time is ambiguous because of a clock change. "
+                                         "Please choose the correct moment."}]}
+
+    if req.time_confidence == "exact":
+        chart = chart_at(report_time)
+    elif req.time_confidence == "approximate":
+        chart = flag_uncertain(chart_at(report_time), [chart_at(t) for t in samples])
+    else:
+        chart = chart_at(report_time, with_houses=False)
+        if moon_changes_sign(chart_at(time(0, 0), False), chart_at(time(23, 59), False)):
+            chart["bodies"]["moon"]["uncertain"] = True
+
+    meta["house_system_used"] = chart["house_system_used"] if chart["houses"] else None
+    warnings = list(chart["warnings"])
+    if req.date.year < 1970 and resolved["offset_source"] == "tzdata":
+        # PRD section 8: time-zone history before 1970 is less certain; say so softly.
+        warnings.append({"code": "historical_offset",
+                         "message": "Charts for this place and year sometimes differ between sites; check the details."})
+    if resolved["offset_source"] == "user_override":
+        warnings.append({"code": "utc_offset_overridden",
+                         "message": "The UTC offset was set by hand instead of the time zone database."})
+    return {"meta": meta, "time": time_block, **to_response(chart), "warnings": warnings}
+
+
+@app.get("/places")
+def search_places(q: str = Query(min_length=places.MIN_QUERY, max_length=100),
+                  lang: Literal["hy", "en", "ru"] = "hy",
+                  db_path: Path = Depends(places.get_db_path)):
+    if not db_path.is_file():
+        raise HTTPException(503, "place database not built; run scripts/build_places.py")
+    return {"results": places.search(db_path, q, lang),
+            "attribution": "Place data © GeoNames (geonames.org), CC BY 4.0"}
+
+
+@app.get("/places/{geonames_id}")
+def get_place(geonames_id: int, lang: Literal["hy", "en", "ru"] = "hy",
+              db_path: Path = Depends(places.get_db_path)):
+    """One place in a language, so saved profiles can show their place in the current language."""
+    if not db_path.is_file():
+        raise HTTPException(503, "place database not built; run scripts/build_places.py")
+    place = places.lookup(db_path, geonames_id, lang)
+    if place is None:
+        raise HTTPException(404, "unknown place")
+    return place

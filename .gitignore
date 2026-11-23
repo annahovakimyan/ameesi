@@ -7,4 +7,6 @@ node_modules/
 .expo/
 server/data/*.sqlite
 content/entries*.json
+server/data/raw/
+!.env.example
 .pytest_cache/

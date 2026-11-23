@@ -4,7 +4,10 @@ Interpretation texts are private. They live in the `ameesi-content` repository a
 
 ## Source
 
-Supabase table `public.entries` (schema in the private repo's `schema.sql`):
+Supabase project `ameesi` (eu-west-1), table `public.entries` (schema in the private repo's `schema.sql`,
+applied as migration `create_entries`). Besides the columns below it has `reviewer`, `reviewed_at`,
+`source_notes` and `updated_at`; `version` increases automatically when `text` or `status` changes.
+Anonymous sign-in is enabled for the app.
 
 | Column | Meaning |
 | --- | --- |
@@ -14,7 +17,9 @@ Supabase table `public.entries` (schema in the private repo's `schema.sql`):
 | `status` | Only `approved` rows are readable by the app (row-level security) |
 | `version` | Increases when the text changes |
 
-The app uses the Supabase URL and **anon** key (public by design). The service key is never in the app or this repository.
+The app uses the Supabase URL and **publishable** key (public by design), from `app/.env`. The secret
+(service) key is never in the app or this repository; only the content pipeline uses it. Row-level security
+lets the app read approved rows only, and the app has no insert, update or delete rights.
 
 ## Behaviour
 
@@ -22,7 +27,7 @@ The app uses the Supabase URL and **anon** key (public by design). The service k
 2. Store them on the device (SQLite or MMKV) so explanations work offline.
 3. On later launches, at most once a day, fetch rows with a newer `version` and update the cache.
 4. When the language changes, download that language.
-5. If an element has no approved entry in the user's language, show the English approved entry with a small "Not yet translated" note; if none exists at all, show the element's facts without an explanation. Never show drafts.
+5. Show only entries approved in the user's language (PRD FR-06). If an element has no approved entry in that language, show its facts and astrological basis without an explanation; never fall back to another language and never show drafts. At launch every element must have an approved entry in Armenian, English and Russian (PRD gate G2).
 
 ## Mapping chart data to entry ids
 
@@ -42,3 +47,22 @@ The app uses the Supabase URL and **anon** key (public by design). The service k
 ## Tests
 
 Use a small fake set of entries (for example "Test text for sign.sun.leo") in fixtures. Never copy real texts into tests.
+
+## Importing entries
+
+`server/scripts/import_content.py` checks entries and loads them into Supabase. It never stores texts in this
+repository; it reads a CSV or JSON export of the private workbook.
+
+1. Start from the template: `python scripts/import_content.py --template blank.csv` gives every entry in the
+   content plan (`content/entry-ids.json`, 608 per language) in hy, en and ru, with a plain-English `element`
+   column. Columns: `id, element, lang, text, status, reviewer, reviewed_at, source_notes`.
+2. Fill in texts and statuses in the workbook and export it as CSV. Rows with empty text are skipped.
+3. Check and preview (writes nothing): `python scripts/import_content.py entries.csv`. It refuses unknown ids,
+   duplicates, empty or placeholder texts, and approved entries without a reviewer and review date; it warns
+   about "will", "always" and "destined" in English approved texts; it reports approved coverage per language.
+4. With `SUPABASE_URL` and `SUPABASE_SECRET_KEY` set in your shell (never in a file in this repository), the
+   preview also compares with Supabase. Add `--apply` to write new and changed entries. `--prune` also deletes
+   entries that aren't in the file; more than 20 deletions also need `--confirm-prune`.
+
+The app checks that every id it can show is in `content/entry-ids.json`; regenerate that file with
+`--write-ids` if the content plan changes.

@@ -1,203 +1,173 @@
-from datetime import date, datetime, time
+from datetime import datetime, timezone
 
 import pytest
 
-from app import engine
-from app.timeutil import resolve_local_time
+from app import engine as e
 
-GYUMRI = dict(lat=40.7894, lon=43.8475, tz="Asia/Yerevan")
-
-
-def chart(**kw):
-    args = dict(birth_date=date(1992, 8, 14), birth_time=time(14, 30), time_confidence="exact",
-                time_window=None, **GYUMRI)
-    args.update(kw)
-    return engine.calculate(**args)
+J2000 = datetime(2000, 1, 1, 12, 0, tzinfo=timezone.utc)
+YEREVAN = (40.1811, 44.5136)
+TROMSO = (69.6496, 18.9560)
 
 
-# ---------- helpers ----------
+# --- sign boundaries and angle maths -------------------------------------
 
-@pytest.mark.parametrize("lon,sign", [(0, "aries"), (29.999, "aries"), (30.0, "taurus"),
-                                      (359.99, "pisces"), (360.0, "aries"), (-1, "pisces")])
-def test_sign_boundaries(lon, sign):
-    assert engine.sign_of(lon) == sign
-
-
-@pytest.mark.parametrize("a,b,sep", [(359, 2, 3), (10, 190, 180), (350, 170, 180), (0, 90, 90), (45, 45, 0)])
-def test_separation_wraps(a, b, sep):
-    assert engine.separation(a, b) == pytest.approx(sep)
-
-
-def test_house_assignment_across_aries_point():
-    cusps = [350 + 30 * i for i in range(12)]  # house 1 starts at 350
-    assert engine.house_of(355, cusps) == 1
-    assert engine.house_of(5, cusps) == 1
-    assert engine.house_of(20, cusps) == 2
-    assert engine.house_of(349.99, cusps) == 12
+@pytest.mark.parametrize("lon,sign,deg", [
+    (0.0, "aries", 0.0),
+    (29.99, "aries", 29.99),
+    (30.0, "taurus", 0.0),
+    (359.99, "pisces", 29.99),
+    (360.0, "aries", 0.0),
+])
+def test_sign_boundaries(lon, sign, deg):
+    assert e.sign_of(lon) == sign
+    assert e.sign_deg(lon) == pytest.approx(deg)
 
 
-# ---------- aspects and orbs ----------
-
-def _pos(**lons):
-    base = {p: {"lon": 0.0, "lat": 0, "speed": 1} for p in engine.PLANETS}
-    spread = {p: 13.0 * i + 1 for i, p in enumerate(engine.PLANETS)}  # nothing aspected by default
-    for p in engine.PLANETS:
-        base[p]["lon"] = spread[p] * 7.3 % 360
-    for k, v in lons.items():
-        base[k]["lon"] = v
-    return base
+def test_normalise_wraps():
+    assert e.norm(359 + 2) == pytest.approx(1)
+    assert e.norm(-1) == pytest.approx(359)
 
 
-def _aspect(pos, a, b):
-    return next((x for x in engine.find_aspects(pos) if {x["a"], x["b"]} == {a, b}), None)
+def test_separation_is_shortest_arc():
+    assert e.separation(359, 1) == pytest.approx(2)
+    assert e.separation(10, 200) == pytest.approx(170)
 
 
-@pytest.mark.parametrize("sep,expected", [(7.9, "conjunction"), (8.1, None), (125.0, "trine"),
-                                          (127.1, None), (95.0, "square"), (65.0, "sextile"), (65.1, None)])
-def test_orbs_without_luminaries(sep, expected):
-    pos = _pos(mars=100.0, jupiter=100.0 + sep)
-    a = _aspect(pos, "mars", "jupiter")
-    assert (a["type"] if a else None) == expected
+# --- house assignment ----------------------------------------------------
+
+CUSPS = [350, 20, 50, 80, 110, 140, 170, 200, 230, 260, 290, 320]  # house 1 crosses 0°
 
 
-@pytest.mark.parametrize("sep,expected", [(9.9, "conjunction"), (10.1, None), (66.9, "sextile"), (129.0, "trine")])
-def test_luminary_bonus(sep, expected):
-    pos = _pos(sun=200.0, saturn=200.0 + sep)
-    a = _aspect(pos, "sun", "saturn")
-    assert (a["type"] if a else None) == expected
+@pytest.mark.parametrize("lon,house", [
+    (350.0, 1), (359.9, 1), (0.0, 1), (19.99, 1), (20.0, 2), (349.99, 12), (175.0, 7),
+])
+def test_house_assignment(lon, house):
+    assert e.house_of(lon, CUSPS) == house
 
 
-def test_nearly_exact_flag():
-    pos = _pos(mars=10.0, saturn=100.8)
-    a = _aspect(pos, "mars", "saturn")
-    assert a["type"] == "square" and a["nearly_exact"] is True
+def test_on_cusp_within_one_degree():
+    assert e.on_cusp(20.9, CUSPS)
+    assert e.on_cusp(19.1, CUSPS)
+    assert not e.on_cusp(21.1, CUSPS)
 
 
-def test_no_aspects_to_nodes_or_chiron():
-    r = chart()
-    names = {x["a"] for x in r["aspects"]} | {x["b"] for x in r["aspects"]}
-    assert names <= set(engine.PLANETS)
+# --- aspects and orbs ----------------------------------------------------
+
+@pytest.mark.parametrize("a,b,sep,expected", [
+    ("venus", "mars", 8.0, "conjunction"),
+    ("venus", "mars", 8.01, None),
+    ("venus", "mars", 172.0, "opposition"),
+    ("venus", "mars", 171.99, None),
+    ("venus", "mars", 97.0, "square"),
+    ("venus", "mars", 97.01, None),
+    ("venus", "mars", 113.0, "trine"),
+    ("venus", "mars", 112.99, None),
+    ("venus", "mars", 65.0, "sextile"),
+    ("venus", "mars", 65.01, None),
+    # +2° when the Sun or Moon is involved
+    ("sun", "mars", 10.0, "conjunction"),
+    ("sun", "mars", 10.01, None),
+    ("moon", "mars", 99.0, "square"),
+    ("moon", "mars", 99.01, None),
+    ("sun", "moon", 67.0, "sextile"),
+    ("sun", "moon", 67.01, None),
+])
+def test_orb_thresholds(a, b, sep, expected):
+    found = e.aspect_between(a, b, sep)
+    assert (found["type"] if found else None) == expected
 
 
-# ---------- stelliums ----------
-
-def test_stellium_needs_three_planets_and_ignores_nodes():
-    placements = {n: {"sign": "aries", "house": None} for n in engine.BODY_ORDER}
-    others = [s for s in engine.SIGNS if s != "leo"]
-    for i, p in enumerate(engine.PLANETS):
-        placements[p]["sign"] = others[i]
-    placements["sun"]["sign"] = placements["moon"]["sign"] = "leo"
-    assert not any(s["where"] == "leo" for s in engine.find_stelliums(placements))
-    placements["mercury"]["sign"] = "leo"
-    st = [s for s in engine.find_stelliums(placements) if s["where"] == "leo"]
-    assert st and set(st[0]["members"]) == {"sun", "moon", "mercury"}
-    assert all("north_node" not in s["members"] for s in engine.find_stelliums(placements))
+def test_nearly_exact():
+    assert e.aspect_between("venus", "mars", 91.0)["nearly_exact"]
+    assert not e.aspect_between("venus", "mars", 91.01)["nearly_exact"]
 
 
-# ---------- whole chart ----------
-
-def test_exact_chart_shape():
-    r = chart()
-    assert r["time"]["utc"] == "1992-08-14T10:30Z" and r["time"]["utc_offset_minutes"] == 240
-    assert [b["id"] for b in r["bodies"]] == engine.BODY_ORDER
-    assert len(r["houses"]) == 12 and set(r["angles"]) == {"asc", "mc", "dsc", "ic"}
-    assert r["meta"]["swisseph"] and r["meta"]["tzdata"] and r["meta"]["engine"]
-    sun = next(b for b in r["bodies"] if b["id"] == "sun")
-    assert sun["sign"] == "leo" and 21 < sun["sign_deg"] < 23
+def test_aspects_only_between_ten_planets():
+    lons = {b: 0.0 for b in e.BODIES}  # everything conjunct
+    pairs = {(x["a"], x["b"]) for x in e.find_aspects(lons)}
+    assert len(pairs) == 45  # 10 choose 2
+    assert not any(p in ("north_node", "south_node", "chiron") for pair in pairs for p in pair)
 
 
-def test_south_node_opposite_north_node():
-    r = chart()
-    nn = next(b for b in r["bodies"] if b["id"] == "north_node")
-    sn = next(b for b in r["bodies"] if b["id"] == "south_node")
-    assert engine.separation(nn["lon"], sn["lon"]) == pytest.approx(180, abs=1e-6)
+# --- stelliums and balance -----------------------------------------------
+
+def test_stellium_by_sign_excludes_nodes_and_chiron():
+    # Aries holds Moon, Mars + nodes and Chiron: only 2 planets, so no stellium
+    signs = dict(zip(e.PLANETS, ["leo", "aries", "leo", "virgo", "aries",
+                                 "taurus", "gemini", "cancer", "libra", "scorpio"]))
+    signs.update({"north_node": "aries", "south_node": "aries", "chiron": "aries"})
+    assert e.find_stelliums(signs, houses=None) == []
 
 
-def test_angles_are_opposite():
-    r = chart()
-    a = r["angles"]
-    assert engine.separation(a["asc"]["lon"], a["dsc"]["lon"]) == pytest.approx(180, abs=1e-3)
-    assert engine.separation(a["mc"]["lon"], a["ic"]["lon"]) == pytest.approx(180, abs=1e-3)
-
-
-def test_retrograde_from_speed():
-    r = chart()
-    sat = next(b for b in r["bodies"] if b["id"] == "saturn")
-    assert sat["retrograde"] is True and sat["speed"] < 0
-
-
-def test_whole_sign_cusps_start_at_zero_degrees():
-    r = chart(house_system="whole_sign")
-    assert all(h["cusp_lon"] % 30 == pytest.approx(0, abs=1e-6) for h in r["houses"])
-    assert r["houses"][0]["sign"] == r["angles"]["asc"]["sign"]
-
-
-def test_polar_fallback():
-    r = chart(lat=69.65, lon=18.96, tz="Europe/Oslo")  # Tromsø
-    assert r["meta"]["house_system_used"] == "whole_sign"
-    assert any(w["code"] == "placidus_polar_fallback" for w in r["warnings"])
+def test_stellium_three_planets():
+    signs = {p: s for p, s in zip(e.PLANETS, ["leo", "leo", "leo", "virgo", "aries",
+                                              "taurus", "gemini", "cancer", "libra", "scorpio"])}
+    houses = {p: h for p, h in zip(e.PLANETS, [10, 10, 11, 11, 11, 1, 2, 3, 4, 5])}
+    assert e.find_stelliums(signs, houses) == [
+        {"kind": "sign", "where": "leo", "members": ["sun", "moon", "mercury"]},
+        {"kind": "house", "where": 11, "members": ["mercury", "venus", "mars"]},
+    ]
 
 
 def test_balance_counts_ten_planets():
-    b = chart()["balance"]
-    assert b["fire"] + b["earth"] + b["air"] + b["water"] == 10
-    assert b["cardinal"] + b["fixed"] + b["mutable"] == 10
+    signs = {p: "aries" for p in e.PLANETS}
+    signs["north_node"] = "taurus"
+    b = e.balance(signs)
+    assert b["fire"] == 10 and b["cardinal"] == 10 and b["earth"] == 0
+    assert sum(b[k] for k in ("fire", "earth", "air", "water")) == 10
 
 
-# ---------- time handling ----------
+# --- full calculation ----------------------------------------------------
 
-def test_dst_gap_is_not_guessed():
-    # Europe/Berlin clocks jumped from 02:00 to 03:00 on 2021-03-28.
-    r = engine.calculate(birth_date=date(2021, 3, 28), birth_time=time(2, 30), time_confidence="exact",
-                         time_window=None, lat=52.52, lon=13.40, tz="Europe/Berlin")
-    assert r["time"]["dst_ambiguity"]["kind"] == "skipped"
-    assert r["bodies"] == [] and r["warnings"][0]["code"] == "needs_confirmation"
-
-
-def test_dst_overlap_is_not_guessed():
-    rt = resolve_local_time(datetime(2021, 10, 31, 2, 30), "Europe/Berlin")
-    assert rt.utc is None and rt.ambiguity["kind"] == "repeated"
-    assert len(rt.ambiguity["candidates_utc"]) == 2
+def test_sun_at_j2000():
+    chart = e.calculate(J2000, *YEREVAN, "placidus")
+    sun = chart["bodies"]["sun"]
+    assert sun["lon"] == pytest.approx(280.37, abs=0.01)
+    assert sun["sign"] == "capricorn"
 
 
-def test_soviet_era_armenia_offset_comes_from_tzdata():
-    # Values from the IANA database; disputed histories are checked with golden charts and the manual override.
-    assert resolve_local_time(datetime(1985, 1, 15, 12, 0), "Asia/Yerevan").offset_minutes == 240
-    assert resolve_local_time(datetime(1985, 7, 15, 12, 0), "Asia/Yerevan").offset_minutes == 300  # Soviet summer time
-    assert resolve_local_time(datetime(1992, 1, 15, 12, 0), "Asia/Yerevan").offset_minutes == 180
+def test_all_bodies_present_and_node_opposition():
+    chart = e.calculate(J2000, *YEREVAN, "placidus")
+    assert list(chart["bodies"]) == e.BODIES
+    n, s = chart["bodies"]["north_node"]["lon"], chart["bodies"]["south_node"]["lon"]
+    assert e.norm(s - n) == pytest.approx(180)
 
 
-def test_override_offset_is_marked():
-    r = chart(utc_offset_override=180)
-    assert r["time"]["offset_source"] == "override" and r["time"]["utc"] == "1992-08-14T11:30Z"
+def test_retrograde_flag_follows_speed():
+    chart = e.calculate(J2000, *YEREVAN, "placidus")
+    for body in chart["bodies"].values():
+        assert body["retrograde"] == (body["speed"] < 0)
 
 
-def test_unknown_time_hides_houses_and_angles():
-    r = chart(birth_time=None, time_confidence="unknown")
-    assert r["houses"] is None and r["angles"] is None
-    assert all(b["house"] is None for b in r["bodies"])
+def test_twelve_houses_and_every_body_has_a_house():
+    chart = e.calculate(J2000, *YEREVAN, "placidus")
+    assert len(chart["houses"]) == 12
+    assert chart["houses"][0]["cusp_lon"] == pytest.approx(chart["angles"]["asc"]["lon"])
+    assert all(1 <= b["house"] <= 12 for b in chart["bodies"].values())
+    assert e.norm(chart["angles"]["dsc"]["lon"] - chart["angles"]["asc"]["lon"]) == pytest.approx(180)
 
 
-def test_unknown_time_flags_moon_when_it_changes_sign():
-    # The Moon entered Pisces around 06:00 UTC on 1992-08-14 in this chart's sky; find a day where it changes sign.
-    flagged = False
-    for day in range(1, 8):
-        r = chart(birth_date=date(1992, 8, day), birth_time=None, time_confidence="unknown")
-        moon = next(b for b in r["bodies"] if b["id"] == "moon")
-        flagged |= moon["uncertain"]
-    assert flagged  # the Moon changes sign every 2-3 days
+def test_whole_sign_cusps_start_at_sign_boundaries():
+    chart = e.calculate(J2000, *YEREVAN, "whole_sign")
+    assert chart["house_system_used"] == "whole_sign"
+    assert all(h["cusp_lon"] % 30 == pytest.approx(0) for h in chart["houses"])
 
 
-def test_approximate_time_flags_changes_in_window():
-    r = chart(birth_time=None, time_confidence="approximate", time_window={"from": "12:00", "to": "16:00"})
-    assert r["angles"]["asc"]["uncertain"] is True  # the Ascendant moves through about two signs in 4 hours
-    assert r["time"]["local"] == "1992-08-14T14:00"
-    narrow = chart(birth_time=None, time_confidence="approximate", time_window={"from": "14:29", "to": "14:31"})
-    assert narrow["angles"]["asc"]["uncertain"] is False
+def test_placidus_polar_fallback():
+    chart = e.calculate(J2000, *TROMSO, "placidus")
+    assert chart["house_system_used"] == "whole_sign"
+    assert [w["code"] for w in chart["warnings"]] == ["placidus_polar_fallback"]
 
 
-def test_bad_input_raises():
-    with pytest.raises(engine.EngineError):
-        chart(time_confidence="sometimes")
-    with pytest.raises(engine.EngineError):
-        chart(birth_time=None)
+def test_no_fallback_in_yerevan():
+    chart = e.calculate(J2000, *YEREVAN, "placidus")
+    assert chart["house_system_used"] == "placidus"
+    assert chart["warnings"] == []
+
+
+def test_works_in_a_fresh_thread():
+    """Swiss Ephemeris settings are per thread; FastAPI uses worker threads."""
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(1) as pool:
+        chart = pool.submit(e.calculate, J2000, *YEREVAN, "placidus").result()
+    assert chart["bodies"]["chiron"]["lon"] >= 0  # Chiron needs seas_18.se1; raises if files unused
