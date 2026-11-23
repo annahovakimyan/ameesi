@@ -42,6 +42,8 @@ export default function App() {
           ) : (
             <Root key={generation} lang={settings.lang} store={profileStore} houseSystem={settings.houseSystem}
               onLang={(lang) => update({ lang })} onHouseSystem={(houseSystem) => update({ houseSystem })}
+              tourDone={settings.tourDone} onTourDone={() => update({ tourDone: true })}
+              addPromptDone={settings.addPromptDone} onAddPromptDone={() => update({ addPromptDone: true })}
               onDeleteAll={() => {
                 settingsStore.deleteAll().catch(() => {}).finally(() => {
                   setSettings({ ...settings, onboarded: false });

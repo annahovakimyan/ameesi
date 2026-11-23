@@ -63,5 +63,7 @@ npm run generate     # after design/tokens.json or content/glossary.json changes
 - [ ] Cloud backup of profiles for signed-in accounts (anonymous sign-in is enabled in Supabase)
 - [x] Onboarding: language, symbolic note (FR-13), then your birth details with 18+; a check step shows the
       resolved time zone, local time and UTC before the chart (FR-01)
+- [x] "Start here" tour on your own chart: Sun, Moon and (with a known time) Ascendant, each opening its
+      explanation; then a one-time prompt to add someone (FR-11)
 - [x] Settings in the Profiles tab: language, house system (recalculates saved charts), About with source code
       link and license notices (FR-17), delete all my data

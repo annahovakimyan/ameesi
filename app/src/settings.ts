@@ -5,9 +5,13 @@ export interface Settings {
   lang: Lang;
   houseSystem: HouseSystem;
   onboarded: boolean;
+  tourDone: boolean; // the "Start here" tour (Sun, Moon, Ascendant) was finished or skipped
+  addPromptDone: boolean; // the prompt to add someone after the tour was answered (FR-11)
 }
 
-export const defaultSettings: Settings = { lang: "hy", houseSystem: "placidus", onboarded: false };
+export const defaultSettings: Settings = {
+  lang: "hy", houseSystem: "placidus", onboarded: false, tourDone: false, addPromptDone: false,
+};
 export const SETTINGS_KEY = "ameesi.settings.v1";
 const PREFIX = "ameesi.";
 
@@ -27,6 +31,8 @@ export function deviceSettingsStore(kv: KV) {
           lang: ["hy", "en", "ru"].includes(raw.lang) ? raw.lang : defaultSettings.lang,
           houseSystem: ["placidus", "whole_sign"].includes(raw.houseSystem) ? raw.houseSystem : defaultSettings.houseSystem,
           onboarded: raw.onboarded === true,
+          tourDone: raw.tourDone === true,
+          addPromptDone: raw.addPromptDone === true,
         };
       } catch {
         return defaultSettings;

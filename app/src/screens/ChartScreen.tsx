@@ -6,14 +6,19 @@ import { Button } from "../components/Button";
 import { ChartList } from "../components/ChartList";
 import { ChartWheel } from "../components/ChartWheel";
 import { ExplanationSheet } from "../components/ExplanationSheet";
+import { AddSomeonePrompt, TourCard, tourSteps } from "../components/TourCard";
 import { Segmented } from "../components/Segmented";
 import { t } from "../i18n";
 import type { Selection } from "../selection";
 import { space } from "../theme";
 
-export function ChartScreen({ chart, lang, onBack, title }: {
+export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addPrompt, onAddSomeone, onAddPromptDone }: {
   chart: Chart; lang: Lang; onBack?: () => void; title?: string;
+  tour?: boolean; onTourDone?: () => void; // "Start here": Sun, Moon, Ascendant
+  addPrompt?: boolean; onAddSomeone?: () => void; onAddPromptDone?: () => void; // FR-11, after the tour
 }) {
+  const steps = tourSteps(chart, lang);
+  const [step, setStep] = useState(0);
   const [view, setView] = useState<"wheel" | "list">("wheel");
   // Switching between wheel and list keeps the selected element (design system: SegmentedControl).
   const [selection, setSelection] = useState<Selection | null>(null);
@@ -26,6 +31,17 @@ export function ChartScreen({ chart, lang, onBack, title }: {
       {title && <AppText variant="titleLg" accessibilityRole="header" testID="chart-title">{title}</AppText>}
       <Segmented testID="view" value={view} onChange={setView}
         options={[{ value: "wheel", label: t("wheel", lang) }, { value: "list", label: t("list", lang) }]} />
+
+      {tour && step < steps.length && (
+        <TourCard lang={lang} step={step + 1} total={steps.length} title={steps[step].title}
+          onRead={() => setSelection(steps[step].sel)}
+          onNext={() => { setSelection(null); if (step + 1 >= steps.length) onTourDone?.(); else setStep(step + 1); }}
+          onSkip={() => { setSelection(null); onTourDone?.(); }} />
+      )}
+      {!tour && addPrompt && (
+        <AddSomeonePrompt lang={lang} onAdd={() => { onAddPromptDone?.(); onAddSomeone?.(); }}
+          onDismiss={() => onAddPromptDone?.()} />
+      )}
 
       {view === "wheel" ? (
         <>

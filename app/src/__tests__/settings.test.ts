@@ -8,15 +8,16 @@ function memory(initial: Record<string, string> = {}) {
 }
 
 test("defaults: Armenian, Placidus, not onboarded", async () => {
-  expect(defaultSettings).toEqual({ lang: "hy", houseSystem: "placidus", onboarded: false });
+  expect(defaultSettings).toEqual({ lang: "hy", houseSystem: "placidus", onboarded: false, tourDone: false, addPromptDone: false });
   expect(await deviceSettingsStore(memory()).load()).toEqual(defaultSettings);
 });
 
 test("saves and loads", async () => {
   const kv = memory();
   const store = deviceSettingsStore(kv);
-  await store.save({ lang: "ru", houseSystem: "whole_sign", onboarded: true });
-  expect(await store.load()).toEqual({ lang: "ru", houseSystem: "whole_sign", onboarded: true });
+  const s = { lang: "ru", houseSystem: "whole_sign", onboarded: true, tourDone: true, addPromptDone: false } as const;
+  await store.save(s);
+  expect(await store.load()).toEqual(s);
 });
 
 test("unknown or broken values fall back to the defaults", async () => {

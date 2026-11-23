@@ -18,9 +18,11 @@ type Editor = { purpose: Purpose; profileId?: string };
 
 /** The app after language choice: first your own birth details, then Chart and Profiles tabs. */
 export function Root({ lang, store, now = () => new Date().toISOString(), houseSystem = "placidus",
-  onLang = () => {}, onHouseSystem = () => {}, onDeleteAll = () => {} }: {
+  onLang = () => {}, onHouseSystem = () => {}, onDeleteAll = () => {},
+  tourDone = true, onTourDone = () => {}, addPromptDone = true, onAddPromptDone = () => {} }: {
   lang: Lang; store: ProfileStore; now?: () => string; houseSystem?: HouseSystem;
   onLang?: (l: Lang) => void; onHouseSystem?: (h: HouseSystem) => void; onDeleteAll?: () => void;
+  tourDone?: boolean; onTourDone?: () => void; addPromptDone?: boolean; onAddPromptDone?: () => void;
 }) {
   const [profiles, setProfiles] = useState<Profile[] | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -116,7 +118,10 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
             houseSystem={houseSystem} onLang={onLang} onHouseSystem={onHouseSystem}
             onDeleteAll={() => { setProfiles([]); setActiveId(null); setTab("chart"); onDeleteAll(); }} />
         ) : active?.chart ? (
-          <ChartScreen key={active.id} chart={active.chart} lang={lang} title={profileName(active, lang)} />
+          <ChartScreen key={active.id} chart={active.chart} lang={lang} title={profileName(active, lang)}
+            tour={active.kind === "self" && !tourDone} onTourDone={onTourDone}
+            addPrompt={active.kind === "self" && tourDone && !addPromptDone && addOther.ok}
+            onAddPromptDone={onAddPromptDone} onAddSomeone={() => setEditor({ purpose: "other" })} />
         ) : (
           <View style={[styles.fill, styles.centre]}>
             {calc === "error" ? (

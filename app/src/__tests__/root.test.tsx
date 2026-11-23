@@ -199,3 +199,19 @@ test("About links to the source code (FR-17)", async () => {
   await fireEvent.press(screen.getByTestId("source-code"));
   expect(open).toHaveBeenCalledWith("https://github.com/annahovakimyan/ameesi");
 });
+
+test("the tour shows on your own chart only, until done", async () => {
+  const friend = ani();
+  const onTourDone = jest.fn();
+  await start([me(), friend], { tourDone: false, onTourDone });
+  expect(screen.getByTestId("tour-card")).toBeTruthy();
+  await fireEvent.press(screen.getByTestId("tab-profiles"));
+  await fireEvent.press(screen.getByTestId(`open-${friend.id}`));
+  expect(screen.queryByTestId("tour-card")).toBeNull();
+});
+
+test("the add-someone prompt opens the form for someone else", async () => {
+  await start([me()], { tourDone: true, addPromptDone: false });
+  await fireEvent.press(screen.getByTestId("add-prompt-add"));
+  expect(screen.getByText("Their birth details")).toBeTruthy();
+});
