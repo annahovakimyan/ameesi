@@ -29,9 +29,9 @@ function memoryStore(initial: Profile[]): ProfileStore & { saved: Profile[] } {
   return s;
 }
 
-async function start(profiles: Profile[]) {
+async function start(profiles: Profile[], props: Partial<Parameters<typeof Root>[0]> = {}) {
   const store = memoryStore(profiles);
-  await render(<Root lang="en" store={store} now={() => NOW} />);
+  await render(<Root lang="en" store={store} now={() => NOW} {...props} />);
   await act(async () => {});
   return store;
 }
@@ -132,6 +132,12 @@ test("edit opens the saved details and saves a recalculated chart", async () => 
   expect(screen.getByText("Edit birth details")).toBeTruthy();
   expect(screen.getByText("1992-08-14")).toBeTruthy(); // date field shows the saved date
   await fireEvent.press(screen.getByTestId("submit")); // "Save": already complete
+  // FR-01: the resolved time zone and UTC are shown before saving
+  await waitFor(() => expect(screen.getByText("Check the details")).toBeTruthy());
+  expect(screen.getByTestId("review-local")).toHaveTextContent("1992-08-14 14:30");
+  expect(screen.getByTestId("review-utc")).toHaveTextContent("1992-08-14 10:30 · UTC+04:00");
+  expect(screen.getByText("Asia/Yerevan")).toBeTruthy();
+  await fireEvent.press(screen.getByTestId("looks-right"));
   await waitFor(() => expect(screen.getByTestId("chart-wheel")).toBeTruthy());
   expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toEqual(request);
   expect(store.saved).toHaveLength(1);
@@ -146,4 +152,50 @@ test("export shares portable JSON", async () => {
   const json = JSON.parse(share.mock.calls[0][0].message!);
   expect(json.format).toBe("ameesi-profiles");
   expect(json.profiles[0].birth.date).toBe("1992-08-14");
+});
+
+test("“Change details” on the check step returns to the form", async () => {
+  mockFetch.mockResolvedValue({ ok: true, status: 200, json: () => Promise.resolve(exact) });
+  const mine = me();
+  await start([mine]);
+  await fireEvent.press(screen.getByTestId("tab-profiles"));
+  await fireEvent.press(screen.getByTestId(`edit-${mine.id}`));
+  await fireEvent.press(screen.getByTestId("submit"));
+  await waitFor(() => expect(screen.getByTestId("change-details")).toBeTruthy());
+  await fireEvent.press(screen.getByTestId("change-details"));
+  expect(screen.getByText("Edit birth details")).toBeTruthy();
+});
+
+test("switching to Whole Sign drops saved charts and recalculates with it (FR-04)", async () => {
+  mockFetch.mockResolvedValue({ ok: true, status: 200, json: () => Promise.resolve(exact) });
+  const store = await start([me()], { houseSystem: "whole_sign" });
+  await waitFor(() => expect(mockFetch).toHaveBeenCalled());
+  expect(JSON.parse(mockFetch.mock.calls[0][1].body).house_system).toBe("whole_sign");
+  await waitFor(() => expect(store.saved[0].chart).toBeDefined());
+  expect(store.saved[0].request.house_system).toBe("whole_sign");
+});
+
+test("settings: language and house system call back; delete all asks first", async () => {
+  const onLang = jest.fn(), onHouseSystem = jest.fn(), onDeleteAll = jest.fn();
+  await start([me()], { onLang, onHouseSystem, onDeleteAll });
+  await fireEvent.press(screen.getByTestId("tab-profiles"));
+  await fireEvent.press(screen.getByTestId("settings-lang-ru"));
+  expect(onLang).toHaveBeenCalledWith("ru");
+  await fireEvent.press(screen.getByTestId("settings-houses-whole_sign"));
+  expect(onHouseSystem).toHaveBeenCalledWith("whole_sign");
+  expect(screen.getByTestId("versions")).toHaveTextContent(/App \d+\.\d+\.\d+ · ameesi-engine/);
+  await fireEvent.press(screen.getByTestId("delete-all"));
+  expect(onDeleteAll).not.toHaveBeenCalled();
+  expect(screen.getByText(/This can't be undone/)).toBeTruthy();
+  await fireEvent.press(screen.getByTestId("confirm-delete-all"));
+  expect(onDeleteAll).toHaveBeenCalled();
+});
+
+test("About links to the source code (FR-17)", async () => {
+  const { Linking } = jest.requireActual("react-native");
+  const open = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+  await start([me()]);
+  await fireEvent.press(screen.getByTestId("tab-profiles"));
+  await fireEvent.press(screen.getByTestId("source-code"));
+  expect(open).toHaveBeenCalledWith("https://github.com/annahovakimyan/ameesi");
 });

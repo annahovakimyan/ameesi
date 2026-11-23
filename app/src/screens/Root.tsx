@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Share, StyleSheet, View } from "react-native";
 import { calculateChart } from "../api/client";
-import type { Lang } from "../api/types";
+import type { HouseSystem, Lang } from "../api/types";
 import { formFromProfile, type Purpose } from "../birthForm";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
@@ -17,8 +17,10 @@ import { ProfilesScreen, profileName } from "./ProfilesScreen";
 type Editor = { purpose: Purpose; profileId?: string };
 
 /** The app after language choice: first your own birth details, then Chart and Profiles tabs. */
-export function Root({ lang, store, now = () => new Date().toISOString() }: {
-  lang: Lang; store: ProfileStore; now?: () => string;
+export function Root({ lang, store, now = () => new Date().toISOString(), houseSystem = "placidus",
+  onLang = () => {}, onHouseSystem = () => {}, onDeleteAll = () => {} }: {
+  lang: Lang; store: ProfileStore; now?: () => string; houseSystem?: HouseSystem;
+  onLang?: (l: Lang) => void; onHouseSystem?: (h: HouseSystem) => void; onDeleteAll?: () => void;
 }) {
   const [profiles, setProfiles] = useState<Profile[] | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -37,6 +39,16 @@ export function Root({ lang, store, now = () => new Date().toISOString() }: {
     setProfiles(next);
     store.save(next).catch(() => {});
   };
+
+  // House system setting (FR-04): apply it to every profile; changed ones drop their chart and recalculate.
+  useEffect(() => {
+    if (!profiles?.some((p) => p.request.house_system !== houseSystem)) return;
+    const at = now();
+    const next = profiles.reduce((acc, p) => p.request.house_system === houseSystem ? acc
+      : upsertProfile(acc, { ...p, request: { ...p.request, house_system: houseSystem } }, at), profiles);
+    commit(next);
+    setCalc("idle");
+  }, [houseSystem, profiles]);
 
   const active = profiles?.find((p) => p.id === activeId) ?? null;
 
@@ -81,6 +93,7 @@ export function Root({ lang, store, now = () => new Date().toISOString() }: {
     return (
       <BirthInputScreen key={editor?.profileId ?? editor?.purpose ?? "first"} lang={lang} purpose={editor?.purpose ?? "self"}
         initial={editing ? formFromProfile(editing) : undefined} editing={!!editing} onChart={saveFromForm}
+        houseSystem={houseSystem}
         onCancel={profiles.length > 0 ? () => setEditor(null) : undefined} />
     );
   }
@@ -99,7 +112,9 @@ export function Root({ lang, store, now = () => new Date().toISOString() }: {
               commit(next);
               if (id === activeId) setActiveId(next[0]?.id ?? null);
             }}
-            onExport={() => { Share.share({ message: exportJson(profiles, now()), title: "Ameesi" }).catch(() => {}); }} />
+            onExport={() => { Share.share({ message: exportJson(profiles, now()), title: "Ameesi" }).catch(() => {}); }}
+            houseSystem={houseSystem} onLang={onLang} onHouseSystem={onHouseSystem}
+            onDeleteAll={() => { setProfiles([]); setActiveId(null); setTab("chart"); onDeleteAll(); }} />
         ) : active?.chart ? (
           <ChartScreen key={active.id} chart={active.chart} lang={lang} title={profileName(active, lang)} />
         ) : (

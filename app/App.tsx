@@ -1,40 +1,60 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { Lang } from "./src/api/types";
-import { Segmented } from "./src/components/Segmented";
 import { LiveContentProvider } from "./src/content/live";
 import { deviceProfileStore } from "./src/profiles/store";
+import { OnboardingScreen } from "./src/screens/OnboardingScreen";
 import { Root } from "./src/screens/Root";
-import { colors, FONTS, space } from "./src/theme";
+import { deviceSettingsStore, type Settings } from "./src/settings";
+import { colors, FONTS } from "./src/theme";
 
 const profileStore = deviceProfileStore(AsyncStorage);
+const settingsStore = deviceSettingsStore(AsyncStorage);
 
 export default function App() {
-  const [lang, setLang] = useState<Lang>("hy"); // Armenian is the default
   const [fontsLoaded] = useFonts(FONTS);
-  if (!fontsLoaded) return <View style={styles.root} />;
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [generation, setGeneration] = useState(0); // remounts Root after "delete all my data"
+
+  useEffect(() => {
+    settingsStore.load().then(setSettings);
+  }, []);
+
+  const update = (patch: Partial<Settings>) => setSettings((cur) => {
+    const next = { ...cur!, ...patch };
+    settingsStore.save(next).catch(() => {});
+    return next;
+  });
+
+  if (!fontsLoaded || !settings) return <View style={styles.root} />;
 
   return (
     <SafeAreaProvider>
-    <SafeAreaView style={styles.root}>
-      <StatusBar style="light" />
-      <View style={styles.lang}>
-        <Segmented testID="lang" value={lang} onChange={setLang}
-          options={[{ value: "hy", label: "Հայ" }, { value: "en", label: "Eng" }, { value: "ru", label: "Рус" }]} />
-      </View>
-      <LiveContentProvider lang={lang}>
-        <Root lang={lang} store={profileStore} />
-      </LiveContentProvider>
-    </SafeAreaView>
+      <SafeAreaView style={styles.root}>
+        <StatusBar style="light" />
+        <LiveContentProvider lang={settings.lang}>
+          {!settings.onboarded ? (
+            <OnboardingScreen lang={settings.lang} onLang={(lang) => update({ lang })}
+              onContinue={() => update({ onboarded: true })} />
+          ) : (
+            <Root key={generation} lang={settings.lang} store={profileStore} houseSystem={settings.houseSystem}
+              onLang={(lang) => update({ lang })} onHouseSystem={(houseSystem) => update({ houseSystem })}
+              onDeleteAll={() => {
+                settingsStore.deleteAll().catch(() => {}).finally(() => {
+                  setSettings({ ...settings, onboarded: false });
+                  setGeneration((g) => g + 1);
+                });
+              }} />
+          )}
+        </LiveContentProvider>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
-  lang: { paddingHorizontal: space[4], paddingTop: space[8] },
 });

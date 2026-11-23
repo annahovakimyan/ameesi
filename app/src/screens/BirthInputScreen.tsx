@@ -17,11 +17,12 @@ export interface BirthResult { chart: Chart; request: ChartRequest; place: Place
 
 /** Birth details for your own chart (18+ confirmation) or someone else's (name and consent).
  *  With `initial`, edits saved details. */
-export function BirthInputScreen({ lang, onChart, purpose = "self", initial, editing, onCancel }: {
+export function BirthInputScreen({ lang, onChart, purpose = "self", initial, editing, onCancel, houseSystem = "placidus" }: {
   lang: Lang; onChart: (r: BirthResult) => void; purpose?: Purpose; initial?: BirthForm; editing?: boolean;
-  onCancel?: () => void;
+  onCancel?: () => void; houseSystem?: BirthForm["houseSystem"];
 }) {
-  const [form, setForm] = useState<BirthForm>(initial ?? emptyForm);
+  const [form, setForm] = useState<BirthForm>(initial ?? { ...emptyForm, houseSystem });
+  const [review, setReview] = useState<BirthResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ambiguous, setAmbiguous] = useState<Chart | null>(null);
@@ -36,7 +37,7 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
       if (chart.time.dst_ambiguity) setAmbiguous(chart);
       else {
         setAmbiguous(null);
-        onChart({ chart, request, place: form.place!, form });
+        setReview({ chart, request, place: form.place!, form }); // FR-01: show time zone and UTC first
       }
     } catch (e) {
       setError(t(e instanceof ApiError && e.status === 0 ? "errorNetwork" : "errorGeneric", lang));
@@ -49,6 +50,34 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
     <PickerField mode="time" value={form[key]} onChange={(d) => set({ [key]: d })}
       placeholder={t("chooseTime", lang)} display={hhmm} testID={testID} />
   );
+
+  if (review) {
+    const tm = review.chart.time;
+    const m = tm.utc_offset_minutes;
+    const offset = `UTC${m >= 0 ? "+" : "−"}${String(Math.floor(Math.abs(m) / 60)).padStart(2, "0")}:${String(Math.abs(m) % 60).padStart(2, "0")}`;
+    const line = (label: string, value: string, testID?: string) => (
+      <View style={styles.reviewRow}>
+        <AppText variant="bodySm" tone="textMuted">{label}</AppText>
+        <AppText testID={testID}>{value}</AppText>
+      </View>
+    );
+    return (
+      <ScrollView contentContainerStyle={styles.screen}>
+        <AppText variant="titleLg" accessibilityRole="header">{t("checkTitle", lang)}</AppText>
+        <View style={styles.reviewCard}>
+          {line(t("place", lang), [review.place.name, review.place.region, review.place.country].filter(Boolean).join(", "))}
+          {line(t("timeZone", lang), review.place.tz)}
+          {line(t("localTime", lang), tm.local.replace("T", " "), "review-local")}
+          {line(t("utcTime", lang), `${tm.utc.replace("T", " ").replace("Z", "")} · ${offset}${
+            tm.offset_source === "user_override" ? ` (${t("offsetSetByHand", lang)})` : ""}`, "review-utc")}
+        </View>
+        {tm.confidence === "unknown" && <AppText variant="bodySm" tone="textMuted">{t("noonNote", lang)}</AppText>}
+        {tm.confidence === "approximate" && <AppText variant="bodySm" tone="textMuted">{t("windowNote", lang)}</AppText>}
+        <Button testID="looks-right" label={t("looksRight", lang)} onPress={() => onChart(review)} />
+        <Button kind="secondary" testID="change-details" label={t("changeDetails", lang)} onPress={() => setReview(null)} />
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
@@ -128,6 +157,8 @@ const styles = StyleSheet.create({
   section: { gap: space[2] },
   window: { flexDirection: "row", gap: space[3] },
   flex: { flex: 1, gap: space[1] },
+  reviewCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
+  reviewRow: { gap: space[1] },
   input: {
     minHeight: MIN_TOUCH, paddingHorizontal: space[4], color: colors.ivory,
     backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,

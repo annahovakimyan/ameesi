@@ -4,6 +4,8 @@ import type { Lang } from "../api/types";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { Row } from "../components/ChartList";
+import { SettingsSection } from "../components/SettingsSection";
+import type { HouseSystem } from "../api/types";
 import { t } from "../i18n";
 import type { Profile } from "../profiles/profiles";
 import { colors, radius, space } from "../theme";
@@ -16,10 +18,12 @@ function birthSummary(p: Profile): string {
   return `${r.date} · ${time} · ${p.place.name}`;
 }
 
-export function ProfilesScreen({ lang, profiles, activeId, canAddMore, onOpen, onAdd, onEdit, onDelete, onExport }: {
+export function ProfilesScreen({ lang, profiles, activeId, canAddMore, onOpen, onAdd, onEdit, onDelete, onExport,
+  houseSystem, onLang, onHouseSystem, onDeleteAll }: {
   lang: Lang; profiles: Profile[]; activeId: string | null; canAddMore: boolean;
   onOpen: (id: string) => void; onAdd: () => void; onEdit: (id: string) => void; onDelete: (id: string) => void;
-  onExport: () => void;
+  onExport: () => void; houseSystem: HouseSystem; onLang: (l: Lang) => void; onHouseSystem: (h: HouseSystem) => void;
+  onDeleteAll: () => void;
 }) {
   const [confirming, setConfirming] = useState<string | null>(null);
 
@@ -57,6 +61,9 @@ export function ProfilesScreen({ lang, profiles, activeId, canAddMore, onOpen, o
         <Button kind="secondary" testID="export" label={t("exportData", lang)} onPress={onExport} />
         <AppText variant="caption" tone="textFaint">{t("storedOnPhone", lang)}</AppText>
       </View>
+
+      <SettingsSection lang={lang} houseSystem={houseSystem} onLang={onLang} onHouseSystem={onHouseSystem}
+        onDeleteAll={onDeleteAll} engine={profiles.find((p) => p.chart)?.chart?.meta.engine} />
     </ScrollView>
   );
 }
