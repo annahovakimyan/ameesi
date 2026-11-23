@@ -1,3 +1,5 @@
+import logging
+import time as _time
 from contextlib import asynccontextmanager
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
@@ -22,6 +24,31 @@ async def lifespan(_app):
 
 
 app = FastAPI(title="Ameesi calculation server", lifespan=lifespan)
+
+# CLAUDE.md rule 6: no birth data in logs. Run uvicorn with --no-access-log (its log includes query
+# strings such as ?q=Leninakan) and log only method, path, status and duration here.
+request_log = logging.getLogger("ameesi.requests")
+if not request_log.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+    request_log.addHandler(_handler)
+    request_log.setLevel(logging.INFO)
+
+
+@app.middleware("http")
+async def log_requests(request, call_next):
+    start = _time.perf_counter()
+    response = await call_next(request)
+    request_log.info("%s %s %s %.0fms", request.method, request.url.path, response.status_code,
+                     (_time.perf_counter() - start) * 1000)
+    return response
+
+
+@app.get("/health")
+def health():
+    """For the host's health checks: versions, and whether the place database is built."""
+    return {"status": "ok", "engine": engine.ENGINE_VERSION, "swisseph": swe.version, "tzdata": TZDATA_VERSION,
+            "places_db": places.get_db_path().is_file()}
 
 
 def r2(x: float) -> float:

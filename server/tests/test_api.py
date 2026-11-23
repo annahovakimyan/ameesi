@@ -98,3 +98,22 @@ def test_pre_1970_births_get_a_soft_warning():
     assert "historical_offset" not in [w["code"] for w in req().json()["warnings"]]
     # an offset set by hand is the user's own correction: no warning
     assert "historical_offset" not in [w["code"] for w in req(date="1965-05-01", utc_offset_override=240).json()["warnings"]]
+
+
+def test_health_reports_versions():
+    data = client.get("/health").json()
+    assert data["status"] == "ok"
+    assert data["engine"].startswith("ameesi-engine") and data["swisseph"] and data["tzdata"]
+    assert "places_db" in data
+
+
+def test_request_log_never_contains_birth_data(caplog):
+    """CLAUDE.md rule 6: no dates, times or places in logs."""
+    import logging
+    with caplog.at_level(logging.INFO, logger="ameesi.requests"):
+        client.get("/places", params={"q": "Leninakan", "lang": "hy"})
+        req(place={**GYUMRI, "name": "Gyumri"})
+    logged = " ".join(r.getMessage() for r in caplog.records if r.name == "ameesi.requests")
+    assert "/places" in logged and "/charts/calculate" in logged  # requests are logged...
+    for secret in ("Leninakan", "q=", "1992", "14:30", "Gyumri", "40.78", "Asia/Yerevan"):
+        assert secret not in logged  # ...but never their birth data

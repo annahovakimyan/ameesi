@@ -12,6 +12,21 @@ python scripts/build_places.py # once: downloads GeoNames (~220 MB), builds data
 uvicorn app.main:app --reload  # http://localhost:8000/docs
 ```
 
+## Deploy
+
+```
+docker build -t ameesi-server .          # from server/; downloads GeoNames and builds the place database
+docker run -p 8000:8000 ameesi-server    # honours $PORT, as most hosts set it
+```
+
+The image compiles pyswisseph in a build stage (PyPI has no prebuilt Linux wheel), keeps only the
+packages, the place database, the ephemeris files and the code, and runs as a non-root user. `GET /health`
+reports versions and whether the place database is present, for the host's health checks.
+
+Logs never contain birth data (CLAUDE.md rule 6): uvicorn's access log is off (it includes query strings
+such as `?q=Leninakan`), and the app logs only method, path, status and duration. Keep `--no-access-log`
+if you change the start command. Point the app at the deployed URL with `EXPO_PUBLIC_API_URL`.
+
 ## Layout
 
 - `app/engine.py`: all astrology (positions, houses, aspects, stelliums, balance). Full precision.
@@ -32,5 +47,6 @@ uvicorn app.main:app --reload  # http://localhost:8000/docs
 - [ ] Golden charts in `tests/golden/charts.csv` (the tests are written; they skip until rows are added)
 - [x] `GET /places`: former Soviet names, Armenian/English/Russian spellings, display names in the requested language
 - [x] Every village in Armenia, Azerbaijan and Georgia (GeoNames country files), not only places over 500 people
+- [x] Docker image, `/health`, request logs without birth data
 - [x] Region rules in `app/place_overrides.json`: Nagorno-Karabakh shows Armenian place names in every language
       (`app/translit.py` where GeoNames has none) and uses Armenian time
