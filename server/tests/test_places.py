@@ -155,6 +155,7 @@ def test_override_file_is_valid():
 # --- country files: villages under 500 people --------------------------------
 
 YAGHDAN, MARTAKERT, HADRUT, STEPANAKERT, SHUSHI, OUTSIDE = 616070, 587379, 148105, 146970, 147105, 584544
+BERDZOR, IVANYAN, HORADIZ = 147625, 147774, 148003
 
 
 def test_small_village_from_country_file(client):
@@ -198,6 +199,25 @@ def test_transliterations_are_searchable_but_never_shown(client):
     # Yaghdan has a Russian name (Ягдан); a transliteration of Յաղդան is "Яхдан"
     assert ids(search(client, "Яхдан", "ru"))[0] == YAGHDAN
     assert search(client, "Яхдан", "ru")[0]["name"] == "Ягдан"
+
+
+@pytest.mark.parametrize("q,gid,lang,name", [
+    ("Lachin", BERDZOR, "en", "Berdzor"),
+    ("Лачин", BERDZOR, "ru", "Бердзор"),
+    ("Berdzor", BERDZOR, "hy", "Բերձոր"),
+    ("Khojaly", IVANYAN, "en", "Ivanyan"),
+    ("Ходжалы", IVANYAN, "ru", "Иванян"),
+    ("Ivanyan", IVANYAN, "hy", "Իվանյան"),
+])
+def test_artsakh_beyond_the_old_oblast(client, q, gid, lang, name):
+    p = next(p for p in search(client, q, lang) if p["geonames_id"] == gid)
+    assert p["name"] == name and p["tz"] == "Asia/Yerevan"
+
+
+def test_split_district_village_east_of_the_line_unchanged(client):
+    # Horadiz (Fuzuli district) stayed on the Azerbaijani side of the 1994-2020 line
+    p = next(p for p in search(client, "Horadiz") if p["geonames_id"] == HORADIZ)
+    assert p["tz"] == "Asia/Baku" and p["name"] == "Horadiz"
 
 
 def test_rest_of_azerbaijan_unchanged(client):

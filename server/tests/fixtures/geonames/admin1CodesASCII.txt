@@ -9,3 +9,6 @@ AZ.65	Khojavend	Khojavend	409423
 AZ.57	Tartar District	Tartar District	409420
 AZ.55	Shusha	Shusha	147163
 AZ.11	Barda	Barda	587056
+AZ.28	Lachin Rayon	Lachin Rayon	147626
+AZ.64	Khojaly	Khojaly	148449
+AZ.18	Fuzuli District	Fuzuli District	148107
