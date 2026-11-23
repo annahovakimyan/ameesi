@@ -30,6 +30,14 @@
         "en": "Varanda",
         "ru": "Варанда"
       }
+    },
+    "587201": {
+      "_what": "Shahumyan: the usual Russian spelling drops the հ (Шаумян), unlike the transliteration rule.",
+      "names": {
+        "hy": "Շահումյան",
+        "en": "Shahumyan",
+        "ru": "Шаумян"
+      }
     }
   },
   "regions": [
