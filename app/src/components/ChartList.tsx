@@ -1,20 +1,31 @@
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import type { Chart, Lang } from "../api/types";
 import { bodyFlags, placement } from "../chartText";
 import { bodyGlyph, formatDegrees } from "../format";
 import { houseTerm, t, term } from "../i18n";
-import { colors, radius, space } from "../theme";
+import type { Selection } from "../selection";
+import { colors, MIN_TOUCH, radius, space } from "../theme";
 import { AppText } from "./AppText";
 
-export function Row({ title, subtitle, glyph, flags }: { title: string; subtitle: string; glyph?: string; flags?: string[] }) {
-  return (
-    <View style={styles.row}>
+export function Row({ title, subtitle, glyph, flags, onPress, testID }: {
+  title: string; subtitle: string; glyph?: string; flags?: string[]; onPress?: () => void; testID?: string;
+}) {
+  const inner = (
+    <>
       {glyph && <AppText variant="glyph" tone="lavender" style={styles.glyph}>{glyph}</AppText>}
       <View style={{ flex: 1 }}>
         <AppText variant="headline">{title}</AppText>
         <AppText variant="bodySm" tone="textMuted">{[subtitle, ...(flags ?? [])].join(" · ")}</AppText>
       </View>
-    </View>
+      {onPress && <AppText variant="title" tone="textMuted">›</AppText>}
+    </>
+  );
+  if (!onPress) return <View style={styles.row}>{inner}</View>;
+  return (
+    <Pressable testID={testID} accessibilityRole="button" onPress={onPress}
+      style={({ pressed }) => [styles.row, styles.tappable, pressed && { backgroundColor: colors.surfaceRaised }]}>
+      {inner}
+    </Pressable>
   );
 }
 
@@ -27,7 +38,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export function ChartList({ chart, lang }: { chart: Chart; lang: Lang }) {
+export function ChartList({ chart, lang, onSelect }: { chart: Chart; lang: Lang; onSelect: (s: Selection) => void }) {
   const flag = (cond: boolean, id: "uncertain" | "retrograde") => (cond ? [t(id, lang)] : []);
 
   return (
@@ -36,7 +47,8 @@ export function ChartList({ chart, lang }: { chart: Chart; lang: Lang }) {
       <Section title={t("bodies", lang)}>
         {chart.bodies.map((b) => (
           <Row key={b.id} glyph={bodyGlyph(b.id)} title={term(`body.${b.id}`, lang)}
-            subtitle={placement(b.sign, b.sign_deg, b.house, lang)} flags={bodyFlags(b, lang)} />
+            subtitle={placement(b.sign, b.sign_deg, b.house, lang)} flags={bodyFlags(b, lang)}
+            onPress={() => onSelect({ kind: "body", id: b.id })} testID={`row-${b.id}`} />
         ))}
       </Section>
 
@@ -45,7 +57,7 @@ export function ChartList({ chart, lang }: { chart: Chart; lang: Lang }) {
           {(["asc", "mc", "dsc", "ic"] as const).map((k) => {
             const a = chart.angles![k];
             return <Row key={k} title={term(`angle.${k}`, lang)} subtitle={placement(a.sign, a.sign_deg, null, lang)}
-              flags={flag(a.uncertain, "uncertain")} />;
+              flags={flag(a.uncertain, "uncertain")} onPress={() => onSelect({ kind: "angle", id: k })} testID={`row-${k}`} />;
           })}
         </Section>
       )}
@@ -57,7 +69,8 @@ export function ChartList({ chart, lang }: { chart: Chart; lang: Lang }) {
             return <Row key={`${a.a}-${a.b}`} glyph={`${bodyGlyph(a.a)}${bodyGlyph(a.b)}`}
               title={`${term(`body.${a.a}`, lang)} – ${term(`body.${a.b}`, lang)}`}
               subtitle={`${term(`aspect.${a.type}`, lang)} · ${t("orb", lang, { orb: formatDegrees(a.orb) })}`}
-              flags={flag(unsure, "uncertain")} />;
+              flags={flag(unsure, "uncertain")} testID={`row-${a.a}-${a.b}`}
+              onPress={() => onSelect({ kind: "aspect", a: a.a, b: a.b, type: a.type })} />;
           })}
         </Section>
       )}
@@ -67,7 +80,8 @@ export function ChartList({ chart, lang }: { chart: Chart; lang: Lang }) {
           {chart.stelliums.map((s) => (
             <Row key={`${s.kind}-${s.where}`}
               title={typeof s.where === "number" ? houseTerm(s.where, lang) : term(`sign.${s.where}`, lang)}
-              subtitle={s.members.map((m) => term(`body.${m}`, lang)).join(", ")} />
+              subtitle={s.members.map((m) => term(`body.${m}`, lang)).join(", ")}
+              onPress={() => onSelect({ kind: "stellium", stellium: s })} />
           ))}
         </Section>
       )}
@@ -92,4 +106,5 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: space[3], paddingHorizontal: space[4], paddingVertical: space[3],
          borderBottomWidth: 1, borderBottomColor: colors.divider },
   glyph: { minWidth: space[8], textAlign: "center" },
+  tappable: { minHeight: MIN_TOUCH },
 });

@@ -116,18 +116,12 @@ describe("ChartScreen wheel view", () => {
     expect((exact as Chart).aspects.some((a) => a.type === "square" || a.type === "opposition")).toBe(true);
   });
 
-  test("tapping a planet shows its placement and aspects; tapping again clears it", async () => {
-    const chart = exact as Chart;
-    const sunAspects = chart.aspects.filter((a) => a.a === "sun" || a.b === "sun");
-    await render(<ChartScreen chart={chart} lang="en" onBack={jest.fn()} />);
+  test("activating a planet (screen reader) opens its explanation", async () => {
+    await render(<ChartScreen chart={exact as Chart} lang="en" onBack={jest.fn()} />);
     await fireEvent(screen.getByTestId("wheel-sun"), "accessibilityAction", { nativeEvent: { actionName: "activate" } });
-    const card = screen.getByTestId("selection");
-    expect(card).toHaveTextContent(/Sun.*Leo 21°52′ · 9th house/);
-    expect(screen.getAllByText(/orb \d+°\d\d′/)).toHaveLength(sunAspects.length);
+    expect(screen.getByTestId("explanation-sheet")).toBeTruthy();
     expect(screen.getByTestId("wheel-sun")).toBeSelected();
     expect(screen.getByTestId("selected-ring")).toBeTruthy();
-    await fireEvent(screen.getByTestId("wheel-sun"), "accessibilityAction", { nativeEvent: { actionName: "activate" } });
-    expect(screen.queryByTestId("selection")).toBeNull();
   });
 
   test("a tap selects the nearest glyph, even when targets would overlap", async () => {
@@ -139,6 +133,7 @@ describe("ChartScreen wheel view", () => {
     const centre = (st: { left: number; top: number }) => ({ locationX: st.left + 24, locationY: st.top + 24 });
     await fireEvent.press(screen.getByTestId("wheel-touch"), { nativeEvent: centre(sun) });
     expect(screen.getByTestId("wheel-sun")).toBeSelected();
+    await fireEvent.press(screen.getByTestId("sheet-close"));
     await fireEvent.press(screen.getByTestId("wheel-touch"), { nativeEvent: centre(chiron) });
     expect(screen.getByTestId("wheel-chiron")).toBeSelected();
     expect(screen.getByTestId("wheel-sun")).not.toBeSelected();

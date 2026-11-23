@@ -44,6 +44,11 @@ npm run generate     # after design/tokens.json or content/glossary.json changes
 - [ ] Fonts (Noto Sans / Serif Armenian): system font for now
 - [x] Chart wheel: signs, houses, axes, aspect lines (gold harmonious, rose tense, dashed if uncertain),
       tap a planet to highlight it and see its placement and aspects
-- [ ] Tap-to-explain bottom sheet (needs content loading from Supabase, build step 4)
+- [x] Tap-to-explain bottom sheet with placeholder texts: tap a planet on the wheel, or any planet, angle,
+      aspect or stellium in the list. Shows the entries for that element (`src/content/entryIds.ts`, per
+      docs/content-spec.md), the astrological basis with content ids, the symbolic framing line, uncertainty
+      notices and related placements. Half height, drag or tap the handle for full, scrim or back to close.
+- [ ] Real texts: replace `placeholderSource()` in `src/content/source.tsx` with the Supabase-backed cache (build step 4)
+- [ ] Houses tappable on the wheel (sheet already supports them)
 - [ ] Profiles (saved charts)
 - [ ] House system setting (Placidus is always used for now)

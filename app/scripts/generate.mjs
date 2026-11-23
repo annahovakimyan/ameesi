@@ -23,6 +23,12 @@ export function tokensSource() {
   const radius = Object.fromEntries(t.radius.tokens.map((r) => [r.name.replace("radius-", ""), px(r.value)]));
   const stroke = Object.fromEntries(t.stroke.tokens.filter((s) => s.name.startsWith("stroke-"))
     .map((s) => [camel(s.name.replace("stroke-", "")), px(s.value)]));
+  // "0 -8px 32px rgba(0, 0, 0, 0.45)" → offset, blur and colour, which React Native draws itself.
+  const shadow = Object.fromEntries(t.shadow.tokens.filter((s) => s.name.startsWith("shadow-")).map((s) => {
+    const m = s.value.match(/^(-?\d+)(?:px)?\s+(-?\d+)(?:px)?\s+(\d+)(?:px)?\s+(rgba?\([^)]*\))$/);
+    if (!m) throw new Error(`unparsed shadow token ${s.name}: ${s.value}`);
+    return [camel(s.name.replace("shadow-", "")), { x: Number(m[1]), y: Number(m[2]), blur: Number(m[3]), color: m[4] }];
+  }));
   const dash = Object.fromEntries(t.stroke.tokens.filter((s) => s.name.startsWith("dash-"))
     .map((s) => [camel(s.name.replace("dash-", "")), s.value]));
   return HEADER +
@@ -31,7 +37,8 @@ export function tokensSource() {
     `export const space = ${JSON.stringify(space, null, 2)} as const;\n\n` +
     `export const radius = ${JSON.stringify(radius, null, 2)} as const;\n\n` +
     `export const stroke = ${JSON.stringify(stroke, null, 2)} as const;\n\n` +
-    `export const dash = ${JSON.stringify(dash, null, 2)} as const;\n`;
+    `export const dash = ${JSON.stringify(dash, null, 2)} as const;\n\n` +
+    `export const shadow = ${JSON.stringify(shadow, null, 2)} as const;\n`;
 }
 
 const ANGLES = { Ascendant: "asc", Midheaven: "mc", Descendant: "dsc", "Imum Coeli (IC)": "ic" };

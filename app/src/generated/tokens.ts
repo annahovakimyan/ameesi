@@ -121,3 +121,12 @@ export const stroke = {
 export const dash = {
   "tense": "5 4"
 } as const;
+
+export const shadow = {
+  "sheet": {
+    "x": 0,
+    "y": -8,
+    "blur": 32,
+    "color": "rgba(0, 0, 0, 0.45)"
+  }
+} as const;
