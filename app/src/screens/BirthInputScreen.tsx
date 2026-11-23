@@ -6,6 +6,7 @@ import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { Checkbox } from "../components/Checkbox";
 import { TextField } from "../components/TextField";
+import { TimeField } from "../components/TimeField";
 import { PickerField } from "../components/PickerField";
 import { PlaceSearch } from "../components/PlaceSearch";
 import { Segmented } from "../components/Segmented";
@@ -58,9 +59,7 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
   }
 
   const timeField = (key: "time" | "windowFrom" | "windowTo", testID: string) => (
-    <PickerField mode="time" value={form[key]} onChange={(d) => set({ [key]: d })}
-      placeholder={t("chooseTime", lang)} display={hhmm} testID={testID}
-      doneLabel={t("done", lang)} cancelLabel={t("cancel", lang)} />
+    <TimeField value={form[key]} onChange={(d) => set({ [key]: d })} placeholder={t("chooseTime", lang)} testID={testID} />
   );
 
   if (review) {
