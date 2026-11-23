@@ -56,7 +56,8 @@ npm run generate     # after design/tokens.json or content/glossary.json changes
 - [x] Content from Supabase (`src/content/live.tsx`, `src/content/sync.ts`): approved entries for the user's
       language, cached on the device, refreshed at most daily and on a language change. Needs `app/.env`
       (copy `.env.example`); without it, or with `EXPO_PUBLIC_CONTENT_SOURCE=placeholder`, placeholders show.
-- [ ] Houses tappable on the wheel (sheet already supports them)
+- [x] Houses tappable on the wheel; uncertain-time banner with "Refine my birth time"; calculation details
+      (coordinates, local time, UTC, settings, versions); server warnings in the user's language
 - [x] Profiles (saved on the phone): your own plus one more free, consent for someone else's, edit (drops the
       saved chart and recalculates), delete with confirmation, export as JSON; saved charts open offline.
       Chart and Profiles tabs.

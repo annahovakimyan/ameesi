@@ -90,3 +90,11 @@ def test_approximate_time_reports_midpoint_with_flags():
 
 def test_approximate_window_must_be_in_order():
     assert req(time_confidence="approximate", time_window={"from": "16:00", "to": "12:00"}).status_code == 422
+
+
+def test_pre_1970_births_get_a_soft_warning():
+    codes = [w["code"] for w in req(date="1965-05-01").json()["warnings"]]
+    assert "historical_offset" in codes
+    assert "historical_offset" not in [w["code"] for w in req().json()["warnings"]]
+    # an offset set by hand is the user's own correction: no warning
+    assert "historical_offset" not in [w["code"] for w in req(date="1965-05-01", utc_offset_override=240).json()["warnings"]]

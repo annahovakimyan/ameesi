@@ -117,6 +117,10 @@ def calculate_chart(req: ChartRequest):
 
     meta["house_system_used"] = chart["house_system_used"] if chart["houses"] else None
     warnings = list(chart["warnings"])
+    if req.date.year < 1970 and resolved["offset_source"] == "tzdata":
+        # PRD section 8: time-zone history before 1970 is less certain; say so softly.
+        warnings.append({"code": "historical_offset",
+                         "message": "Charts for this place and year sometimes differ between sites; check the details."})
     if resolved["offset_source"] == "user_override":
         warnings.append({"code": "utc_offset_overridden",
                          "message": "The UTC offset was set by hand instead of the time zone database."})

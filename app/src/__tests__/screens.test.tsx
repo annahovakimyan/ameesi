@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
 import type { Chart } from "../api/types";
 import { BirthInputScreen } from "../screens/BirthInputScreen";
-import { nearestGlyph } from "../components/ChartWheel";
+import { nearestTarget } from "../components/ChartWheel";
 import { ChartScreen } from "../screens/ChartScreen";
 import exact from "./fixtures/chart-exact.json";
 import unknown from "./fixtures/chart-unknown.json";
@@ -80,7 +80,8 @@ describe("ChartScreen list view", () => {
   test("unknown time: no angles or houses, Moon marked uncertain", async () => {
     await renderList(unknown, "en");
     expect(screen.queryByText("Angles")).toBeNull();
-    expect(screen.queryByText(/house/)).toBeNull();
+    expect(screen.queryByText(/\d+(st|nd|rd|th) house/)).toBeNull();
+    expect(screen.getByTestId("time-banner")).toHaveTextContent(/birth time is unknown, so houses and angles/);
     // Only the Moon is uncertain: it moves from Scorpio into Sagittarius that day
     const flagged = screen.getAllByText(/uncertain/);
     expect(flagged).toHaveLength(1);
@@ -88,11 +89,11 @@ describe("ChartScreen list view", () => {
   });
 });
 
-test("nearestGlyph ignores taps far from every glyph", () => {
-  const glyphs = [{ b: { id: "sun" as const }, x: 100, y: 100 }, { b: { id: "moon" as const }, x: 115, y: 100 }];
-  expect(nearestGlyph(glyphs, 104, 100)).toBe("sun");
-  expect(nearestGlyph(glyphs, 112, 101)).toBe("moon");
-  expect(nearestGlyph(glyphs, 200, 200)).toBeNull();
+test("nearestTarget ignores taps far from every target", () => {
+  const targets = [{ value: "sun", x: 100, y: 100 }, { value: "moon", x: 115, y: 100 }];
+  expect(nearestTarget(targets, 104, 100)).toBe("sun");
+  expect(nearestTarget(targets, 112, 101)).toBe("moon");
+  expect(nearestTarget(targets, 200, 200)).toBeNull();
 });
 
 describe("ChartScreen wheel view", () => {
@@ -143,7 +144,7 @@ describe("ChartScreen wheel view", () => {
     await render(<ChartScreen chart={unknown as Chart} lang="hy" onBack={jest.fn()} />);
     expect(screen.getByLabelText(/^Արեգակ, Այծեղջյուր/)).toBeTruthy();
     expect(screen.queryByLabelText(/\d+-(ին|րդ) տուն/)).toBeNull(); // not /տուն/: Նեպտուն contains it
-    expect(screen.getByText("Առանց ժամի տները և անկյունները չեն հաշվարկվում։")).toBeTruthy();
+    expect(screen.getByTestId("time-banner")).toHaveTextContent(/Ձեր ծննդյան ժամը հայտնի չէ/);
     expect(screen.getByText(/^տրոպիկական · tzdata/)).toBeTruthy();
   });
 });

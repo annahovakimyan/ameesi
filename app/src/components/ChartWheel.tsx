@@ -2,6 +2,8 @@ import { Pressable, StyleSheet, View } from "react-native";
 import Svg, { Circle, G, Line, Text as SvgText } from "react-native-svg";
 import type { AspectType, BodyId, Chart, Lang, SignId } from "../api/types";
 import { bodyLabel } from "../chartText";
+import { houseTerm } from "../i18n";
+import type { Selection } from "../selection";
 import { bodyGlyph, signGlyph } from "../format";
 import { colors, dash, MIN_TOUCH, space, stroke, textStyle } from "../theme";
 import { polar, screenAngle, spread } from "../wheel/geometry";
@@ -23,14 +25,14 @@ const ASPECT_STYLE: Record<Exclude<AspectType, "conjunction">, { colour: string;
   square: { colour: colors.rose, dash: dash.tense }, opposition: { colour: colors.rose, dash: dash.tense },
 };
 
-/** The body whose glyph centre is nearest the touch, if within half a touch target. */
-export function nearestGlyph(glyphs: { b: { id: BodyId }; x: number; y: number }[], x: number, y: number): BodyId | null {
-  let best: BodyId | null = null;
+/** The target (planet glyph or house number) nearest the touch, if within half a touch target. */
+export function nearestTarget<T>(targets: { value: T; x: number; y: number }[], x: number, y: number): T | null {
+  let best: T | null = null;
   let bestDist = MIN_TOUCH / 2;
-  for (const g of glyphs) {
+  for (const g of targets) {
     const d = Math.hypot(g.x - x, g.y - y);
     if (d <= bestDist) {
-      best = g.b.id;
+      best = g.value;
       bestDist = d;
     }
   }
@@ -38,7 +40,7 @@ export function nearestGlyph(glyphs: { b: { id: BodyId }; x: number; y: number }
 }
 
 export function ChartWheel({ chart, lang, size, selected, onSelect }: {
-  chart: Chart; lang: Lang; size: number; selected: BodyId | null; onSelect: (id: BodyId) => void;
+  chart: Chart; lang: Lang; size: number; selected: BodyId | null; onSelect: (s: Selection) => void;
 }) {
   const c = size / 2;
   const asc = chart.angles?.asc.lon ?? null;
@@ -52,6 +54,15 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
   const uncertainAspect = new Set(chart.aspects_uncertain.map((u) => `${u.a}-${u.b}-${u.type}`));
   const glyphText = textStyle("glyph");
   const glyphs = chart.bodies.map((b, i) => ({ b, ...at(display[i], R.planetGlyph) }));
+  const houseMid = (i: number) => {
+    const h = chart.houses![i].cusp_lon, next = chart.houses![(i + 1) % 12].cusp_lon;
+    return h + ((((next - h) % 360) + 360) % 360) / 2;
+  };
+  const houseSpots = (chart.houses ?? []).map((h, i) => ({ n: h.house, ...at(houseMid(i), R.houseNumber) }));
+  const targets: { value: Selection; x: number; y: number }[] = [
+    ...glyphs.map((g) => ({ value: { kind: "body", id: g.b.id } as Selection, x: g.x, y: g.y })),
+    ...houseSpots.map((h) => ({ value: { kind: "house", n: h.n } as Selection, x: h.x, y: h.y })),
+  ];
 
   return (
     <View style={{ width: size, height: size }} testID="chart-wheel">
@@ -72,9 +83,7 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
 
         {/* Houses (not shown when the birth time is unknown) */}
         {chart.houses?.map((h, i) => {
-          const next = chart.houses![(i + 1) % 12].cusp_lon;
-          const mid = h.cusp_lon + (((next - h.cusp_lon) % 360) + 360) % 360 / 2;
-          const n = at(mid, R.houseNumber);
+          const n = at(houseMid(i), R.houseNumber);
           const caption = textStyle("caption");
           return (
             <G key={h.house}>
@@ -134,19 +143,25 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
           <View key={b.id} testID={`wheel-${b.id}`} pointerEvents="none" accessible accessibilityRole="button"
             accessibilityLabel={bodyLabel(b, lang)} accessibilityState={{ selected: isSelected }}
             accessibilityActions={[{ name: "activate" }]}
-            onAccessibilityAction={(e) => e.nativeEvent.actionName === "activate" && onSelect(b.id)}
+            onAccessibilityAction={(e) => e.nativeEvent.actionName === "activate" && onSelect({ kind: "body", id: b.id })}
             style={[styles.glyph, { left: x - MIN_TOUCH / 2, top: y - MIN_TOUCH / 2 }]}>
             <AppText variant="glyph" tone={isSelected ? "gold" : "ivory"}>{bodyGlyph(b.id)}</AppText>
           </View>
         );
       })}
+      {houseSpots.map((h) => (
+        <View key={h.n} testID={`wheel-house-${h.n}`} pointerEvents="none" accessible accessibilityRole="button"
+          accessibilityLabel={houseTerm(h.n, lang)} accessibilityActions={[{ name: "activate" }]}
+          onAccessibilityAction={(e) => e.nativeEvent.actionName === "activate" && onSelect({ kind: "house", n: h.n })}
+          style={[styles.glyph, { left: h.x - MIN_TOUCH / 2, top: h.y - MIN_TOUCH / 2 }]} />
+      ))}
       <Pressable testID="wheel-touch" accessible={false} importantForAccessibility="no"
         style={StyleSheet.absoluteFill}
         onPress={(e) => {
           // Android/iOS give locationX/Y; the web preview gives offsetX/Y. Both are relative to this layer.
           const n = e.nativeEvent as unknown as Record<string, number | undefined>;
-          const id = nearestGlyph(glyphs, n.locationX ?? n.offsetX ?? NaN, n.locationY ?? n.offsetY ?? NaN);
-          if (id) onSelect(id);
+          const hit = nearestTarget(targets, n.locationX ?? n.offsetX ?? NaN, n.locationY ?? n.offsetY ?? NaN);
+          if (hit) onSelect(hit);
         }} />
     </View>
   );

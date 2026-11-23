@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
-import type { Chart, Lang } from "../api/types";
+import type { Chart, Lang, Place } from "../api/types";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
 import { ChartList } from "../components/ChartList";
@@ -9,16 +9,26 @@ import { ExplanationSheet } from "../components/ExplanationSheet";
 import { AddSomeonePrompt, TourCard, tourSteps } from "../components/TourCard";
 import { Segmented } from "../components/Segmented";
 import { t } from "../i18n";
+import { strings } from "../i18n/strings";
 import type { Selection } from "../selection";
-import { space } from "../theme";
+import { colors, radius, space } from "../theme";
 
-export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addPrompt, onAddSomeone, onAddPromptDone }: {
+function warningText(code: string, message: string, lang: Lang): string {
+  const id = `warn_${code}` as keyof typeof strings;
+  return id in strings ? t(id, lang) : message;
+}
+
+export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addPrompt, onAddSomeone, onAddPromptDone,
+  place, onEditDetails }: {
   chart: Chart; lang: Lang; onBack?: () => void; title?: string;
+  place?: Place; onEditDetails?: () => void; // calculation details and "Refine my birth time"
   tour?: boolean; onTourDone?: () => void; // "Start here": Sun, Moon, Ascendant
   addPrompt?: boolean; onAddSomeone?: () => void; onAddPromptDone?: () => void; // FR-11, after the tour
 }) {
   const steps = tourSteps(chart, lang);
   const [step, setStep] = useState(0);
+  const [details, setDetails] = useState(false);
+  const confidence = chart.time.confidence;
   const [view, setView] = useState<"wheel" | "list">("wheel");
   // Switching between wheel and list keeps the selected element (design system: SegmentedControl).
   const [selection, setSelection] = useState<Selection | null>(null);
@@ -31,6 +41,13 @@ export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addP
       {title && <AppText variant="titleLg" accessibilityRole="header" testID="chart-title">{title}</AppText>}
       <Segmented testID="view" value={view} onChange={setView}
         options={[{ value: "wheel", label: t("wheel", lang) }, { value: "list", label: t("list", lang) }]} />
+
+      {confidence !== "exact" && (
+        <View style={styles.notice} testID="time-banner" accessibilityRole="alert">
+          <AppText variant="bodySm"><Icon char="ⓘ" tone="gold" /> {t(confidence === "unknown" ? "bannerUnknown" : "bannerApprox", lang)}</AppText>
+          {onEditDetails && <Button kind="secondary" testID="refine-time" label={t("refineTime", lang)} onPress={onEditDetails} />}
+        </View>
+      )}
 
       {tour && step < steps.length && (
         <TourCard lang={lang} step={step + 1} total={steps.length} title={steps[step].title}
@@ -47,30 +64,64 @@ export function ChartScreen({ chart, lang, onBack, title, tour, onTourDone, addP
         <>
           <View style={styles.centre}>
             <ChartWheel chart={chart} lang={lang} size={width - space[4] * 2} selected={selectedBody}
-              onSelect={(id) => setSelection({ kind: "body", id })} />
+              onSelect={setSelection} />
           </View>
           <AppText variant="bodySm" tone="textMuted" style={styles.hint}>{t("tapPlanet", lang)}</AppText>
-          {!chart.houses && (
-            <AppText variant="bodySm" tone="textMuted" style={styles.hint}>{t("unknownTimeNote", lang)}</AppText>
-          )}
         </>
       ) : (
         <ChartList chart={chart} lang={lang} onSelect={setSelection} />
       )}
 
-      {chart.warnings.map((w) => <AppText key={w.code} tone="gold" variant="bodySm"><Icon char="⚠" tone="gold" /> {w.message}</AppText>)}
+      {chart.warnings.map((w) => (
+        <AppText key={w.code} tone="gold" variant="bodySm"><Icon char="⚠" tone="gold" /> {warningText(w.code, w.message, lang)}</AppText>
+      ))}
+
       <AppText variant="caption" tone="textFaint">
         {chart.meta.house_system_used
           ? t("calcDetails", lang, { houses: t(chart.meta.house_system_used, lang), tzdata: chart.meta.tzdata })
           : t("calcDetailsNoHouses", lang, { tzdata: chart.meta.tzdata })}
       </AppText>
+      <Button kind="secondary" testID="calc-details" label={t("calcDetailsTitle", lang)} onPress={() => setDetails(!details)} />
+      {details && <CalcDetails chart={chart} lang={lang} place={place} onEdit={onEditDetails} />}
+
       <ExplanationSheet chart={chart} lang={lang} selection={selection} onSelect={setSelection}
         onClose={() => setSelection(null)} />
     </ScrollView>
   );
 }
 
+function CalcDetails({ chart, lang, place, onEdit }: { chart: Chart; lang: Lang; place?: Place; onEdit?: () => void }) {
+  const m = chart.time.utc_offset_minutes;
+  const offset = `UTC${m >= 0 ? "+" : "−"}${String(Math.floor(Math.abs(m) / 60)).padStart(2, "0")}:${String(Math.abs(m) % 60).padStart(2, "0")}`;
+  const used = chart.meta.house_system_used;
+  const rows: [string, string][] = [
+    ...(place ? [[t("place", lang), [place.name, place.region, place.country].filter(Boolean).join(", ")],
+      [t("coordinates", lang), `${place.lat.toFixed(4)}, ${place.lon.toFixed(4)}`],
+      [t("timeZone", lang), place.tz]] as [string, string][] : []),
+    [t("localTime", lang), `${chart.time.local.replace("T", " ")} · ${t(chart.time.confidence, lang)}`],
+    [t("utcTime", lang), `${chart.time.utc.replace("T", " ").replace("Z", "")} · ${offset}${
+      chart.time.offset_source === "user_override" ? ` (${t("offsetSetByHand", lang)})` : ""}`],
+    [t("houseSystem", lang), used ? t(used, lang) : "—"],
+    ["", t("zodiacNode", lang)],
+    ["", t("versionsLine", lang, { engine: chart.meta.engine, swe: chart.meta.swisseph, tz: chart.meta.tzdata })],
+  ];
+  return (
+    <View style={styles.details} testID="calc-details-panel">
+      {rows.map(([label, value]) => (
+        <View key={label + value}>
+          {label !== "" && <AppText variant="caption" tone="textMuted">{label}</AppText>}
+          <AppText variant="bodySm">{value}</AppText>
+        </View>
+      ))}
+      {onEdit && <Button kind="secondary" testID="details-edit" label={t("editBirthTitle", lang)} onPress={onEdit} />}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  notice: { padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.border, borderRadius: radius.md,
+            backgroundColor: colors.surface },
+  details: { padding: space[4], gap: space[3], backgroundColor: colors.surface, borderRadius: radius.lg },
   screen: { padding: space[4], paddingTop: space[8], gap: space[6] },
   centre: { alignItems: "center" },
   hint: { textAlign: "center" },

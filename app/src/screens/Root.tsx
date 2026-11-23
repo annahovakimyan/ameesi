@@ -121,7 +121,8 @@ export function Root({ lang, store, now = () => new Date().toISOString(), houseS
           <ChartScreen key={active.id} chart={active.chart} lang={lang} title={profileName(active, lang)}
             tour={active.kind === "self" && !tourDone} onTourDone={onTourDone}
             addPrompt={active.kind === "self" && tourDone && !addPromptDone && addOther.ok}
-            onAddPromptDone={onAddPromptDone} onAddSomeone={() => setEditor({ purpose: "other" })} />
+            onAddPromptDone={onAddPromptDone} onAddSomeone={() => setEditor({ purpose: "other" })}
+            place={active.place} onEditDetails={() => setEditor({ purpose: active.kind, profileId: active.id })} />
         ) : (
           <View style={[styles.fill, styles.centre]}>
             {calc === "error" ? (
