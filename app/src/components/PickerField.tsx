@@ -80,7 +80,7 @@ export function PickerField({ mode, value, onChange, placeholder, display, testI
 const styles = StyleSheet.create({
   field: {
     minHeight: MIN_TOUCH, justifyContent: "center", paddingHorizontal: space[4],
-    backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,
+    backgroundColor: colors.field, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,
   },
   focused: { borderColor: colors.gold },
   panel: {

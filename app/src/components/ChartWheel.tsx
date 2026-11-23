@@ -69,7 +69,7 @@ export function ChartWheel({ chart, lang, size, selected, onSelect }: {
       <Svg width={size} height={size}>
         {/* Zodiac ring */}
         <Circle cx={c} cy={c} r={c * R.outer} fill={colors.surface} stroke={colors.border} strokeWidth={STROKE.hairline} />
-        <Circle cx={c} cy={c} r={c * R.signInner} fill={colors.bg} stroke={colors.border} strokeWidth={STROKE.hairline} />
+        <Circle cx={c} cy={c} r={c * R.signInner} fill={colors.wheelNight} stroke={colors.border} strokeWidth={STROKE.hairline} />
         {SIGNS.map((s, i) => {
           const g = at(i * 30 + 15, R.signGlyph);
           return (

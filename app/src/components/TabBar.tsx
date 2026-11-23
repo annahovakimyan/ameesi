@@ -22,6 +22,6 @@ export function TabBar<T extends string>({ tabs, value, onChange }: {
 }
 
 const styles = StyleSheet.create({
-  bar: { flexDirection: "row", backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.divider },
+  bar: { flexDirection: "row", backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.glassEdge },
   tab: { flex: 1, minHeight: MIN_TOUCH + space[2], alignItems: "center", justifyContent: "center" },
 });

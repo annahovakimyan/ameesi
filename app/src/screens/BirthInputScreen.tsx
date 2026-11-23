@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1, gap: space[1] },
   notice: { padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.rose, borderRadius: radius.md,
             backgroundColor: colors.surface },
-  reviewCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
+  reviewCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.glassEdge },
   reviewRow: { gap: space[1] },
   fill: { flex: 1 },
 });

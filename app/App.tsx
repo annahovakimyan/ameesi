@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { CosmicBackground } from "./src/components/CosmicBackground";
 import { LiveContentProvider } from "./src/content/live";
 import { deviceProfileStore } from "./src/profiles/store";
 import { OnboardingScreen } from "./src/screens/OnboardingScreen";
@@ -33,7 +34,8 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.root}>
+      <CosmicBackground>
+      <SafeAreaView style={styles.transparent}>
         <StatusBar style="light" />
         <LiveContentProvider lang={settings.lang}>
           {!settings.onboarded ? (
@@ -53,10 +55,12 @@ export default function App() {
           )}
         </LiveContentProvider>
       </SafeAreaView>
+      </CosmicBackground>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
+  transparent: { flex: 1 },
 });

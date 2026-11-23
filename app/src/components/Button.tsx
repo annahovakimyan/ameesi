@@ -1,5 +1,6 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, StyleSheet } from "react-native";
-import { colors, MIN_TOUCH, radius, space } from "../theme";
+import { colors, gradient, MIN_TOUCH, radius, space } from "../theme";
 import { AppText } from "./AppText";
 
 export function Button({ label, onPress, disabled, kind = "primary", testID, compact }: {
@@ -17,18 +18,25 @@ export function Button({ label, onPress, disabled, kind = "primary", testID, com
         styles.base,
         compact && styles.compact,
         kind === "primary"
-          ? { backgroundColor: disabled ? colors.disabledFill : pressed ? colors.pomegranatePressed : colors.pomegranate }
-          : { borderWidth: 1, borderColor: colors.border, backgroundColor: pressed ? colors.surfaceRaised : undefined },
+          ? { backgroundColor: disabled ? colors.disabledFill : colors.pomegranatePressed }
+          : { borderWidth: 1, borderColor: colors.border, backgroundColor: pressed ? colors.surfaceRaised : colors.surface },
       ]}
     >
-      <AppText variant="label" tone={disabled ? "disabledText" : "ivory"} style={styles.label}>{label}</AppText>
+      {({ pressed }) => (
+        <>
+          {kind === "primary" && !disabled && !pressed && (
+            <LinearGradient colors={gradient.primary} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+          )}
+          <AppText variant="label" tone={disabled ? "disabledText" : "ivory"} style={styles.label}>{label}</AppText>
+        </>
+      )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: MIN_TOUCH, borderRadius: radius.pill, alignItems: "center", justifyContent: "center",
+    minHeight: MIN_TOUCH, borderRadius: radius.pill, alignItems: "center", justifyContent: "center", overflow: "hidden",
     paddingHorizontal: space[6], paddingVertical: space[2],
   },
   label: { textAlign: "center" },

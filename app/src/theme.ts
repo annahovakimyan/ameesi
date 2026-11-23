@@ -1,8 +1,8 @@
 import type { TextStyle } from "react-native";
 import type { ViewStyle } from "react-native";
-import { colors, dash, radius, shadow, space, stroke, type as typeTokens } from "./generated/tokens";
+import { colors, dash, gradient, radius, shadow, space, stroke, type as typeTokens } from "./generated/tokens";
 
-export { colors, dash, radius, space, stroke };
+export { colors, dash, gradient, radius, space, stroke };
 
 /** React Native shadow for a design-system shadow token (iOS shadow props, Android elevation). */
 export function shadowStyle(name: keyof typeof shadow): ViewStyle {

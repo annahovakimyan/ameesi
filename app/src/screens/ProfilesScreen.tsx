@@ -71,7 +71,7 @@ export function ProfilesScreen({ lang, profiles, activeId, canAddMore, onOpen, o
 
 const styles = StyleSheet.create({
   screen: { padding: space[4], paddingTop: space[8], gap: space[6] },
-  card: { backgroundColor: colors.surface, borderRadius: radius.lg, overflow: "hidden" },
+  card: { backgroundColor: colors.surface, borderRadius: radius.lg, overflow: "hidden", borderWidth: 1, borderColor: colors.glassEdge },
   active: { borderWidth: 1, borderColor: colors.gold },
   actions: { padding: space[4], gap: space[2] },
   row: { flexDirection: "row" },

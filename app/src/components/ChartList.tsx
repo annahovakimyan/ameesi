@@ -102,9 +102,9 @@ export function ChartList({ chart, lang, onSelect }: { chart: Chart; lang: Lang;
 const styles = StyleSheet.create({
   list: { gap: space[6] },
   section: { gap: space[2] },
-  group: { backgroundColor: colors.surface, borderRadius: radius.md, overflow: "hidden" },
+  group: { backgroundColor: colors.surface, borderRadius: radius.lg, overflow: "hidden", borderWidth: 1, borderColor: colors.glassEdge },
   row: { flexDirection: "row", alignItems: "center", gap: space[3], paddingHorizontal: space[4], paddingVertical: space[3],
-         borderBottomWidth: 1, borderBottomColor: colors.divider },
+         borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.glassEdge },
   glyph: { minWidth: space[8], textAlign: "center" },
   tappable: { minHeight: MIN_TOUCH },
 });

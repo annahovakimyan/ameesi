@@ -59,7 +59,7 @@ export function AddSomeonePrompt({ lang, onAdd, onDismiss }: { lang: Lang; onAdd
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[2] },
+  card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space[4], gap: space[2], borderWidth: 1, borderColor: colors.glassEdge },
   row: { flexDirection: "row", gap: space[2] },
   flex: { flex: 1 },
   outlined: { backgroundColor: undefined, borderWidth: 1.5, borderColor: colors.border },

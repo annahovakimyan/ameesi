@@ -134,9 +134,9 @@ function CalcDetails({ chart, lang, place, onEdit }: { chart: Chart; lang: Lang;
 
 const styles = StyleSheet.create({
   offscreen: { position: "absolute", left: -10000, top: 0 },
-  notice: { padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.border, borderRadius: radius.md,
+  notice: { padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.glassEdge, borderRadius: radius.lg,
             backgroundColor: colors.surface },
-  details: { padding: space[4], gap: space[3], backgroundColor: colors.surface, borderRadius: radius.lg },
+  details: { padding: space[4], gap: space[3], backgroundColor: colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.glassEdge },
   screen: { padding: space[4], gap: space[4], paddingBottom: space[8] },
   header: { flexDirection: "row", alignItems: "center", gap: space[3] },
   flex: { flex: 1 },

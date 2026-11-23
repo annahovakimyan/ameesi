@@ -22,7 +22,7 @@ export function TextField({ style, onFocus, onBlur, ...props }: TextInputProps) 
 const styles = StyleSheet.create({
   input: {
     minHeight: MIN_TOUCH, paddingHorizontal: space[4], paddingVertical: space[3], color: colors.ivory,
-    backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,
+    backgroundColor: colors.field, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,
     outlineStyle: "none" as never, // web preview: the gold border is the focus indicator
   },
   focused: { borderColor: colors.gold },

@@ -29,6 +29,7 @@ export function tokensSource() {
     if (!m) throw new Error(`unparsed shadow token ${s.name}: ${s.value}`);
     return [camel(s.name.replace("shadow-", "")), { x: Number(m[1]), y: Number(m[2]), blur: Number(m[3]), color: m[4] }];
   }));
+  const gradient = Object.fromEntries(t.gradient.tokens.map((g) => [camel(g.name.replace("gradient-", "")), g.value]));
   const dash = Object.fromEntries(t.stroke.tokens.filter((s) => s.name.startsWith("dash-"))
     .map((s) => [camel(s.name.replace("dash-", "")), s.value]));
   return HEADER +
@@ -38,7 +39,8 @@ export function tokensSource() {
     `export const radius = ${JSON.stringify(radius, null, 2)} as const;\n\n` +
     `export const stroke = ${JSON.stringify(stroke, null, 2)} as const;\n\n` +
     `export const dash = ${JSON.stringify(dash, null, 2)} as const;\n\n` +
-    `export const shadow = ${JSON.stringify(shadow, null, 2)} as const;\n`;
+    `export const shadow = ${JSON.stringify(shadow, null, 2)} as const;\n\n` +
+    `export const gradient = ${JSON.stringify(gradient, null, 2)} as const;\n`;
 }
 
 const ANGLES = { Ascendant: "asc", Midheaven: "mc", Descendant: "dsc", "Imum Coeli (IC)": "ic" };

@@ -103,7 +103,7 @@ export function PlaceSearch({ lang, value, onChange }: {
 
 const styles = StyleSheet.create({
   error: { marginTop: space[2] },
-  results: { marginTop: space[2], backgroundColor: colors.surface, borderRadius: radius.md, overflow: "hidden" },
+  results: { marginTop: space[2], backgroundColor: colors.field, borderRadius: radius.lg, overflow: "hidden", borderWidth: 1, borderColor: colors.glassEdge },
   row: { paddingHorizontal: space[4], paddingVertical: space[3], minHeight: MIN_TOUCH, justifyContent: "center",
-         borderBottomWidth: 1, borderBottomColor: colors.divider },
+         borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.glassEdge },
 });

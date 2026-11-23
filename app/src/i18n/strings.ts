@@ -116,6 +116,7 @@ export const strings = {
   },
   calculating: { hy: "Հաշվարկվում է…", en: "Calculating…", ru: "Рассчитываем…" },
   retry: { hy: "Կրկին փորձել", en: "Try again", ru: "Повторить" },
+  tagline: { hy: "Ձեր երկինքը՝ պարզ բառերով", en: "Your sky, in plain words", ru: "Ваше небо — простыми словами" },
   chooseLanguage: { hy: "Ընտրեք լեզուն", en: "Choose your language", ru: "Выберите язык" },
   continue: { hy: "Շարունակել", en: "Continue", ru: "Продолжить" },
   settings: { hy: "Կարգավորումներ", en: "Settings", ru: "Настройки" },

@@ -2,7 +2,9 @@
 
 export const colors = {
   "bg": "#0D0B28",
-  "surface": "#281C4C",
+  "surface": "rgba(40, 28, 76, 0.62)",
+  "field": "rgba(40, 28, 76, 0.94)",
+  "glassEdge": "rgba(185, 167, 217, 0.18)",
   "surfaceRaised": "#352862",
   "border": "#7A6BAA",
   "divider": "#3E3170",
@@ -19,10 +21,22 @@ export const colors = {
   "disabledText": "#7F7699",
   "rose": "#F29AA6",
   "sage": "#8FD3A8",
-  "scrim": "rgba(13, 11, 40, 0.72)"
+  "scrim": "rgba(13, 11, 40, 0.72)",
+  "wheelNight": "rgba(9, 7, 28, 0.6)",
+  "star": "#F8F5EF",
+  "starDim": "#B9A7D9",
+  "glowGold": "rgba(233, 184, 111, 0.16)",
+  "glowPomegranate": "rgba(196, 72, 106, 0.22)",
+  "glowLavender": "rgba(185, 167, 217, 0.14)"
 } as const;
 
 export const type = {
+  "wordmark": {
+    "fontSize": 44,
+    "lineHeight": 52,
+    "fontWeight": "600",
+    "family": "display"
+  },
   "display": {
     "fontSize": 32,
     "lineHeight": 40,
@@ -129,4 +143,17 @@ export const shadow = {
     "blur": 32,
     "color": "rgba(0, 0, 0, 0.45)"
   }
+} as const;
+
+export const gradient = {
+  "sky": [
+    "#07061C",
+    "#141038",
+    "#251448",
+    "#3A1846"
+  ],
+  "primary": [
+    "#C4486A",
+    "#962B3C"
+  ]
 } as const;

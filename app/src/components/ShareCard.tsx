@@ -1,11 +1,12 @@
 import type { ComponentRef, Ref } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View } from "react-native";
 import * as Sharing from "expo-sharing";
 import { captureRef } from "react-native-view-shot";
 import type { Chart, Lang } from "../api/types";
 import { bodyGlyph, signGlyph } from "../format";
 import { t } from "../i18n";
-import { colors, radius, space } from "../theme";
+import { colors, gradient, radius, space } from "../theme";
 import { AppText } from "./AppText";
 import { tourSteps } from "./TourCard";
 
@@ -22,7 +23,8 @@ export function ShareCard({ chart, lang, ref }: { chart: Chart; lang: Lang; ref?
   });
   return (
     <View ref={ref} collapsable={false} style={styles.card} testID="share-card">
-      <AppText variant="overline" tone="gold">Ameesi</AppText>
+      <LinearGradient colors={gradient.sky} style={StyleSheet.absoluteFill} />
+      <AppText variant="wordmark" tone="gold">Ameesi</AppText>
       <AppText variant="display">{t("bigThree", lang)}</AppText>
       {rows.map((r) => (
         <View key={r.key} style={styles.row}>
@@ -44,8 +46,8 @@ export async function shareCard(view: ViewRef | null): Promise<boolean> {
 }
 
 const styles = StyleSheet.create({
-  card: { width: CARD_WIDTH, padding: space[6], gap: space[4], backgroundColor: colors.bg,
-          borderRadius: radius.lg, borderWidth: 1, borderColor: colors.divider },
+  card: { width: CARD_WIDTH, padding: space[6], gap: space[4], backgroundColor: colors.bg, overflow: "hidden",
+          borderRadius: radius.lg, borderWidth: 1, borderColor: colors.glassEdge },
   row: { flexDirection: "row", alignItems: "center", gap: space[3] },
   flex: { flex: 1 },
   glyph: { width: space[8], textAlign: "center" },
