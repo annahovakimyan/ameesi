@@ -4,238 +4,550 @@
   "en": "Sun",
   "hy": "Արեգակ",
   "ru": "Солнце",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Արեգակը",
+    "en": "Sun",
+    "ru": "Солнце"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Planets and celestial bodies",
   "en": "Moon",
   "hy": "Լուսին",
   "ru": "Луна",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Լուսինը",
+    "en": "Moon",
+    "ru": "Луна"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Planets and celestial bodies",
   "en": "Mercury",
   "hy": "Փայլածու",
   "ru": "Меркурий",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Փայլածուն",
+    "en": "Mercury",
+    "ru": "Меркурий"
+   },
+   "retro": {
+    "hy": "Փայլածուն հետադարձ շարժման մեջ",
+    "en": "Mercury retrograde",
+    "ru": "Ретроградный Меркурий"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Planets and celestial bodies",
   "en": "Venus",
   "hy": "Արուսյակ",
   "ru": "Венера",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Արուսյակը",
+    "en": "Venus",
+    "ru": "Венера"
+   },
+   "retro": {
+    "hy": "Արուսյակը հետադարձ շարժման մեջ",
+    "en": "Venus retrograde",
+    "ru": "Ретроградная Венера"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Planets and celestial bodies",
   "en": "Mars",
   "hy": "Հրատ",
   "ru": "Марс",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Հրատը",
+    "en": "Mars",
+    "ru": "Марс"
+   },
+   "retro": {
+    "hy": "Հրատը հետադարձ շարժման մեջ",
+    "en": "Mars retrograde",
+    "ru": "Ретроградный Марс"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Planets and celestial bodies",
   "en": "Jupiter",
   "hy": "Լուսնթագ",
   "ru": "Юпитер",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Լուսնթագը",
+    "en": "Jupiter",
+    "ru": "Юпитер"
+   },
+   "retro": {
+    "hy": "Լուսնթագը հետադարձ շարժման մեջ",
+    "en": "Jupiter retrograde",
+    "ru": "Ретроградный Юпитер"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Planets and celestial bodies",
   "en": "Saturn",
   "hy": "Երևակ",
   "ru": "Сатурн",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Երևակը",
+    "en": "Saturn",
+    "ru": "Сатурн"
+   },
+   "retro": {
+    "hy": "Երևակը հետադարձ շարժման մեջ",
+    "en": "Saturn retrograde",
+    "ru": "Ретроградный Сатурн"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Planets and celestial bodies",
   "en": "Uranus",
   "hy": "Ուրան",
   "ru": "Уран",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Ուրանը",
+    "en": "Uranus",
+    "ru": "Уран"
+   },
+   "retro": {
+    "hy": "Ուրանը հետադարձ շարժման մեջ",
+    "en": "Uranus retrograde",
+    "ru": "Ретроградный Уран"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Planets and celestial bodies",
   "en": "Neptune",
   "hy": "Նեպտուն",
   "ru": "Нептун",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Նեպտունը",
+    "en": "Neptune",
+    "ru": "Нептун"
+   },
+   "retro": {
+    "hy": "Նեպտունը հետադարձ շարժման մեջ",
+    "en": "Neptune retrograde",
+    "ru": "Ретроградный Нептун"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Planets and celestial bodies",
   "en": "Pluto",
   "hy": "Պլուտոն",
   "ru": "Плутон",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Պլուտոնը",
+    "en": "Pluto",
+    "ru": "Плутон"
+   },
+   "retro": {
+    "hy": "Պլուտոնը հետադարձ շարժման մեջ",
+    "en": "Pluto retrograde",
+    "ru": "Ретроградный Плутон"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Aries",
   "hy": "Խոյ",
   "ru": "Овен",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Խոյում",
+    "en": "in Aries",
+    "ru": "в Овне"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Taurus",
   "hy": "Ցուլ",
   "ru": "Телец",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Ցուլում",
+    "en": "in Taurus",
+    "ru": "в Тельце"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Gemini",
   "hy": "Երկվորյակներ",
   "ru": "Близнецы",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Երկվորյակներում",
+    "en": "in Gemini",
+    "ru": "в Близнецах"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Cancer",
   "hy": "Խեցգետին",
   "ru": "Рак",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Խեցգետնում",
+    "en": "in Cancer",
+    "ru": "в Раке"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Leo",
   "hy": "Առյուծ",
   "ru": "Лев",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Առյուծում",
+    "en": "in Leo",
+    "ru": "во Льве"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Virgo",
   "hy": "Կույս",
   "ru": "Дева",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Կույսում",
+    "en": "in Virgo",
+    "ru": "в Деве"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Libra",
   "hy": "Կշեռք",
   "ru": "Весы",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Կշեռքում",
+    "en": "in Libra",
+    "ru": "в Весах"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Scorpio",
   "hy": "Կարիճ",
   "ru": "Скорпион",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Կարիճում",
+    "en": "in Scorpio",
+    "ru": "в Скорпионе"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Sagittarius",
   "hy": "Աղեղնավոր",
   "ru": "Стрелец",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Աղեղնավորում",
+    "en": "in Sagittarius",
+    "ru": "в Стрельце"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Capricorn",
   "hy": "Այծեղջյուր",
   "ru": "Козерог",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Այծեղջյուրում",
+    "en": "in Capricorn",
+    "ru": "в Козероге"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Aquarius",
   "hy": "Ջրհոս",
   "ru": "Водолей",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Ջրհոսում",
+    "en": "in Aquarius",
+    "ru": "в Водолее"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Zodiac signs",
   "en": "Pisces",
   "hy": "Ձկներ",
   "ru": "Рыбы",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "Ձկներում",
+    "en": "in Pisces",
+    "ru": "в Рыбах"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "1st house",
   "hy": "1-ին տուն",
   "ru": "1-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "1-ին տանը",
+    "en": "in 1st house",
+    "ru": "в 1-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "2nd house",
   "hy": "2-րդ տուն",
   "ru": "2-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "2-րդ տանը",
+    "en": "in 2nd house",
+    "ru": "в 2-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "3rd house",
   "hy": "3-րդ տուն",
   "ru": "3-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "3-րդ տանը",
+    "en": "in 3rd house",
+    "ru": "в 3-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "4th house",
   "hy": "4-րդ տուն",
   "ru": "4-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "4-րդ տանը",
+    "en": "in 4th house",
+    "ru": "в 4-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "5th house",
   "hy": "5-րդ տուն",
   "ru": "5-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "5-րդ տանը",
+    "en": "in 5th house",
+    "ru": "в 5-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "6th house",
   "hy": "6-րդ տուն",
   "ru": "6-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "6-րդ տանը",
+    "en": "in 6th house",
+    "ru": "в 6-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "7th house",
   "hy": "7-րդ տուն",
   "ru": "7-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "7-րդ տանը",
+    "en": "in 7th house",
+    "ru": "в 7-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "8th house",
   "hy": "8-րդ տուն",
   "ru": "8-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "8-րդ տանը",
+    "en": "in 8th house",
+    "ru": "в 8-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "9th house",
   "hy": "9-րդ տուն",
   "ru": "9-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "9-րդ տանը",
+    "en": "in 9th house",
+    "ru": "в 9-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "10th house",
   "hy": "10-րդ տուն",
   "ru": "10-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "10-րդ տանը",
+    "en": "in 10th house",
+    "ru": "в 10-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "11th house",
   "hy": "11-րդ տուն",
   "ru": "11-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "11-րդ տանը",
+    "en": "in 11th house",
+    "ru": "в 11-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological houses",
   "en": "12th house",
   "hy": "12-րդ տուն",
   "ru": "12-й дом",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "in": {
+    "hy": "12-րդ տանը",
+    "en": "in 12th house",
+    "ru": "в 12-м доме"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Astrological aspects",
@@ -289,7 +601,15 @@
   "short": {
    "hy": "Ասցենդենտ"
   },
-  "short_status": "to check"
+  "short_status": "to check",
+  "forms": {
+   "subject": {
+    "hy": "Ասցենդենտը",
+    "en": "Ascendant",
+    "ru": "Асцендент"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Chart angles",
@@ -300,7 +620,15 @@
   "short": {
    "hy": "Միջին երկինք"
   },
-  "short_status": "to check"
+  "short_status": "to check",
+  "forms": {
+   "subject": {
+    "hy": "Միջին երկինքը",
+    "en": "Midheaven",
+    "ru": "Середина неба"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Chart angles",
@@ -326,14 +654,30 @@
   "en": "North Node",
   "hy": "Հյուսիսային լուսնային հանգույց",
   "ru": "Северный лунный узел",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Հյուսիսային լուսնային հանգույցը",
+    "en": "North Node",
+    "ru": "Северный лунный узел"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Additional astrological concepts",
   "en": "Chiron",
   "hy": "Քիրոն",
   "ru": "Хирон",
-  "status": "agreed"
+  "status": "agreed",
+  "forms": {
+   "subject": {
+    "hy": "Քիրոնը",
+    "en": "Chiron",
+    "ru": "Хирон"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Additional astrological concepts",
@@ -522,7 +866,15 @@
   "en": "South Node",
   "hy": "Հարավային լուսնային հանգույց",
   "ru": "Южный лунный узел",
-  "status": "to check"
+  "status": "to check",
+  "forms": {
+   "subject": {
+    "hy": "Հարավային լուսնային հանգույցը",
+    "en": "South Node",
+    "ru": "Южный лунный узел"
+   }
+  },
+  "forms_status": "to check"
  },
  {
   "category": "Additional astrological concepts",

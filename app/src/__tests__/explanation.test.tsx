@@ -30,8 +30,8 @@ test("a planet: title, facts, its entries in order, basis, content ids and frami
   const s = sheet();
   expect(s.getByRole("header", { name: "Sun" })).toBeTruthy();
   expect(s.getByText("♌\uFE0E Leo 21°52′ · 9th house")).toBeTruthy(); // header facts
-  expect(s.getByText("Sun · Leo")).toBeTruthy();
-  expect(s.getByText("Sun · 9th house")).toBeTruthy();
+  expect(s.getByText("Sun in Leo")).toBeTruthy();
+  expect(s.getByText("Sun in 9th house")).toBeTruthy();
   expect(s.getByText("Basics · Sun")).toBeTruthy();
   expect(s.getByText("Test text for sign.sun.leo (en)")).toBeTruthy();
   expect(s.getByText("ASTROLOGICAL BASIS")).toBeTruthy();
@@ -49,7 +49,7 @@ test("related aspects switch the sheet to that aspect, and back to a planet", as
   expect(sheet().getByText(/separation 172°4\d′ · orb 7°1\d′/)).toBeTruthy();
   await fireEvent.press(sheet().getByRole("button", { name: /♄.*Saturn/ }));
   expect(sheet().getByRole("header", { name: "Saturn" })).toBeTruthy();
-  expect(sheet().getByText("Saturn · retrograde")).toBeTruthy();
+  expect(sheet().getByText("Saturn retrograde")).toBeTruthy();
 });
 
 test("only entries approved in the user's language are shown (PRD FR-06)", async () => {
@@ -72,7 +72,7 @@ test("Armenian: glossary headings, no letter-spaced capitals", async () => {
   await openList(exact, "hy");
   await fireEvent.press(screen.getByTestId("row-asc"));
   expect(sheet().getByRole("header", { name: "Ասցենդենտ" })).toBeTruthy();
-  expect(sheet().getByText("Ասցենդենտ · Կարիճ")).toBeTruthy();
+  expect(sheet().getByText("Ասցենդենտը Կարիճում")).toBeTruthy();
   expect(sheet().getByText("Աստղագիտական հիմք")).toBeTruthy();
 });
 
@@ -80,7 +80,7 @@ test("South Node is explained by the North Node's entries", async () => {
   await openList(exact);
   await fireEvent.press(screen.getByTestId("row-south_node"));
   expect(sheet().getByRole("header", { name: "South Node" })).toBeTruthy();
-  expect(sheet().getByText("North Node · Sagittarius")).toBeTruthy();
+  expect(sheet().getByText("North Node in Sagittarius")).toBeTruthy();
   expect(sheet().getByTestId("entry-ids")).toHaveTextContent(/node\.sign\.sagittarius, node\.house\.01$/);
 });
 
@@ -106,4 +106,11 @@ test("the handle switches between half and full height without a drag", async ()
   expect(handle).not.toBeExpanded();
   await fireEvent.press(handle);
   expect(screen.getByTestId("sheet-handle")).toBeExpanded();
+});
+
+test("Russian headings use the prepositional case", async () => {
+  await openList(exact, "ru");
+  await fireEvent.press(screen.getByTestId("row-sun"));
+  expect(sheet().getByText("Солнце во Льве")).toBeTruthy();
+  expect(sheet().getByText("Солнце в 9-м доме")).toBeTruthy();
 });

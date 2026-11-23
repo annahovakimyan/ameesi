@@ -79,7 +79,8 @@ export function glossarySource() {
     if (terms[id]) throw new Error(`duplicate glossary id ${id}`);
     // Labels use `short` where the glossary gives one (e.g. without a gloss in brackets).
     const short = { hy: entry.hy, en: entry.en, ru: entry.ru, ...(entry.short ?? {}) };
-    terms[id] = { hy: entry.hy, en: entry.en, ru: entry.ru, short, status: entry.status };
+    // Inflected forms for headings ("Արեգակը Առյուծում", "Солнце во Льве"), where the glossary has them.
+    terms[id] = { hy: entry.hy, en: entry.en, ru: entry.ru, short, status: entry.status, ...(entry.forms ? { forms: entry.forms } : {}) };
   }
   return HEADER + `export const terms = ${JSON.stringify(terms, null, 2)} as const;\n\n` +
     "export type TermId = keyof typeof terms;\n";

@@ -49,3 +49,28 @@ test("labels use the short form; the full form keeps the gloss", () => {
     for (const lang of ["hy", "en", "ru"] as const) expect(entry.short[lang]).not.toMatch(/[()]/);
   }
 });
+
+// The glossary's own worked examples ("Combined terminology examples") are the reference for headings.
+import glossary from "../../../content/glossary.json";
+import { houseId, inTitle, retroTitle } from "../i18n";
+import type { TermId } from "../generated/glossary";
+
+const examples = (glossary as { category: string; en: string; hy: string; ru: string }[])
+  .filter((x) => x.category === "Combined terminology examples");
+
+test.each(examples.map((x) => [x.en, x]))("heading matches the glossary example: %s", (_, x) => {
+  const retro = x.en.match(/^(\w+) retrograde$/);
+  const sign = x.en.match(/^(\w+) in (\w+)$/);
+  const house = x.en.match(/^(\w+) in (\d+)\w\w house$/);
+  for (const lang of ["hy", "en", "ru"] as const) {
+    const body = `body.${(retro ?? sign ?? house)![1].toLowerCase()}` as TermId;
+    const got = retro ? retroTitle(body, lang)
+      : house ? inTitle(body, houseId(Number(house[2])), lang)
+      : inTitle(body, `sign.${sign![2].toLowerCase()}` as TermId, lang);
+    expect(got).toBe(x[lang]);
+  }
+});
+
+test("there are worked examples to check against", () => {
+  expect(examples.length).toBeGreaterThanOrEqual(10);
+});

@@ -10,7 +10,14 @@ export const terms = {
       "en": "Sun",
       "ru": "Солнце"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Արեգակը",
+        "en": "Sun",
+        "ru": "Солнце"
+      }
+    }
   },
   "body.moon": {
     "hy": "Լուսին",
@@ -21,7 +28,14 @@ export const terms = {
       "en": "Moon",
       "ru": "Луна"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Լուսինը",
+        "en": "Moon",
+        "ru": "Луна"
+      }
+    }
   },
   "body.mercury": {
     "hy": "Փայլածու",
@@ -32,7 +46,19 @@ export const terms = {
       "en": "Mercury",
       "ru": "Меркурий"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Փայլածուն",
+        "en": "Mercury",
+        "ru": "Меркурий"
+      },
+      "retro": {
+        "hy": "Փայլածուն հետադարձ շարժման մեջ",
+        "en": "Mercury retrograde",
+        "ru": "Ретроградный Меркурий"
+      }
+    }
   },
   "body.venus": {
     "hy": "Արուսյակ",
@@ -43,7 +69,19 @@ export const terms = {
       "en": "Venus",
       "ru": "Венера"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Արուսյակը",
+        "en": "Venus",
+        "ru": "Венера"
+      },
+      "retro": {
+        "hy": "Արուսյակը հետադարձ շարժման մեջ",
+        "en": "Venus retrograde",
+        "ru": "Ретроградная Венера"
+      }
+    }
   },
   "body.mars": {
     "hy": "Հրատ",
@@ -54,7 +92,19 @@ export const terms = {
       "en": "Mars",
       "ru": "Марс"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Հրատը",
+        "en": "Mars",
+        "ru": "Марс"
+      },
+      "retro": {
+        "hy": "Հրատը հետադարձ շարժման մեջ",
+        "en": "Mars retrograde",
+        "ru": "Ретроградный Марс"
+      }
+    }
   },
   "body.jupiter": {
     "hy": "Լուսնթագ",
@@ -65,7 +115,19 @@ export const terms = {
       "en": "Jupiter",
       "ru": "Юпитер"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Լուսնթագը",
+        "en": "Jupiter",
+        "ru": "Юпитер"
+      },
+      "retro": {
+        "hy": "Լուսնթագը հետադարձ շարժման մեջ",
+        "en": "Jupiter retrograde",
+        "ru": "Ретроградный Юпитер"
+      }
+    }
   },
   "body.saturn": {
     "hy": "Երևակ",
@@ -76,7 +138,19 @@ export const terms = {
       "en": "Saturn",
       "ru": "Сатурн"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Երևակը",
+        "en": "Saturn",
+        "ru": "Сатурн"
+      },
+      "retro": {
+        "hy": "Երևակը հետադարձ շարժման մեջ",
+        "en": "Saturn retrograde",
+        "ru": "Ретроградный Сатурн"
+      }
+    }
   },
   "body.uranus": {
     "hy": "Ուրան",
@@ -87,7 +161,19 @@ export const terms = {
       "en": "Uranus",
       "ru": "Уран"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Ուրանը",
+        "en": "Uranus",
+        "ru": "Уран"
+      },
+      "retro": {
+        "hy": "Ուրանը հետադարձ շարժման մեջ",
+        "en": "Uranus retrograde",
+        "ru": "Ретроградный Уран"
+      }
+    }
   },
   "body.neptune": {
     "hy": "Նեպտուն",
@@ -98,7 +184,19 @@ export const terms = {
       "en": "Neptune",
       "ru": "Нептун"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Նեպտունը",
+        "en": "Neptune",
+        "ru": "Нептун"
+      },
+      "retro": {
+        "hy": "Նեպտունը հետադարձ շարժման մեջ",
+        "en": "Neptune retrograde",
+        "ru": "Ретроградный Нептун"
+      }
+    }
   },
   "body.pluto": {
     "hy": "Պլուտոն",
@@ -109,7 +207,19 @@ export const terms = {
       "en": "Pluto",
       "ru": "Плутон"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Պլուտոնը",
+        "en": "Pluto",
+        "ru": "Плутон"
+      },
+      "retro": {
+        "hy": "Պլուտոնը հետադարձ շարժման մեջ",
+        "en": "Pluto retrograde",
+        "ru": "Ретроградный Плутон"
+      }
+    }
   },
   "sign.aries": {
     "hy": "Խոյ",
@@ -120,7 +230,14 @@ export const terms = {
       "en": "Aries",
       "ru": "Овен"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Խոյում",
+        "en": "in Aries",
+        "ru": "в Овне"
+      }
+    }
   },
   "sign.taurus": {
     "hy": "Ցուլ",
@@ -131,7 +248,14 @@ export const terms = {
       "en": "Taurus",
       "ru": "Телец"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Ցուլում",
+        "en": "in Taurus",
+        "ru": "в Тельце"
+      }
+    }
   },
   "sign.gemini": {
     "hy": "Երկվորյակներ",
@@ -142,7 +266,14 @@ export const terms = {
       "en": "Gemini",
       "ru": "Близнецы"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Երկվորյակներում",
+        "en": "in Gemini",
+        "ru": "в Близнецах"
+      }
+    }
   },
   "sign.cancer": {
     "hy": "Խեցգետին",
@@ -153,7 +284,14 @@ export const terms = {
       "en": "Cancer",
       "ru": "Рак"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Խեցգետնում",
+        "en": "in Cancer",
+        "ru": "в Раке"
+      }
+    }
   },
   "sign.leo": {
     "hy": "Առյուծ",
@@ -164,7 +302,14 @@ export const terms = {
       "en": "Leo",
       "ru": "Лев"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Առյուծում",
+        "en": "in Leo",
+        "ru": "во Льве"
+      }
+    }
   },
   "sign.virgo": {
     "hy": "Կույս",
@@ -175,7 +320,14 @@ export const terms = {
       "en": "Virgo",
       "ru": "Дева"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Կույսում",
+        "en": "in Virgo",
+        "ru": "в Деве"
+      }
+    }
   },
   "sign.libra": {
     "hy": "Կշեռք",
@@ -186,7 +338,14 @@ export const terms = {
       "en": "Libra",
       "ru": "Весы"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Կշեռքում",
+        "en": "in Libra",
+        "ru": "в Весах"
+      }
+    }
   },
   "sign.scorpio": {
     "hy": "Կարիճ",
@@ -197,7 +356,14 @@ export const terms = {
       "en": "Scorpio",
       "ru": "Скорпион"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Կարիճում",
+        "en": "in Scorpio",
+        "ru": "в Скорпионе"
+      }
+    }
   },
   "sign.sagittarius": {
     "hy": "Աղեղնավոր",
@@ -208,7 +374,14 @@ export const terms = {
       "en": "Sagittarius",
       "ru": "Стрелец"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Աղեղնավորում",
+        "en": "in Sagittarius",
+        "ru": "в Стрельце"
+      }
+    }
   },
   "sign.capricorn": {
     "hy": "Այծեղջյուր",
@@ -219,7 +392,14 @@ export const terms = {
       "en": "Capricorn",
       "ru": "Козерог"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Այծեղջյուրում",
+        "en": "in Capricorn",
+        "ru": "в Козероге"
+      }
+    }
   },
   "sign.aquarius": {
     "hy": "Ջրհոս",
@@ -230,7 +410,14 @@ export const terms = {
       "en": "Aquarius",
       "ru": "Водолей"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Ջրհոսում",
+        "en": "in Aquarius",
+        "ru": "в Водолее"
+      }
+    }
   },
   "sign.pisces": {
     "hy": "Ձկներ",
@@ -241,7 +428,14 @@ export const terms = {
       "en": "Pisces",
       "ru": "Рыбы"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "Ձկներում",
+        "en": "in Pisces",
+        "ru": "в Рыбах"
+      }
+    }
   },
   "house.1": {
     "hy": "1-ին տուն",
@@ -252,7 +446,14 @@ export const terms = {
       "en": "1st house",
       "ru": "1-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "1-ին տանը",
+        "en": "in 1st house",
+        "ru": "в 1-м доме"
+      }
+    }
   },
   "house.2": {
     "hy": "2-րդ տուն",
@@ -263,7 +464,14 @@ export const terms = {
       "en": "2nd house",
       "ru": "2-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "2-րդ տանը",
+        "en": "in 2nd house",
+        "ru": "в 2-м доме"
+      }
+    }
   },
   "house.3": {
     "hy": "3-րդ տուն",
@@ -274,7 +482,14 @@ export const terms = {
       "en": "3rd house",
       "ru": "3-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "3-րդ տանը",
+        "en": "in 3rd house",
+        "ru": "в 3-м доме"
+      }
+    }
   },
   "house.4": {
     "hy": "4-րդ տուն",
@@ -285,7 +500,14 @@ export const terms = {
       "en": "4th house",
       "ru": "4-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "4-րդ տանը",
+        "en": "in 4th house",
+        "ru": "в 4-м доме"
+      }
+    }
   },
   "house.5": {
     "hy": "5-րդ տուն",
@@ -296,7 +518,14 @@ export const terms = {
       "en": "5th house",
       "ru": "5-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "5-րդ տանը",
+        "en": "in 5th house",
+        "ru": "в 5-м доме"
+      }
+    }
   },
   "house.6": {
     "hy": "6-րդ տուն",
@@ -307,7 +536,14 @@ export const terms = {
       "en": "6th house",
       "ru": "6-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "6-րդ տանը",
+        "en": "in 6th house",
+        "ru": "в 6-м доме"
+      }
+    }
   },
   "house.7": {
     "hy": "7-րդ տուն",
@@ -318,7 +554,14 @@ export const terms = {
       "en": "7th house",
       "ru": "7-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "7-րդ տանը",
+        "en": "in 7th house",
+        "ru": "в 7-м доме"
+      }
+    }
   },
   "house.8": {
     "hy": "8-րդ տուն",
@@ -329,7 +572,14 @@ export const terms = {
       "en": "8th house",
       "ru": "8-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "8-րդ տանը",
+        "en": "in 8th house",
+        "ru": "в 8-м доме"
+      }
+    }
   },
   "house.9": {
     "hy": "9-րդ տուն",
@@ -340,7 +590,14 @@ export const terms = {
       "en": "9th house",
       "ru": "9-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "9-րդ տանը",
+        "en": "in 9th house",
+        "ru": "в 9-м доме"
+      }
+    }
   },
   "house.10": {
     "hy": "10-րդ տուն",
@@ -351,7 +608,14 @@ export const terms = {
       "en": "10th house",
       "ru": "10-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "10-րդ տանը",
+        "en": "in 10th house",
+        "ru": "в 10-м доме"
+      }
+    }
   },
   "house.11": {
     "hy": "11-րդ տուն",
@@ -362,7 +626,14 @@ export const terms = {
       "en": "11th house",
       "ru": "11-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "11-րդ տանը",
+        "en": "in 11th house",
+        "ru": "в 11-м доме"
+      }
+    }
   },
   "house.12": {
     "hy": "12-րդ տուն",
@@ -373,7 +644,14 @@ export const terms = {
       "en": "12th house",
       "ru": "12-й дом"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "in": {
+        "hy": "12-րդ տանը",
+        "en": "in 12th house",
+        "ru": "в 12-м доме"
+      }
+    }
   },
   "aspect.conjunction": {
     "hy": "Միացում",
@@ -439,7 +717,14 @@ export const terms = {
       "en": "Ascendant",
       "ru": "Асцендент"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Ասցենդենտը",
+        "en": "Ascendant",
+        "ru": "Асцендент"
+      }
+    }
   },
   "angle.mc": {
     "hy": "Միջին երկինք (MC)",
@@ -450,7 +735,14 @@ export const terms = {
       "en": "Midheaven",
       "ru": "Середина неба"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Միջին երկինքը",
+        "en": "Midheaven",
+        "ru": "Середина неба"
+      }
+    }
   },
   "angle.dsc": {
     "hy": "Դեսցենդենտ",
@@ -483,7 +775,14 @@ export const terms = {
       "en": "North Node",
       "ru": "Северный лунный узел"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Հյուսիսային լուսնային հանգույցը",
+        "en": "North Node",
+        "ru": "Северный лунный узел"
+      }
+    }
   },
   "body.chiron": {
     "hy": "Քիրոն",
@@ -494,7 +793,14 @@ export const terms = {
       "en": "Chiron",
       "ru": "Хирон"
     },
-    "status": "agreed"
+    "status": "agreed",
+    "forms": {
+      "subject": {
+        "hy": "Քիրոնը",
+        "en": "Chiron",
+        "ru": "Хирон"
+      }
+    }
   },
   "concept.retrograde": {
     "hy": "Հետադարձ շարժում",
@@ -681,7 +987,14 @@ export const terms = {
       "en": "South Node",
       "ru": "Южный лунный узел"
     },
-    "status": "to check"
+    "status": "to check",
+    "forms": {
+      "subject": {
+        "hy": "Հարավային լուսնային հանգույցը",
+        "en": "South Node",
+        "ru": "Южный лунный узел"
+      }
+    }
   },
   "concept.natal_chart": {
     "hy": "Ծննդյան քարտեզ",

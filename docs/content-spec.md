@@ -22,7 +22,7 @@ The app uses the Supabase URL and **anon** key (public by design). The service k
 2. Store them on the device (SQLite or MMKV) so explanations work offline.
 3. On later launches, at most once a day, fetch rows with a newer `version` and update the cache.
 4. When the language changes, download that language.
-5. If an element has no approved entry in the user's language, show the English approved entry with a small "Not yet translated" note; if none exists at all, show the element's facts without an explanation. Never show drafts.
+5. Show only entries approved in the user's language (PRD FR-06). If an element has no approved entry in that language, show its facts and astrological basis without an explanation; never fall back to another language and never show drafts. At launch every element must have an approved entry in Armenian, English and Russian (PRD gate G2).
 
 ## Mapping chart data to entry ids
 

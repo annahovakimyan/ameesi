@@ -22,3 +22,21 @@ export function houseTerm(n: number, lang: Lang): string {
   if (!Number.isInteger(n) || n < 1 || n > 12) throw new Error(`bad house ${n}`);
   return terms[`house.${n}` as TermId].short[lang];
 }
+
+type Forms = Partial<Record<"subject" | "in" | "retro", Record<Lang, string>>>;
+const formsOf = (id: TermId): Forms | undefined => (terms[id] as { forms?: Forms }).forms;
+
+/** "Sun in Leo" / "Արեգակը Առյուծում" / "Солнце во Льве"; also houses ("Sun in 9th house").
+ *  Falls back to "Sun · Leo" where the glossary has no inflected forms. */
+export function inTitle(subject: TermId, place: TermId, lang: Lang): string {
+  const s = formsOf(subject)?.subject?.[lang];
+  const p = formsOf(place)?.in?.[lang];
+  return s && p ? `${s} ${p}` : `${term(subject, lang)} · ${term(place, lang)}`;
+}
+
+/** "Mars retrograde" / "Հրատը հետադարձ շարժման մեջ" / "Ретроградный Марс". */
+export function retroTitle(body: TermId, lang: Lang): string {
+  return formsOf(body)?.retro?.[lang] ?? `${term(body, lang)} · ${strings.retrograde[lang]}`;
+}
+
+export const houseId = (n: number) => `house.${n}` as TermId;

@@ -4,7 +4,7 @@ import { bodyFlags, placement } from "../chartText";
 import { entriesFor, type EntryRef } from "../content/entryIds";
 import { useContent } from "../content/source";
 import { bodyGlyph, formatDegrees, signGlyph } from "../format";
-import { houseTerm, t, term } from "../i18n";
+import { houseId, houseTerm, inTitle, retroTitle, t, term } from "../i18n";
 import type { Selection } from "../selection";
 import { colors, radius, space } from "../theme";
 import { AppText } from "./AppText";
@@ -45,10 +45,10 @@ function header(sel: Selection, chart: Chart, lang: Lang): Header {
 
 function heading(e: EntryRef, lang: Lang): string {
   switch (e.kind) {
-    case "sign": return `${term(`body.${e.body}`, lang)} · ${term(`sign.${e.sign}`, lang)}`;
-    case "house": return `${term(`body.${e.body}`, lang)} · ${houseTerm(e.house, lang)}`;
-    case "retro": return `${term(`body.${e.body}`, lang)} · ${t("retrograde", lang)}`;
-    case "angle": return `${term(`angle.${e.angle}`, lang)} · ${term(`sign.${e.sign}`, lang)}`;
+    case "sign": return inTitle(`body.${e.body}`, `sign.${e.sign}`, lang);
+    case "house": return inTitle(`body.${e.body}`, houseId(e.house), lang);
+    case "retro": return retroTitle(`body.${e.body}`, lang);
+    case "angle": return inTitle(`angle.${e.angle}`, `sign.${e.sign}`, lang);
     case "aspect": return `${term(`body.${e.a}`, lang)} – ${term(`body.${e.b}`, lang)} · ${term(`aspect.${e.type}`, lang)}`;
     case "stellium": return `${term("concept.stellium", lang)} · ${
       typeof e.where === "number" ? houseTerm(e.where, lang) : term(`sign.${e.where}`, lang)}`;
