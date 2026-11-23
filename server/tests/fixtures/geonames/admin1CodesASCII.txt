@@ -12,3 +12,4 @@ AZ.11	Barda	Barda	587056
 AZ.28	Lachin Rayon	Lachin Rayon	147626
 AZ.64	Khojaly	Khojaly	148449
 AZ.18	Fuzuli District	Fuzuli District	148107
+AZ.21	Goranboy District	Goranboy District	586112

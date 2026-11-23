@@ -220,6 +220,13 @@ def test_split_district_village_east_of_the_line_unchanged(client):
     assert p["tz"] == "Asia/Baku" and p["name"] == "Horadiz"
 
 
+def test_shahumyan_armenian_names_but_baku_time(client):
+    # Former Shahumyan district: Armenian names; Azerbaijan held it from mid-1992, so Baku time stays
+    p = next(p for p in search(client, "Ashaghi Aghjakand") if p["geonames_id"] == 587201)
+    assert p["name"] == "Shahumyan" and p["tz"] == "Asia/Baku"
+    assert next(p for p in search(client, "Ashaghi Aghjakand", "hy") if p["geonames_id"] == 587201)["name"] == "Շահումյան"
+
+
 def test_rest_of_azerbaijan_unchanged(client):
     p = search(client, "Zumurxan")[0]
     assert p["geonames_id"] == OUTSIDE and p["tz"] == "Asia/Baku" and p["name"] == "Zümürxan"

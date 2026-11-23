@@ -209,6 +209,32 @@
       ],
       "names": "armenian",
       "tz": "Asia/Yerevan"
+    },
+    {
+      "id": "shahumyan",
+      "_what": "Armenian villages of the former Soviet Shahumyan district (now in Goranboy), claimed by Artsakh. Founder's decision (2026-11-23): Armenian names in every language. Time zone unchanged (Baku): Azerbaijan held the area from mid-1992, before the Baku and Yerevan clocks first differed. Villages chosen: Goranboy places with an Armenian name in GeoNames, west of 46.69 E and south of 40.5 N. Check against a map.",
+      "places": [
+        584571,
+        584647,
+        584668,
+        584833,
+        585037,
+        585197,
+        585580,
+        585963,
+        586223,
+        586373,
+        586388,
+        586607,
+        586927,
+        587040,
+        587062,
+        587201,
+        587210,
+        8528098,
+        11172804
+      ],
+      "names": "armenian"
     }
   ]
 }
