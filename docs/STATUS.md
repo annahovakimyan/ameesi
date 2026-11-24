@@ -24,6 +24,8 @@ Last updated 24 November 2026. Read this with `CLAUDE.md` at the start of a new 
 - There is no `app/.env` on the Mac, so `API_URL` falls back to `https://ameesi.onrender.com` (`app/src/api/client.ts`).
 - React Native's `URLSearchParams` builds the query string correctly.
 
+**Cause found (24 Nov 2026):** the Mac's checkout was on the old `engine-exact-time` branch (`c6526a1`), 12 commits behind `main`. That code predates `f5ab630`, which made the app use the live server by default, so `git pull` said "Already up to date" and the phone kept running old code. Fix: `git switch main && git pull`, then restart Expo as in step 2 below. Confirm on the phone, then delete this section. Original notes follow.
+
 **Most likely cause:** the phone is running an old JavaScript bundle, or a different Expo project. That would explain why none of the recent changes appear: no new logo on the first screen, no "Searching…" message, no error line. Check these first:
 1. In the project folder (`/Users/ahovakimyan/Desktop/Claude/Ameesi/ameesi`), `git log --oneline -1` should show this commit or later.
 2. Stop every running `expo start`. Then in `app/` run `npm install` and `npx expo start -c`. In Expo Go, remove the project from "Recently opened" and scan the new QR code.
