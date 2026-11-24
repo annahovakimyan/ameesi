@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Keyboard, Pressable, StyleSheet, View } from "react-native";
-import { searchPlaces } from "../api/client";
+import { lastNetworkError, searchPlaces } from "../api/client";
 import { offlinePlaces } from "../sample/places";
 import type { Lang, Place } from "../api/types";
 import { t } from "../i18n";
@@ -91,7 +91,9 @@ export function PlaceSearch({ lang, value, onChange, onFocus, onResults }: {
         </AppText>
       )}
       {offline && results && (
-        <AppText variant="caption" tone="gold" testID="offline-places" style={styles.error}>{t("offlinePlaces", lang)}</AppText>
+        <AppText variant="caption" tone="gold" testID="offline-places" style={styles.error}>
+          {t("offlinePlaces", lang)}{lastNetworkError ? `\n(${lastNetworkError})` : ""}
+        </AppText>
       )}
       {results && (
         <View style={styles.results}>

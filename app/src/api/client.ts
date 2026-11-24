@@ -4,6 +4,9 @@ import type { Chart, ChartRequest, Lang, Place, PlaceSearchResponse } from "./ty
 // (the Android emulator reaches your computer at http://10.0.2.2:8000).
 export const API_URL = process.env.EXPO_PUBLIC_API_URL || "https://ameesi.onrender.com";
 
+/** Development aid: the address and error of the last failed connection (no query string, so no birth data). */
+export let lastNetworkError: string | null = null;
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
@@ -16,6 +19,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     res = await fetch(`${API_URL}${path}`, init);
   } catch (e) {
     if (e instanceof Error && e.name === "AbortError") throw e; // cancelled on purpose, not a network failure
+    lastNetworkError = `${API_URL}${path.split("?")[0]} · ${e instanceof Error ? e.message : String(e)}`;
     throw new ApiError(0, "network");
   }
   if (!res.ok) {

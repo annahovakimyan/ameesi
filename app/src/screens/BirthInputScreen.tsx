@@ -1,6 +1,6 @@
 import { type ComponentRef, useEffect, useRef, useState } from "react";
 import { KeyboardAvoidingView, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
-import { API_URL, ApiError, calculateChart, serverReachable } from "../api/client";
+import { API_URL, ApiError, calculateChart, lastNetworkError, serverReachable } from "../api/client";
 import type { Chart, ChartRequest, Lang, Place } from "../api/types";
 import { AppText, Icon } from "../components/AppText";
 import { Button } from "../components/Button";
@@ -110,7 +110,8 @@ export function BirthInputScreen({ lang, onChart, purpose = "self", initial, edi
           {__DEV__ && (
             <AppText variant="caption" tone="textMuted" testID="server-dev-hint">
               {`Development: looking for the calculation server at ${API_URL}. If it was asleep, wait a minute and retry. `
-                + "For a local server, set EXPO_PUBLIC_API_URL in app/.env (for example http://192.168.1.20:8000) and restart Expo with -c."}
+                + "For a local server, set EXPO_PUBLIC_API_URL in app/.env (for example http://192.168.1.20:8000) and restart Expo with -c."
+                + (lastNetworkError ? `\nLast error: ${lastNetworkError}` : "")}
             </AppText>
           )}
           <Button kind="secondary" testID="server-retry" label={t("retry", lang)}
