@@ -10,6 +10,7 @@ import { colors, gradient, radius, space } from "../theme";
 import { AppText } from "./AppText";
 import { ChartWheel } from "./ChartWheel";
 import { CrescentDivider } from "./Ornaments";
+import { hasLogo, Logo } from "./Logo";
 
 export const SHARE_IMAGE_WIDTH = 1080; // px of the shared PNG, whatever the card's size on screen
 const SHARED_ASPECTS = 3;
@@ -27,7 +28,7 @@ export function ShareCard({ chart, lang, width, ref }: { chart: Chart; lang: Lan
   return (
     <View ref={ref} collapsable={false} style={[styles.card, { width }]} testID="share-card">
       <LinearGradient colors={gradient.sky} style={StyleSheet.absoluteFill} />
-      <AppText variant="wordmark" tone="gold" style={styles.centre}>Ameesi</AppText>
+      {hasLogo() ? <View style={styles.centre}><Logo kind="lockup" width={width * 0.34} /></View> : <AppText variant="wordmark" tone="gold" style={styles.centre}>Ameesi</AppText>}
       <View pointerEvents="none">
         <ChartWheel chart={chart} lang={lang} size={wheel} selected={null} onSelect={() => {}} />
       </View>

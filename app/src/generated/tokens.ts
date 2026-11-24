@@ -17,6 +17,7 @@ export const colors = {
   "textFaint": "#A08AA0",
   "lavender": "#BFA5D6",
   "onGold": "#140D1C",
+  "logoMidnight": "#111222",
   "disabledFill": "#2C2236",
   "disabledText": "#83728A",
   "rose": "#F29AA6",

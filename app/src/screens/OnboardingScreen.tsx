@@ -3,6 +3,7 @@ import type { Lang } from "../api/types";
 import { AppText } from "../components/AppText";
 import { Button } from "../components/Button";
 import { Checkbox } from "../components/Checkbox";
+import { Logo, hasLogo } from "../components/Logo";
 import { ArchPortal, CrescentDivider } from "../components/Ornaments";
 import { t } from "../i18n";
 import { colors, radius, space } from "../theme";
@@ -16,8 +17,14 @@ export function OnboardingScreen({ lang, onLang, onContinue }: {
   return (
     <ScrollView contentContainerStyle={styles.screen}>
       <View style={styles.hero}>
-        <ArchPortal size={132} />
-        <AppText variant="wordmark" accessibilityRole="header" style={styles.centre}>Ameesi</AppText>
+        {hasLogo() ? (
+          <View accessibilityRole="header"><Logo kind="lockup" width={200} /></View>
+        ) : (
+          <>
+            <ArchPortal size={132} />
+            <AppText variant="wordmark" accessibilityRole="header" style={styles.centre}>Ameesi</AppText>
+          </>
+        )}
         <AppText variant="title" tone="gold" testID="tagline" style={styles.centre}>{t("tagline", lang)}</AppText>
         <CrescentDivider width={160} />
       </View>
