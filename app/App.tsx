@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { serverReachable } from "./src/api/client";
 import { CosmicBackground } from "./src/components/CosmicBackground";
 import { LiveContentProvider } from "./src/content/live";
 import { deviceProfileStore } from "./src/profiles/store";
@@ -22,6 +23,8 @@ export default function App() {
 
   useEffect(() => {
     settingsStore.load().then(setSettings);
+    // Wake the calculation server now: on free hosting it sleeps when idle and takes up to a minute to start.
+    serverReachable().catch(() => {});
   }, []);
 
   const update = (patch: Partial<Settings>) => setSettings((cur) => {

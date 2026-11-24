@@ -87,3 +87,18 @@ test("typing the birthplace makes room to keep the field above the keyboard, unt
   await fireEvent.press(screen.getByTestId("place-616635"));
   expect(screen.queryByTestId("place-room")).toBeNull();
 });
+
+test("place search shows that it's searching, and says so when the server is slow to wake", async () => {
+  jest.useFakeTimers();
+  try {
+    mockFetch.mockImplementation((url: string) => url.includes("/places") ? new Promise(() => {}) : ok({ status: "ok" }));
+    await render(<BirthInputScreen lang="en" onChart={jest.fn()} />);
+    await fireEvent.changeText(screen.getByTestId("place-input"), "Gyumri");
+    await act(async () => { jest.advanceTimersByTime(300); });
+    expect(screen.getByTestId("place-searching")).toHaveTextContent("Searching…");
+    await act(async () => { jest.advanceTimersByTime(4000); });
+    expect(screen.getByTestId("place-searching")).toHaveTextContent(/waking up/);
+  } finally {
+    jest.useRealTimers();
+  }
+});

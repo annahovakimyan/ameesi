@@ -19,6 +19,12 @@ export const strings = {
   place: { hy: "Ծննդավայր", en: "Place of birth", ru: "Место рождения" },
   placeHint: { hy: "Քաղաք կամ գյուղ", en: "City, town or village", ru: "Город или село" },
   formerly: { hy: "նախկինում՝ {name}", en: "formerly {name}", ru: "ранее {name}" },
+  searchingPlaces: { hy: "Փնտրում ենք…", en: "Searching…", ru: "Ищем…" },
+  serverWaking: {
+    hy: "Սերվերը արթնանում է, սա կարող է տևել մինչև մեկ րոպե։",
+    en: "The server is waking up. This can take up to a minute.",
+    ru: "Сервер просыпается, это может занять до минуты.",
+  },
   noPlaces: { hy: "Ոչինչ չի գտնվել", en: "No places found", ru: "Ничего не найдено" },
   adult: { hy: "Ես 18 տարեկան եմ կամ ավելի", en: "I am 18 or older", ru: "Мне 18 лет или больше" },
   getChart: { hy: "Ստանալ քարտեզը", en: "Get my chart", ru: "Получить карту" },
