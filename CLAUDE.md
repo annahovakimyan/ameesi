@@ -44,11 +44,15 @@ tests/golden/ reference charts with known correct results
 - Users must be 18+. No account needed before the first chart.
 - Launch market: Armenia only.
 
+## Current status
+
+See `docs/STATUS.md`: what's done, the open phone/location problem, decisions from earlier chats, and what's waiting on the founder. Live server: https://ameesi.onrender.com.
+
 ## Build order
 
-1. **Now: calculation server** (`docs/engine-spec.md`). Done when the golden charts pass.
-2. Place search with former Soviet names (Leninakan finds Gyumri).
-3. App: birth input, chart wheel, tap-to-explain bottom sheet, list view, profiles.
+1. Calculation server (`docs/engine-spec.md`). Done; deployed on Render.
+2. Place search with former Soviet names (Leninakan finds Gyumri). Done.
+3. App: birth input, chart wheel, tap-to-explain bottom sheet, list view, profiles. Done (v0.2.0); **now: get it working on the founder's phone**.
 4. Content loading from Supabase in three languages (offline cache); Ameesi Plus purchase; share card.
 5. Closed test on Google Play (12+ testers for 14 days).
 
